@@ -1,0 +1,5 @@
+fullscreen = true
+display_width = 1366
+display_height = 768
+fps = 30
+music = true
