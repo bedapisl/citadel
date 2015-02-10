@@ -125,7 +125,7 @@ void people::draw_interface()
 {
 	specific_draw_interface();
 	people_info info = people_info::show_people_info(type);
-	al_draw_text(font25, WRITING_COLOR, display_width / 2, display_height - BUTTON_SIZE, ALLEGRO_ALIGN_CENTER, info.name.c_str());	//draw name
+	al_draw_text(font25, WRITING_COLOR, display_width / 2, display_height - BUTTON_SIZE, ALLEGRO_ALIGN_CENTRE, info.name.c_str());	//draw name
 
 	al_draw_textf(font15, WRITING_COLOR, 10, display_height - BUTTON_SIZE, ALLEGRO_ALIGN_LEFT, "Health: %i/%i", life, max_life);
 	al_draw_textf(font15, WRITING_COLOR, 10, display_height - BUTTON_SIZE + BUTTON_SIZE / 3, ALLEGRO_ALIGN_LEFT, "Attack: %i", info.attack);
@@ -1148,8 +1148,8 @@ void carrier::update()
 
 void carrier::specific_draw_interface()
 {
-	if(((type_of_transaction == IN) && (path.back()->building_on_tile.lock() == home_building.lock())) || 
-		((type_of_transaction == OUT) && (path.back()->building_on_tile.lock() == target.lock())))
+	if(((type_of_transaction == IN_TRANSACTION) && (path.back()->building_on_tile.lock() == home_building.lock())) || 
+		((type_of_transaction == OUT_TRANSACTION) && (path.back()->building_on_tile.lock() == target.lock())))
 	{
 		al_draw_bitmap_region(image_list[RESOURCES_IMAGE], 30 * static_cast<int>(resource_carried), 0, 30, 30, 100, display_height - BUTTON_SIZE + 5, 0);
 		al_draw_textf(font15, WRITING_COLOR, 140, display_height - BUTTON_SIZE + 5, ALLEGRO_ALIGN_LEFT, "%i", transaction_size);
@@ -1170,10 +1170,10 @@ void carrier::give_task(resources resource_type, int amount, transaction_type ty
 	waiting = false;
 	
 	transaction_type reversed_transaction;
-	if(type == IN)
-		reversed_transaction = OUT;
+	if(type == IN_TRANSACTION)
+		reversed_transaction = OUT_TRANSACTION;
 	else 
-		reversed_transaction = IN;
+		reversed_transaction = IN_TRANSACTION;
 
 	bool success_1 = home_building.lock()->show_carrier_output()->reserve_transaction(resource_type, amount, type);
 	bool success_2 = target->show_carrier_output()->reserve_transaction(resource_type, amount, reversed_transaction);
@@ -1181,7 +1181,7 @@ void carrier::give_task(resources resource_type, int amount, transaction_type ty
 	if((!success_1) || (!success_2))
 		throw new std::exception;
 
-	if(type == OUT)
+	if(type == OUT_TRANSACTION)
 		home_building.lock()->show_carrier_output()->accomplish_transaction(resource_type, amount, type);	//subtract resources which should be carried away
 	if(path_to_target.size() == 0)
 		throw new std::exception;
@@ -1320,7 +1320,7 @@ void carrier::target_reached()
 	
 	if(home)
 	{
-		if(type_of_transaction == IN)
+		if(type_of_transaction == IN_TRANSACTION)
 			output->accomplish_transaction(resource_carried, transaction_size, type_of_transaction);
 		
 		output->add_idle_carrier(boost::dynamic_pointer_cast<carrier>(shared_from_this()));
@@ -1331,7 +1331,7 @@ void carrier::target_reached()
 	}
 	else
 	{
-		transaction_type other_transaction = (type_of_transaction == IN) ? OUT : IN;
+		transaction_type other_transaction = (type_of_transaction == IN_TRANSACTION) ? OUT_TRANSACTION : IN_TRANSACTION;
 		output->accomplish_transaction(resource_carried, transaction_size, other_transaction);
 		
 		target = home_building;
