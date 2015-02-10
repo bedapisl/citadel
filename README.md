@@ -23,17 +23,14 @@ To check version: dpkg -s libboost-dev | grep 'Version'
 ####Library Allegro 5.1
 [Guidline to install Allegro](https://wiki.allegro.cc/index.php?title=Install_Allegro5_From_Git/Linux/Debian)
 
-Dont forget that you need version 5.1 not 5.0, so instead of "git checkout 5.0" use "git checkout 5.1".
-
+Dont forget that you need version 5.1 not 5.0, so instead of "git checkout 5.0" use "git checkout 5.1". 
 Version 5.0 should compile too, but the game doesn't work well with 5.0.
 ###Download source
 git clone git://github.com/spekoun/citadel
 
-Above command should create directory named citadel with source codes.
+Above command should create directory named "citadel" with source codes.
 ###Compile
-cd citadel
-
-make
+cd citadel; make
 
 
 
