@@ -882,9 +882,12 @@ tower::tower(building_type type, int tile_x, int tile_y, int surface_height, pla
 
 tower::~tower()
 {
-	std::vector<tile*> tiles = tiles_under_building(tile_x, tile_y, FOUR_TILE_BUILDING);
-	for(size_t i=0; i<tiles.size(); ++i)
-		tiles[i]->can_go_on_building = false;
+	if(is_real)
+	{
+		std::vector<tile*> tiles = tiles_under_building(tile_x, tile_y, FOUR_TILE_BUILDING);
+		for(size_t i=0; i<tiles.size(); ++i)
+			tiles[i]->can_go_on_building = false;
+	}
 }
 
 std::vector<game_object*> tower::draw(int screen_position_x, int screen_position_y)
