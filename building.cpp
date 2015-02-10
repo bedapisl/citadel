@@ -56,7 +56,7 @@ int building::draw_interface()
 	}
 	
 	std::string name = building_info::show_building_info(type).name;
-	al_draw_text(font25, WRITING_COLOR, display_width/2, display_height - BUTTON_SIZE, ALLEGRO_ALIGN_CENTER, name.c_str());
+	al_draw_text(font25, WRITING_COLOR, display_width/2, display_height - BUTTON_SIZE, ALLEGRO_ALIGN_CENTRE, name.c_str());
 
 	draw_specific_interface();
 		
