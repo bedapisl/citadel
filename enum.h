@@ -286,8 +286,8 @@ enum upgrade_level
 
 enum transaction_type
 {
-	IN,
-	OUT
+	IN_TRANSACTION,
+	OUT_TRANSACTION
 };
 
 enum class resource_status
