@@ -2,7 +2,7 @@
 RTS game written in C++
 
 
-#Compilation:
+#Compilation
 ##Debian
 Best version of Debian for this compilation is Jessie or Sid, because you will need g++ 4.9 or newer, which is not easy to get on Debian Wheezy.
 ###Dependencies
@@ -33,10 +33,14 @@ Above command should create directory named "citadel" with source codes.
 cd citadel; make
 
 
-
-
-
-
+##Fedora
+###Dependencies
+####g++
+yum install gcc-c++
+####Boost
+yum install boost-devel
+####Allegro 
+yum install allegro5 allegro5-devel allegro5-debuginfo allegro5-addon-acodec allegro5-addon-acodec-devel allegro5-addon-audio allegro5-addon-audio-devel allegro5-addon-dialog allegro5-addon-dialog-devel allegro5-addon-image allegro5-addon-image-devel allegro5-addon-physfs allegro5-addon-physfs-devel allegro5-addon-ttf allegro5-addon-ttf-devel
 
 
 

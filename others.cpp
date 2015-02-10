@@ -429,7 +429,7 @@ void carrier_output::update()
 
 bool carrier_output::reserve_transaction(resources resource_type, int amount, transaction_type type)
 {
-	if((type == IN) && (contains(in, resource_type)))
+	if((type == IN_TRANSACTION) && (contains(in, resource_type)))
 	{
 		if(stored[resource_type] + reserved_in[resource_type] + amount <= capacity)
 		{
@@ -437,7 +437,7 @@ bool carrier_output::reserve_transaction(resources resource_type, int amount, tr
 			return true;
 		}
 	}
-	if((type == OUT) && (contains(out, resource_type)))
+	if((type == OUT_TRANSACTION) && (contains(out, resource_type)))
 	{
 		if(stored[resource_type] - reserved_out[resource_type] - amount >= 0)
 		{
@@ -450,14 +450,14 @@ bool carrier_output::reserve_transaction(resources resource_type, int amount, tr
 
 void carrier_output::delete_transaction(resources resource_type, int amount, transaction_type type)
 {
-	if(type == IN)
+	if(type == IN_TRANSACTION)
 	{
 		reserved_in[resource_type] -= amount;
 
 		if(reserved_in[resource_type] < 0)
 			throw new std::exception;
 	}
-	else if(type == OUT)
+	else if(type == OUT_TRANSACTION)
 	{
 		reserved_out[resource_type] -= amount;
 
@@ -468,14 +468,14 @@ void carrier_output::delete_transaction(resources resource_type, int amount, tra
 
 bool carrier_output::accomplish_transaction(resources resource_type, int amount, transaction_type type)
 {
-	if(type == IN)
+	if(type == IN_TRANSACTION)
 	{
 		reserved_in[resource_type] -= amount;
 		save(resource_type, amount);			//if output doesn't have enough capacity, resources disapear
 		if(reserved_in[resource_type] < 0)
 			throw new std::exception;
 	}
-	else if(type == OUT)
+	else if(type == OUT_TRANSACTION)
 	{
 		reserved_out[resource_type] -= amount;
 		bool return_value = try_subtract(resource_type, amount);
@@ -487,11 +487,11 @@ bool carrier_output::accomplish_transaction(resources resource_type, int amount,
 
 int carrier_output::show_max_possible_transaction(resources resource_type, transaction_type type)
 {
-	if((type == IN) && (contains(in, resource_type)))
+	if((type == IN_TRANSACTION) && (contains(in, resource_type)))
 	{
 		return capacity - stored[resource_type] - reserved_in[resource_type];
 	}
-	else if((type == OUT) && (contains(out, resource_type)))
+	else if((type == OUT_TRANSACTION) && (contains(out, resource_type)))
 	{
 		return stored[resource_type] - reserved_out[resource_type];
 	}
@@ -584,14 +584,14 @@ void carrier_output::assign_tasks()
 
 		for(int j = 0; j < in.size(); ++j)
 		{
-			int max_amount = std::min(show_max_possible_transaction(in[j], IN), founded_output->show_max_possible_transaction(in[j], OUT));
+			int max_amount = std::min(show_max_possible_transaction(in[j], IN_TRANSACTION), founded_output->show_max_possible_transaction(in[j], OUT_TRANSACTION));
 			
 			while(max_amount > 0)
 			{
 				int real_amount = std::min(max_amount, CARRIER_CAPACITY);
 				max_amount -= real_amount;
 
-				idle_carriers.front().lock()->give_task(in[j], real_amount, IN, paths_to_tasks[i].back()->building_on_tile.lock(), paths_to_tasks[i]);
+				idle_carriers.front().lock()->give_task(in[j], real_amount, IN_TRANSACTION, paths_to_tasks[i].back()->building_on_tile.lock(), paths_to_tasks[i]);
 				idle_carriers.erase(idle_carriers.begin());
 				if(idle_carriers.size() == 0)
 				{
@@ -601,14 +601,14 @@ void carrier_output::assign_tasks()
 		}
 		for(int j = 0; j < out.size(); ++j)
 		{
-			int max_amount = std::min(show_max_possible_transaction(out[j], OUT), founded_output->show_max_possible_transaction(out[j], IN));
+			int max_amount = std::min(show_max_possible_transaction(out[j], OUT_TRANSACTION), founded_output->show_max_possible_transaction(out[j], IN_TRANSACTION));
 			
 			while(max_amount > 0)
 			{
 				int real_amount = std::min(max_amount, CARRIER_CAPACITY);
 				max_amount -= real_amount;
 
-				idle_carriers.front().lock()->give_task(out[j], real_amount, OUT, paths_to_tasks[i].back()->building_on_tile.lock(),
+				idle_carriers.front().lock()->give_task(out[j], real_amount, OUT_TRANSACTION, paths_to_tasks[i].back()->building_on_tile.lock(),
 										paths_to_tasks[i]);
 				idle_carriers.erase(idle_carriers.begin());
 				if(idle_carriers.size() == 0)
