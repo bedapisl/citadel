@@ -23,7 +23,7 @@ Installation - Fedora: yum install boost-devel
 Game can be compiled with Allegro version 5.0, but works better with Allegro 5.1. So try to get the newer version if you can.
 
 [Guide to compile Allegro on Debian.](https://wiki.allegro.cc/index.php?title=Install_Allegro5_From_Git/Linux/Debian) 
-You should change command "git checkout 5.0" to "git checkout 5.1".
+You should change command "git checkout 5.0" to "git checkout 5.1". Also if you want build Allegro statically, you have to use "cmake -DSHARED=off -DCMAKE_INSTALL_PREFIX=/usr .." instead of "cmake _DCMAKE_INSTALL_PREFIX=/usr ..".
 
 Fedora: yum install allegro5 allegro5-devel allegro5-debuginfo allegro5-addon-acodec allegro5-addon-acodec-devel allegro5-addon-audio allegro5-addon-audio-devel allegro5-addon-dialog allegro5-addon-dialog-devel allegro5-addon-image allegro5-addon-image-devel allegro5-addon-physfs allegro5-addon-physfs-devel allegro5-addon-ttf allegro5-addon-ttf-devel
 
@@ -38,6 +38,7 @@ cd citadel; make
 
 This should create executable file a.out, which can be run with "./a.out".
 
+If you want executable with Allegro library linked statically, use "make static" instead of make. But this works only if you have static version of Allegro installed.
 
 
 
