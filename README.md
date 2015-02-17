@@ -53,7 +53,5 @@ cd citadel; make
 
 This should create executable file a.out, which can be run with "./a.out".
 
-If you want executable with Allegro library linked statically, use "make static" instead of make. But this works only if you have static version of Allegro installed.
-
 
 
