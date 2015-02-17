@@ -20,7 +20,7 @@ Last step should launch the game. If this is not working for you, please, send m
 #Compilation on Linux
 This guide was tested with Debian Jessie and Fedora 21. It should also work with minor changes on other distros. 
 ##Dependencies
-###g++ 4.9 or higher
+###g++ 4.8 or higher
 Installation - Debian: apt-get install g++
 
 Installation - Fedora: yum install gcc-c++
