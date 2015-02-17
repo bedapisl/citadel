@@ -4,19 +4,21 @@ RTS game written in C++
 #Download binary
 This is the easiest option of trying this game. It should work on recent Linux distributions.
 
-1) Install git ("apt-get install git", "yum install git", ...) and create directory where the game will be.
+1) Install git ("apt-get install git", "yum install git", ...).
 
 2) Execute on console: 
 
-2a) git init
+2a) git clone git://github.com/spekoun/citadel
 
-2b) git pull git://github.com/spekoun/citadel
+2b) cd citadel
 
 2c) ./run.sh
 
+Last step should launch the game. If this is not working for you, please, send me email on bedapisl@gmail.com with description of what went wrong.
+
 
 #Compilation on Linux
-These guide was tested with Debian Jessie and Fedora 21. It should also work with minor changes on other distros. 
+This guide was tested with Debian Jessie and Fedora 21. It should also work with minor changes on other distros. 
 ##Dependencies
 ###g++ 4.9 or higher
 Installation - Debian: apt-get install g++
@@ -36,7 +38,7 @@ Installation - Fedora: yum install boost-devel
 Game can be compiled with Allegro version 5.0, but works better with Allegro 5.1. So try to get the newer version if you can.
 
 [Guide to compile Allegro on Debian.](https://wiki.allegro.cc/index.php?title=Install_Allegro5_From_Git/Linux/Debian) 
-You should change command "git checkout 5.0" to "git checkout 5.1". Also if you want build Allegro statically, you have to use "cmake -DSHARED=off -DCMAKE_INSTALL_PREFIX=/usr .." instead of "cmake _DCMAKE_INSTALL_PREFIX=/usr ..".
+You should change command "git checkout 5.0" to "git checkout 5.1".
 
 Fedora: yum install allegro5 allegro5-devel allegro5-debuginfo allegro5-addon-acodec allegro5-addon-acodec-devel allegro5-addon-audio allegro5-addon-audio-devel allegro5-addon-dialog allegro5-addon-dialog-devel allegro5-addon-image allegro5-addon-image-devel allegro5-addon-physfs allegro5-addon-physfs-devel allegro5-addon-ttf allegro5-addon-ttf-devel
 
