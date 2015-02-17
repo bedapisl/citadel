@@ -2,7 +2,7 @@
 RTS game written in C++
 
 #Download binary
-This is the easiest option of trying this game. It should work on recent Linux distributions.
+This is the easiest option of trying this game. It should work on recent Linux distributions (with glibc version at least 2.15, tested on Debian Jessie and Fedora 21).
 
 1) Install git ("apt-get install git", "yum install git", ...).
 
