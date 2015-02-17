@@ -1,4 +1,4 @@
-#citadel
+#Citadel
 RTS game written in C++
 
 #Download binary
