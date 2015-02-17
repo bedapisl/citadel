@@ -38,7 +38,7 @@ Installation - Fedora: yum install boost-devel
 Game can be compiled with Allegro version 5.0, but works better with Allegro 5.1. So try to get the newer version if you can.
 
 [Guide to compile Allegro on Debian.](https://wiki.allegro.cc/index.php?title=Install_Allegro5_From_Git/Linux/Debian) 
-You should change command "git checkout 5.0" to "git checkout 5.1".
+In this guide you should change command "git checkout 5.0" to "git checkout 5.1".
 
 Fedora: yum install allegro5 allegro5-devel allegro5-debuginfo allegro5-addon-acodec allegro5-addon-acodec-devel allegro5-addon-audio allegro5-addon-audio-devel allegro5-addon-dialog allegro5-addon-dialog-devel allegro5-addon-image allegro5-addon-image-devel allegro5-addon-physfs allegro5-addon-physfs-devel allegro5-addon-ttf allegro5-addon-ttf-devel
 
