@@ -1,6 +1,19 @@
 #citadel
 RTS game written in C++
 
+#Download binary
+This is the easiest option of trying this game. It should work on recent Linux distributions.
+
+1) Install git and create directory where the game will be.
+
+2) Execute on console: 
+
+2a) git init
+
+2b) git pull git://github.com/spekoun/citadel
+
+2c) ./run.sh
+
 
 #Compilation on Linux
 These guide was tested with Debian Jessie and Fedora 21. It should also work with minor changes on other distros. 
