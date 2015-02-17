@@ -4,7 +4,7 @@ RTS game written in C++
 #Download binary
 This is the easiest option of trying this game. It should work on recent Linux distributions.
 
-1) Install git and create directory where the game will be.
+1) Install git ("apt-get install git", "yum install git", ...) and create directory where the game will be.
 
 2) Execute on console: 
 
