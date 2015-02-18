@@ -26,23 +26,25 @@ boost serialization, boost filesystem, boost iostream, boost system
 Allegro library version 5
 
 To install all dependecies on Debian run command:
-su apt-get update && apt-get install g++ git make boost-serialization-dev boost-system-dev boost-filesystem-dev boost-iostreams-dev liballegro-acodec5-dev liballegro-audio5-dev liballegro-dialog5-dev liballegro-image5-dev liballegro-physfs5-dev liballegro-ttf5-dev liballegro5-dev
+
+	su apt-get update && apt-get install g++ git make boost-serialization-dev boost-system-dev boost-filesystem-dev boost-iostreams-dev liballegro-acodec5-dev liballegro-audio5-dev liballegro-dialog5-dev liballegro-image5-dev liballegro-physfs5-dev liballegro-ttf5-dev liballegro5-dev
 
 
 On Fedora:
-yum install gcc-c++ git make boost-devel allegro5-devel allegro5-addon-acodec-devel allegro5-addon-audio-devel allegro5-addon-dialog-devel allegro5-addon-image-devel allegro5-addon-physfs-devel allegro5-addon-ttf-devel
+
+	yum install gcc-c++ git make boost-devel allegro5-devel allegro5-addon-acodec-devel allegro5-addon-audio-devel allegro5-addon-dialog-devel allegro5-addon-image-devel allegro5-addon-physfs-devel allegro5-addon-ttf-devel
 
 
 ###Download source
-git clone git://github.com/spekoun/citadel
+	git clone git://github.com/spekoun/citadel
 
 ###Compile
-cd citadel; make
+	cd citadel; make
 
 ###Run
-./a.out
+	./a.out
 
 ##Troubleshooting
-Incase of any problems you can contact me on bedapisl@gmail.com.
+In case of any problems you can contact me on bedapisl@gmail.com.
 
 
