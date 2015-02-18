@@ -8,22 +8,21 @@ Not supported
 ##Download binaries on Linux
 This is the easiest option of trying this game. It should work on recent Linux distributions (with glibc version at least 2.15, tested on Debian Jessie and Fedora 21).
 
-[Linux binaries](https://sourceforge.net/projects/citadel-game/files/)
-
-After download, unzip downloaded file and run "./run.sh" script.
+Download [Linux binaries](https://sourceforge.net/projects/citadel-game/files/), unzip downloaded file and run "./run.sh" script.
 
 ##Compilation on Linux
 This guide was tested with Debian Jessie and Fedora 21. It should also work with minor changes on other recent distros. 
+
 ###Dependencies
 To download and compile this game you will need:
 
-g++ 4.8 or higher
+1. g++ 4.8 or higher
 
-git, make
+2. git, make
 
-boost serialization, boost filesystem, boost iostream, boost system
+3. boost serialization, boost filesystem, boost iostream, boost system
 
-Allegro library version 5
+4. Allegro library version 5
 
 To install all dependecies on Debian run command:
 
@@ -32,7 +31,7 @@ To install all dependecies on Debian run command:
 
 On Fedora:
 
-	yum install gcc-c++ git make boost-devel allegro5-devel allegro5-addon-acodec-devel allegro5-addon-audio-devel allegro5-addon-dialog-devel allegro5-addon-image-devel allegro5-addon-physfs-devel allegro5-addon-ttf-devel
+	su yum install gcc-c++ git make boost-devel allegro5-devel allegro5-addon-acodec-devel allegro5-addon-audio-devel allegro5-addon-dialog-devel allegro5-addon-image-devel allegro5-addon-physfs-devel allegro5-addon-ttf-devel
 
 
 ###Download source
@@ -46,5 +45,4 @@ On Fedora:
 
 ##Troubleshooting
 In case of any problems you can contact me on bedapisl@gmail.com.
-
 
