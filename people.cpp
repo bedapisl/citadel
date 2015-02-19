@@ -192,7 +192,7 @@ bool people::general_can_move(tile* from, tile* to)
 	return false;
 }
 
-int people::rotate(int tile_x, int tile_y, bool clockwise)
+void people::rotate(int tile_x, int tile_y, bool clockwise)
 {
 	game_object::rotate(tile_x, tile_y, clockwise);
 	if(bMoving)
@@ -565,6 +565,9 @@ void warrior::damage(int damage, tile* attacker_position, bool is_ranged)
 			case(NORTHEAST_TOWER):
 			case(SOUTHEAST_TOWER):
 				evasion_chance = 90;
+				break;
+			default:
+				throw new std::exception;
 		}
 	}
 	
@@ -1027,12 +1030,14 @@ bool warrior::can_attack_people(tile* from, tile* enemy_tile)
 		case(AXEMAN):
 		case(SWORDSMAN):
 			return general_can_move(from, enemy_tile);
-			break;
+		break;
 		case(SPEARMAN):
 		case(BOWMAN):
 		case(CATAPULT):
 			return can_attack_ranged(from, enemy_tile);
-			break;
+		break;
+		default:
+			throw new std::exception;
 	}
 	throw new std::exception;
 	return 0;
@@ -1073,6 +1078,8 @@ bool warrior::can_attack_building(tile* from, tile* enemy_tile)
 			return can_attack_ranged(from, enemy_tile);	
 		}
 		break;
+		default:
+			throw new std::exception;
 	}
 	throw new std::exception;
 	return false;

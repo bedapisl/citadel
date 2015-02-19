@@ -454,7 +454,7 @@ void building::general_upgrade()
 	}
 }
 
-int building::rotate(int new_tile_x, int new_tile_y, bool clockwise)
+void building::rotate(int new_tile_x, int new_tile_y, bool clockwise)
 {
 	int coordinates_change = 0;
 	if(size == FOUR_TILE_BUILDING)
@@ -474,7 +474,6 @@ int building::rotate(int new_tile_x, int new_tile_y, bool clockwise)
 	
 	game_object::update(new_tile_x, new_tile_y, show_surface_height());
 
-	return 0;
 }
 
 void building::set_drawing_tile()
@@ -487,15 +486,12 @@ void building::set_drawing_tile()
 	int drawing_tile_x = tile_x;
 	int drawing_tile_y = tile_y;
 	
-	switch(size)
-	{
-		case(FOUR_TILE_BUILDING):
-			drawing_tile_x--;
-			break;
-		case(NINE_TILE_BUILDING):
-			drawing_tile_x -= 2;
-	}
-
+	if(size == FOUR_TILE_BUILDING)
+		drawing_tile_x--;
+	
+	else if(size == NINE_TILE_BUILDING)
+		drawing_tile_x -= 2;
+	
 	session->tile_list[drawing_tile_y][drawing_tile_x]->set_draw_building(true);
 	
 	if(session->tile_list[drawing_tile_y][drawing_tile_x]->building_on_tile.expired())
@@ -955,7 +951,7 @@ std::vector<game_object*> tower::draw(int screen_position_x, int screen_position
 	return std::vector<game_object*>();
 }
 
-int tower::rotate(int tile_x, int tile_y, bool clockwise)
+void tower::rotate(int tile_x, int tile_y, bool clockwise)
 {
 	building::rotate(tile_x, tile_y, clockwise);
 	if(clockwise)
@@ -1159,7 +1155,7 @@ void barracks::draw_specific_interface()
 		al_draw_textf(font15, WRITING_COLOR, i*BUTTON_SIZE + 72, display_height - 23, ALLEGRO_ALIGN_RIGHT, "%i", i + 1);
 	}
 
-	al_draw_textf(font15, WRITING_COLOR, number_of_functions * BUTTON_SIZE, display_height - BUTTON_SIZE + 50, ALLEGRO_ALIGN_LEFT, "Space for %i soldiers.", max_units[upgrade_level] - supported_units.size() - actions.size());
+	al_draw_textf(font15, WRITING_COLOR, number_of_functions * BUTTON_SIZE, display_height - BUTTON_SIZE + 50, ALLEGRO_ALIGN_LEFT, "Space for %lu soldiers.", max_units[upgrade_level] - supported_units.size() - actions.size());
 
 	output->draw_nonzero_resources(number_of_functions * BUTTON_SIZE, true);
 
@@ -1673,7 +1669,7 @@ std::vector<game_object*> gate::draw(int screen_position_x, int screen_position_
 	return std::vector<game_object*>();
 }
 
-int gate::rotate(int new_tile_x, int new_tile_y, bool clockwise)
+void gate::rotate(int new_tile_x, int new_tile_y, bool clockwise)
 {
 	if(type == RIGHT_GATE)
 	{
@@ -1690,8 +1686,6 @@ int gate::rotate(int new_tile_x, int new_tile_y, bool clockwise)
 	}
 	
 	game_object::update(new_tile_x, new_tile_y, show_surface_height());		//this will also change game_x and game_y
-
-	return 0;
 }
 
 void gate::set_gate_tile()
@@ -2112,7 +2106,7 @@ void store::draw_button(int x, int y, resources r)
 	al_draw_bitmap_region(image_list[RESOURCES_IMAGE], r * 30, 0, 30, 30, x, y, 0);
 	al_draw_textf(font15, WRITING_COLOR, x + 40, y + 10, ALLEGRO_ALIGN_LEFT, "%i/%i", output->show_amount(r), output->show_capacity());
 	al_draw_filled_rectangle(x + button_start_x, y + button_start_y, x + button_start_x + button_length, y + button_start_y + button_height, BLACK_COLOR);
-	al_draw_textf(font15, WRITING_COLOR, x + button_start_x, y + 10, ALLEGRO_ALIGN_LEFT, text.c_str());
+	al_draw_textf(font15, WRITING_COLOR, x + button_start_x, y + 10, ALLEGRO_ALIGN_LEFT, "%s", text.c_str());
 	
 	x += button_start_x + button_length;
 	
@@ -2230,14 +2224,14 @@ void stairs::draw_specific_interface()
 {
 }
 
-int stairs::rotate(int tile_x, int tile_y, bool clockwise)
+void stairs::rotate(int tile_x, int tile_y, bool clockwise)
 {
 	building::rotate(tile_x, tile_y, clockwise);
 
 	if(clockwise)
 	{
 		if(type == SOUTHWEST_STAIRS)
-			type == NORTHWEST_STAIRS;
+			type = NORTHWEST_STAIRS;
 
 		else 
 			type = static_cast<building_type>(static_cast<int>(type) + 1);

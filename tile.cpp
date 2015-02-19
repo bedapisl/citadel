@@ -32,12 +32,6 @@ tile::tile(tile_type type, int tile_x, int tile_y, int surface_height) : game_ob
 		border = GROUND_LEVEL;
 	if(show_surface_height() > 0)
 		border = NO_BORDERS;
-	/*
-	if(!image)
-	{
-		std::cout << "failed to load tile image" << std::endl;
-	}
-	*/
 }
 
 std::vector<game_object*> tile::draw(int screen_position_x, int screen_position_y)
@@ -141,6 +135,8 @@ std::vector<game_object*> tile::draw(int screen_position_x, int screen_position_
 					drawn_by_building = true;
 				}
 				break;
+				default:
+					{ }
 			}
 		}
 		
@@ -333,6 +329,8 @@ int tile::show_effective_height()
 		case(SOUTHEAST_TOWER):
 			return show_surface_height() + 2;
 			break;
+		default:
+			{ }
 	}
 	return show_surface_height();
 }

@@ -579,7 +579,7 @@ void save_menu::draw_save_window()
 		if(i == chosen_file)
 			color = YELLOW_COLOR;
 
-		al_draw_textf(font20, color, start_x, start_y + (i - first_file_index)*height, ALLEGRO_ALIGN_LEFT, save_files[i].c_str());
+		al_draw_textf(font20, color, start_x, start_y + (i - first_file_index)*height, ALLEGRO_ALIGN_LEFT, "%s", save_files[i].c_str());
 	}
 
 	al_draw_filled_rectangle(start_x, display_height - space_after_end_y + 30, display_width - 100, display_height - space_after_end_y + 60, BLACK_COLOR);
@@ -587,7 +587,7 @@ void save_menu::draw_save_window()
 	if(writing_name)
 		c = WHITE_COLOR;
 
-	al_draw_textf(font20, c, start_x, display_height - space_after_end_y + 30, ALLEGRO_ALIGN_LEFT, current_name.c_str());
+	al_draw_textf(font20, c, start_x, display_height - space_after_end_y + 30, ALLEGRO_ALIGN_LEFT, "%s", current_name.c_str());
 
 	for(int i=0; i<option_names.size(); ++i)
 	{
@@ -596,7 +596,7 @@ void save_menu::draw_save_window()
 		if(i == highlighted_option)
 			color = WHITE_COLOR;
 
-		al_draw_textf(font25, color, start_x + i*option_distance + 15, display_height - 100 + 15, ALLEGRO_ALIGN_LEFT, option_names[i].c_str());
+		al_draw_textf(font25, color, start_x + i*option_distance + 15, display_height - 100 + 15, ALLEGRO_ALIGN_LEFT, "%s", option_names[i].c_str());
 	}
 	al_flip_display();
 }
@@ -828,9 +828,9 @@ void main_menu::draw_main_menu()
 	for(int i=0; i<options_names.size(); i++)
 	{
 		if(chosen_option != i)
-			al_draw_textf(font25, al_map_rgb(150, 150, 150), display_width/2, 100 + 80*i, ALLEGRO_ALIGN_CENTRE, options_names[i].c_str());  
+			al_draw_textf(font25, al_map_rgb(150, 150, 150), display_width/2, 100 + 80*i, ALLEGRO_ALIGN_CENTRE, "%s", options_names[i].c_str());  
 		else
-			al_draw_textf(font30, al_map_rgb(200, 200, 200), display_width/2, 100 + 80*i, ALLEGRO_ALIGN_CENTRE, options_names[i].c_str()); 
+			al_draw_textf(font30, al_map_rgb(200, 200, 200), display_width/2, 100 + 80*i, ALLEGRO_ALIGN_CENTRE, "%s", options_names[i].c_str()); 
 	}
 	
 	al_flip_display();
@@ -1130,7 +1130,7 @@ void random_game_settings::draw()
 		if(highlighted_option == i)
 			c = WHITE_COLOR;
 		al_draw_rectangle(first_collumn + 300*i, display_height - 100, first_collumn + 200 + 300*i, display_height - 50, GREY_COLOR, 4);
-		al_draw_textf(font25, c, first_collumn + 300*i + 10, display_height - 100 + 10, ALLEGRO_ALIGN_LEFT, button_names[i].c_str());
+		al_draw_textf(font25, c, first_collumn + 300*i + 10, display_height - 100 + 10, ALLEGRO_ALIGN_LEFT, "%s", button_names[i].c_str());
 	}
 	al_flip_display();
 }

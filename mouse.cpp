@@ -311,7 +311,7 @@ int game_mouse::move(int &screen_position_x, int &screen_position_y)
 
 	if(state->y > display_height - BUTTON_SIZE)		//in panel
 	{	
-		if((state->x > display_width - 2*BUTTON_SIZE) && (state->buttons && 1)) 	//button hold in minimap
+		if((state->x > display_width - 2*BUTTON_SIZE) && (state->buttons & 1)) 	//button hold in minimap
 		{
 			float size_increase = (float)BUTTON_SIZE / (float)((game_info::map_width > MAP_HEIGHT) ? game_info::map_width : game_info::map_height); 
 			screen_position_x = - ((display_width - BUTTON_SIZE*2 - state->x)/size_increase)*32 - display_width/2;

@@ -319,6 +319,8 @@ void draw_tile_to_minimap(tile* t, float size_increase)
 			case(TREE_TILE):
 				color = DARK_GREEN_COLOR;
 				break;
+			default:
+				throw new std::exception;
 		}
 	}
 	else if(t->is_fertile())

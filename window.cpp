@@ -129,7 +129,7 @@ void slider::mouse_up(int mouse_x, int mouse_y)
 
 void slider::draw()
 {
-	al_draw_textf(font25, WRITING_COLOR, x, y, ALLEGRO_ALIGN_LEFT, label.c_str());
+	al_draw_textf(font25, WRITING_COLOR, x, y, ALLEGRO_ALIGN_LEFT, "%s", label.c_str());
 	al_draw_filled_rounded_rectangle(x + name_length, y + 4, x + name_length + slider_length, y + height - 4, 4, 4, GREY_COLOR);
 	al_draw_filled_circle(x + name_length + slider_length * ((double)value/(double)max_value), y + height/2, 10, WRITING_COLOR);
 }
@@ -179,7 +179,7 @@ void text_field::key_char(ALLEGRO_EVENT* ev)
 
 void text_field::draw()
 {
-	al_draw_textf(font25, WRITING_COLOR, x, y, ALLEGRO_ALIGN_LEFT, label.c_str());
+	al_draw_textf(font25, WRITING_COLOR, x, y, ALLEGRO_ALIGN_LEFT, "%s", label.c_str());
 	ALLEGRO_COLOR background_color = BLACK_COLOR;
 	ALLEGRO_COLOR text_color = WRITING_COLOR;
 	if(has_focus)
@@ -190,7 +190,7 @@ void text_field::draw()
 	
 	al_draw_filled_rectangle(x + name_length, y, x + name_length + field_length, y + height, background_color);
 	al_draw_rectangle(x + name_length, y, x + name_length + field_length, y + height, GREY_COLOR, 4);
-	al_draw_textf(font25, text_color, x + name_length + 10, y, ALLEGRO_ALIGN_LEFT, value.c_str());
+	al_draw_textf(font25, text_color, x + name_length + 10, y, ALLEGRO_ALIGN_LEFT, "%s", value.c_str());
 }
 
 music::music() : sample_playing(nullptr), mixer(al_create_mixer(44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2)), 

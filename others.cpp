@@ -262,6 +262,7 @@ possible_borders tile_borders(tile* cTile, direction way)
 				result = RAMP_BORDER;
 			else result = NORMAL_BORDER;
 		}
+		break;
 	case(WEST_INSIDE_BORDER):
 		{
 			if(way == WEST)
@@ -270,6 +271,7 @@ possible_borders tile_borders(tile* cTile, direction way)
 				result = RAMP_BORDER;
 			else result = NORMAL_BORDER;
 		}
+		break;
 	case(NORTH_INSIDE_BORDER):
 		{
 			if(way == NORTH)
@@ -278,6 +280,7 @@ possible_borders tile_borders(tile* cTile, direction way)
 				result = RAMP_BORDER;
 			else result = NORMAL_BORDER;
 		}
+		break;
 	case(EAST_INSIDE_BORDER):
 		{
 			if(way == EAST)
@@ -286,6 +289,8 @@ possible_borders tile_borders(tile* cTile, direction way)
 				result = RAMP_BORDER;
 			else result = NORMAL_BORDER;
 		}
+	default:
+		{ }
 	}
 	if((result == DOWN_BORDER) && (double_ramp == true))
 		result = DOUBLE_DOWN_BORDER;
