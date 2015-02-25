@@ -28,8 +28,8 @@ int draw_map(int screen_position_x, int screen_position_y, game_mouse* mouse)
 
 	int x1 = compute_tile_x(0,0, screen_position_x, screen_position_y) - 3;
 	int y1 = compute_tile_y(0,0, screen_position_x, screen_position_y);
-	int x2 = compute_tile_x(display_width, display_height - BUTTON_SIZE, screen_position_x, screen_position_y) + 5 + game_object::highest_surface;
-	int y2 = compute_tile_y(display_width, display_height - BUTTON_SIZE, screen_position_x, screen_position_y) + 3 + game_object::highest_surface;
+	int x2 = compute_tile_x(display_width, display_height - BUTTON_SIZE, screen_position_x, screen_position_y) + 5 + session->highest_surface;
+	int y2 = compute_tile_y(display_width, display_height - BUTTON_SIZE, screen_position_x, screen_position_y) + 3 + session->highest_surface;
 	
 	std::vector<tile*> tiles_to_check = tiles_in_rectangle(x1, y1, x2, y2);
 
@@ -67,7 +67,6 @@ int draw_map(int screen_position_x, int screen_position_y, game_mouse* mouse)
 						draw = true;
 					}
 					
-
 					if((draw) && (objects_to_draw[i]->type_of_object == TILE))
 					{
 						int drawing_x = compute_game_x(x, y) - screen_position_x - 32;
@@ -239,15 +238,8 @@ int draw_main_panel(ALLEGRO_BITMAP* minimap, int screen_position_x, int screen_p
 		
 	al_draw_bitmap(image_list[HONOUR_IMAGE], 100, 10, 0);
 	al_draw_textf(font25, WRITING_COLOR, 140, 5, ALLEGRO_ALIGN_LEFT, "%i", session->honour);
+				
 				//draw time to invasion
-	/*
-	int time_to_invasion;
-	if(session->show_frames_from_start() >= FIRST_INVASION)
-		time_to_invasion = INVASION_TIME - ((session->show_frames_from_start() - FIRST_INVASION) % INVASION_TIME);	
-
-	else if(session->show_frames_from_start() < FIRST_INVASION)
-		time_to_invasion = FIRST_INVASION - session->show_frames_from_start();
-	*/
 	int time_to_invasion = session->frames_to_invasion();
 	if((time_to_invasion > 0) && (time_to_invasion < 300*game_info::fps))
 		al_draw_textf(font25, WRITING_COLOR, display_width - 5, 35, ALLEGRO_ALIGN_RIGHT, "%i:%.2i", time_to_invasion / (60*game_info::fps), (time_to_invasion / game_info::fps) % 60 );
@@ -545,7 +537,6 @@ std::vector<std::vector<boost::shared_ptr<tile>>> generate_map(std::vector<int> 
 {
 	std::vector<std::vector<boost::shared_ptr<tile>>> map;
 
-
 	bool done = false;
 	while(!done)
 	{
@@ -577,7 +568,6 @@ std::vector<std::vector<boost::shared_ptr<tile>>> generate_map(std::vector<int> 
 		}
 		done = check_map(map);
 	}
-	//tile::set_neighbours_with_path();
 	return map;
 }
 
@@ -763,7 +753,7 @@ bool check_map(std::vector<std::vector<boost::shared_ptr<tile>>>& map)
 			if((!explored[y][x]) && (!map[y][x]->is_water_tile()))
 				//if tile is not explored I will change it's height such that it will be accessible from previous tile
 			{			
-				int new_height;
+				//int new_height;
 				tile* previous_tile;
 				direction direction_from_previous;
 
@@ -1002,183 +992,5 @@ direction compute_direction(tile* old_tile, tile* new_tile)
 	}
 	return movement_direction;
 }
-
-/*Sets static variables used in actual game (not menu) to initial values. */
-int init_static_variables()
-{
-	game_object::highest_surface = 0;
-	tile::minimap_updates.clear();
-
-	return 0;
-}
-/*
-struct ingame_menu_parametres
-{
-	static const int menu_width = 400;
-	static const int menu_start_y = 100;
-	static const int button_start_x = 20;
-	static const int button_start_y = 20;
-	static const int button_distance = 100;
-	static const int button_heigth = 60;
-	//static const std::vector<std::string> options_names{"Continue", "Save", "Exit"};
-	static const std::vector<std::string> options_names()
-	{
-		return std::vector<std::string>{"Continue", "Save", "Exit"};
-	}
-};
-
-void draw_ingame_menu(ingame_menu_options chosen_option)
-{
-	const int menu_width = ingame_menu_parametres::menu_width;
-	const int menu_start_y = ingame_menu_parametres::menu_start_y;
-	const int button_start_x = ingame_menu_parametres::button_start_x;
-	const int button_start_y = ingame_menu_parametres::button_start_y;
-	const int button_distance = ingame_menu_parametres::button_distance;
-	const int button_heigth = ingame_menu_parametres::button_heigth;
-	const std::vector<std::string> options_names = ingame_menu_parametres::options_names();
-
-	int menu_start_x = (display_width - menu_width) / 2;
-	int menu_end_x = (display_width + menu_width) / 2;
-	al_draw_bitmap_region(image_list[TEXTURE_GREY_IMAGE], 0, 0, menu_width, options_names.size() * button_distance, 
-						menu_start_x, menu_start_y, 0);
-
-	int chosen_option_number = static_cast<int>(chosen_option);
-	
-	for(int i=0; i<options_names.size(); ++i)
-	{
-		int start_y = menu_start_y + button_start_y + i*button_distance;
-		al_draw_filled_rectangle(menu_start_x + button_start_x, start_y, menu_end_x - button_start_x, start_y + button_heigth, BLACK_COLOR);
-		
-		ALLEGRO_COLOR color = WRITING_COLOR;
-		ALLEGRO_FONT* font = font25;
-		if(chosen_option_number == i)
-		{
-			color = WHITE_COLOR;
-			font = font30;
-		}
-
-		al_draw_text(font, color, display_width / 2, start_y + 10, ALLEGRO_ALIGN_CENTRE, options_names[i].c_str());
-	}
-	al_flip_display();
-}
-
-ingame_menu_options compute_ingame_menu_option(int x, int y)
-{
-	if(x < ((display_width - ingame_menu_parametres::menu_width)/2 + ingame_menu_parametres::button_start_x) ||
-		x > ((display_width + ingame_menu_parametres::menu_width)/2 - ingame_menu_parametres::button_start_x))
-		return ingame_menu_options::NO_OPTION;
-
-	int start_y = ingame_menu_parametres::menu_start_y + ingame_menu_parametres::button_start_y;
-	int end_y = ingame_menu_parametres::menu_start_y + ingame_menu_parametres::button_start_y + ingame_menu_parametres::button_heigth;
-
-	for(int i=0; i<ingame_menu_parametres::options_names().size(); ++i)
-	{
-		if((y >= start_y) && (y <= end_y))
-			return static_cast<ingame_menu_options>(i);
-		
-		start_y += ingame_menu_parametres::button_distance;
-		end_y += ingame_menu_parametres::button_distance;
-	}
-	return ingame_menu_options::NO_OPTION;
-}
-
-void execute_ingame_menu_option(ingame_menu_options option, bool& exit_ingame_menu, bool& exit_to_main_menu, bool& saving)
-{
-	switch(option)
-	{
-		case(ingame_menu_options::CONTINUE):
-			exit_ingame_menu = true;
-			break;
-		case(ingame_menu_options::SAVE):
-			saving = true;
-			break;
-		case(ingame_menu_options::EXIT):
-		{
-			exit_ingame_menu = true;
-			exit_to_main_menu = true;
-		}
-			break;
-		case(ingame_menu_options::NO_OPTION):
-			break;
-		default:
-			throw new std::exception;
-	}
-}
-
-bool ingame_menu(ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_EVENT* ev)
-{
-	al_flush_event_queue(queue);
-	
-	ingame_menu_options chosen_option = ingame_menu_options::CONTINUE;
-	draw_ingame_menu(chosen_option);
-
-	bool done = false;
-	bool exit_to_main_menu = false;
-	bool saving = false;
-
-	while(!done)
-	{
-		al_wait_for_event(queue, ev);
-		if(ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
-		{
-			ingame_menu_options clicked_option = compute_ingame_menu_option(ev->mouse.x, ev->mouse.y);
-			execute_ingame_menu_option(clicked_option, done, exit_to_main_menu, saving);
-		}
-		else if(ev->type == ALLEGRO_EVENT_MOUSE_AXES)
-		{
-			chosen_option = compute_ingame_menu_option(ev->mouse.x, ev->mouse.y);
-		}
-		else if(ev->type == ALLEGRO_EVENT_KEY_DOWN)
-		{
-			if(ev->keyboard.keycode == ALLEGRO_KEY_ESCAPE)
-				done = true;
-			
-			else if(ev->keyboard.keycode == ALLEGRO_KEY_ENTER)
-				execute_ingame_menu_option(chosen_option, done, exit_to_main_menu, saving);
-
-			else if(ev->keyboard.keycode == ALLEGRO_KEY_UP)
-			{	
-				chosen_option = static_cast<ingame_menu_options>(static_cast<int>(chosen_option) - 1);
-				if(static_cast<int>(chosen_option) < 0)
-					chosen_option = ingame_menu_options::EXIT;
-			}
-			else if(ev->keyboard.keycode == ALLEGRO_KEY_DOWN)
-			{
-				chosen_option = static_cast<ingame_menu_options>(static_cast<int>(chosen_option) + 1);
-				if(static_cast<int>(chosen_option) > static_cast<int>(ingame_menu_options::EXIT))
-					chosen_option = ingame_menu_options::CONTINUE;
-			}
-		}
-		else if(ev->type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-		{	
-			game_info::close_display = true;
-			done = true;
-			exit_to_main_menu = true;
-		}
-		else if(ev->type == ALLEGRO_EVENT_DISPLAY_RESIZE)
-			resize_display(ev);
-		
-		else if(ev->type == ALLEGRO_EVENT_TIMER)
-		{
-			draw_ingame_menu(chosen_option);
-		}
-		
-		if(saving)
-		{
-			bool display_closed = false;
-			save_window(display_closed);
-			saving = false;
-			done = true;
-			if(display_closed)
-				exit_to_main_menu = true;
-		}
-	}
-	
-	//al_start_timer(game_info::timer);
-	return exit_to_main_menu;
-}
-*/			
-
-
 
 

@@ -4,10 +4,6 @@
 #define TILE_WIDTH 64					//real width of one image in pixels
 #define TILE_HEIGHT 32
 
-//#include <memory>
-
-//int game_loop();
-
 int draw_map(int screen_position_x, int screen_position_y, game_mouse* mouse);
 
 ALLEGRO_BITMAP* create_minimap();
@@ -53,9 +49,5 @@ std::vector<std::vector<bool>>& find_accessible(std::vector<std::vector<bool>> &
 void rotate_map(bool clockwise, ALLEGRO_BITMAP** minimap, int *screen_position_x, int* screen_position_y);
 
 direction compute_direction(tile* old_tile, tile* new_tile);
-
-int init_static_variables();
-
-//bool ingame_menu(ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_EVENT* ev);
 
 #endif

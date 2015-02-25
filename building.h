@@ -13,7 +13,7 @@ class people;
 class missile;
 class game_session;
 
-struct building_info;
+class building_info;
 struct commodities_list;
 
 extern ALLEGRO_BITMAP** image_list;
@@ -46,10 +46,10 @@ public:
 	int change_working() {stopped = !stopped; return 0;}
 	int stop_working();
 	int draw_life_bar(int screen_position_x, int screen_position_y);
-	bool can_build_here(tile* here);
+	can_build_output can_build_here(tile* here);
 	bool can_be_upgraded();
 	virtual bool can_be_stopped() {return false;}
-	virtual int rotate(int new_tile_x, int new_tile_y, bool clockwise);
+	virtual void rotate(int new_tile_x, int new_tile_y, bool clockwise);
 	void set_drawing_tile();
 	virtual bool has_carrier_output() {return false;}
 	virtual boost::shared_ptr<carrier_output> show_carrier_output() {return NULL;}
@@ -91,6 +91,8 @@ public:
 protected:
 	building() {}	//for boost::serialization
 
+	static can_build_output enough_resources(building_type type, int start_tile_x, int start_tile_y, int end_tile_x, int end_tile_y);
+
 	building(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
 	int compute_button_number(int mouse_x, int mouse_y);
 	virtual void set_carrier_output() {}
@@ -112,7 +114,7 @@ public:
 	tower(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
 	~tower();
 	std::vector<game_object*> draw(int screen_position_x, int screen_position_y);
-	int rotate(int tile_x, int tile_y, bool clockwise);
+	void rotate(int tile_x, int tile_y, bool clockwise);
 	int specific_update();
 	tile* doors_tile;
 	void add_people_to_draw(boost::weak_ptr<people> p) {people_to_draw.push_back(p);}
@@ -266,7 +268,7 @@ public:
 	void draw_specific_interface();
 	void function_click(int mouse_x, int mouse_y);
 	std::vector<game_object*> draw(int screen_position_x, int screen_position_y);
-	int rotate(int tile_x, int tile_y, bool clockwise);
+	void rotate(int tile_x, int tile_y, bool clockwise);
 	void set_gate_tile();
 	bool show_open() {return open;}
 	
@@ -479,7 +481,7 @@ public:
 	int specific_update() {return 0;}
 	void draw_specific_interface();
 	std::vector<game_object*> draw(int screen_position_x, int screen_position_y);
-	int rotate(int tile_x, int tile_y, bool clockwise);
+	void rotate(int tile_x, int tile_y, bool clockwise);
 	
 	friend class boost::serialization::access;
 

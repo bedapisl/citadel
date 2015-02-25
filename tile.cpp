@@ -215,8 +215,9 @@ std::vector<game_object*> tile::draw(int screen_position_x, int screen_position_
 	return objects;
 }
 
-int tile::build(building_type type, player owner)
+void tile::build(building_type type, player owner)
 {
+	/*
 	for(int i=0; i<NUMBER_OF_RESOURCES; ++i)		//check if player has enough resources
 	{
 		resources resource_type = static_cast<resources>(i);
@@ -226,7 +227,7 @@ int tile::build(building_type type, player owner)
 			return 0;
 		}
 	}
-	
+	*/
 	for(int i=0; i<NUMBER_OF_RESOURCES; ++i)		//subtract resources
 	{
 		resources resource_type = static_cast<resources>(i);
@@ -253,8 +254,6 @@ int tile::build(building_type type, player owner)
 
 	new_building->set_drawing_tile();
 	session->building_list.push_back(new_building);
-
-	return 0;
 }
 
 boost::weak_ptr<warrior> tile::warrior_born(people_type type, player owner)

@@ -21,6 +21,7 @@ public:
 	int show_frames_from_start() {return frames_from_start;}
 	int frames_to_invasion() {return time_to_invasion;}
 	
+	int highest_surface;
 	std::vector<std::vector<boost::shared_ptr<tile>>> tile_list;
 	std::vector<boost::shared_ptr<building>> building_list;
 	std::vector<boost::shared_ptr<people>> people_list;
@@ -36,6 +37,7 @@ public:
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
+		ar & highest_surface;
 		ar & tile_list;
 		ar & building_list;
 		ar & people_list;

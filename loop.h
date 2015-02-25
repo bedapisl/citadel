@@ -138,8 +138,6 @@ public:
 	void enter_down(ALLEGRO_EVENT* ev);
 	void up_arrow_down(ALLEGRO_EVENT* ev);
 	void down_arrow_down(ALLEGRO_EVENT* ev);
-	//void left_arrow_down(ALLEGRO_EVENT* ev);
-	//void right_arrow_down(ALLEGRO_EVENT* ev);
 	void key_char(ALLEGRO_EVENT* ev);
 	void mouse_axes(ALLEGRO_EVENT* ev);
 	void mouse_left_down(ALLEGRO_EVENT* ev);
@@ -196,27 +194,22 @@ class settings_menu : public loop
 public:
 	settings_menu();
 	void escape_down(ALLEGRO_EVENT* ev);
-	void enter_down(ALLEGRO_EVENT* ev);
-	void up_arrow_down(ALLEGRO_EVENT* ev);
-	void down_arrow_down(ALLEGRO_EVENT* ev);
-	void other_key_down(ALLEGRO_EVENT* ev);
+	void key_char(ALLEGRO_EVENT* ev);
+	void mouse_axes(ALLEGRO_EVENT* ev);
 	void mouse_left_down(ALLEGRO_EVENT* ev);
 	void timer(ALLEGRO_EVENT* ev, int x, int y);
 	void start();
 	void end();
 
 private:
-	void draw_settings();
+	void draw_settings();	
+	void update_gui_elements_position();
+	
+	const int header_height = 100;
 
-	bool fullscreen_option;
-	bool music_option;
-	int display_width_option;
-	int display_height_option;
-	int fps_option;
-
-	int number_of_options;
-	int option_focus;
-	std::string text;
+	std::vector<switch_button> buttons;
+	std::vector<text_field> text_fields;	
+	menu_button done_button;
 };
 
 class slider;
@@ -226,9 +219,6 @@ class random_game_settings : public loop
 public:
 	random_game_settings();
 	void escape_down(ALLEGRO_EVENT* ev);
-	//void enter_down(ALLEGRO_EVENT* ev);
-	//void up_arrow_down(ALLEGRO_EVENT* ev);
-	//void down_arrow_down(ALLEGRO_EVENT* ev);
 	void key_char(ALLEGRO_EVENT* ev);
 	void mouse_axes(ALLEGRO_EVENT* ev);
 	void mouse_left_down(ALLEGRO_EVENT* ev);
@@ -236,19 +226,22 @@ public:
 	void timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y);
 
 private:
-	const int first_collumn = 100;
-	const int second_collumn = display_width/2;
+	int first_column;
+	int second_column;
+	int buttons_y;
 	const int header_height = 100;
+
 
 	void draw();
 	void start_new_game();
 	int compute_button_number(int x, int y);
-	//text_field honour_field;
+	void update_gui_elements_position();
 	const std::vector<std::string> resources_names{"Wood", "Stone", "Marble", "Bricks"};
 	const std::vector<std::string> resources_initial_values{"200", "100", "10", "10"};
 	const std::vector<std::string> natural_resources_names{"Water", "Wood", "Fertile soil", "Iron", "Coal", "Marble", "Gold"};
 	std::vector<text_field> text_fields;
 	std::vector<slider> sliders;
+	std::vector<menu_button> buttons;
 	std::vector<std::string> button_names{"Back", "Start game"};
 	int highlighted_option;
 };

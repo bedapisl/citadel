@@ -15,12 +15,16 @@ class game_info{
 public:
 	static int map_width;
 	static int map_height;
-	//static ALLEGRO_TIMER* timer;
 	static ALLEGRO_DISPLAY* display;
 	static int fps;
 	static bool close_display;
 	static bool fullscreen;
 	static bool music;
+
+//	static const int minimal_display_width = 720;
+//	static const int minimal_display_height = 560;
+
+	static void load_game_info();
 };
 
 class missile{

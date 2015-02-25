@@ -329,13 +329,13 @@ int game_mouse::move(int &screen_position_x, int &screen_position_y)
 		int new_tile_y;
 		if(compute_game_x(start_tile_x, start_tile_y) >= mouse_real_x)
 		{
-			new_tile_x = start_tile_x + game_object::highest_surface;
-			new_tile_y = start_tile_y + game_object::highest_surface;
+			new_tile_x = start_tile_x + session->highest_surface;
+			new_tile_y = start_tile_y + session->highest_surface;
 		}
-		else if(compute_game_x(start_tile_x, start_tile_y) <= mouse_real_x)
+		else
 		{
-			new_tile_x = start_tile_x + game_object::highest_surface + 1;
-			new_tile_y = start_tile_y + game_object::highest_surface;
+			new_tile_x = start_tile_x + session->highest_surface + 1;
+			new_tile_y = start_tile_y + session->highest_surface;
 		}
 
 		if(new_tile_x > game_info::map_width - 1)

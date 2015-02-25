@@ -1,11 +1,11 @@
 #include "core.h"
 
-int game_object::highest_surface = 0;
+//int game_object::highest_surface = 0;
 
 extern std::ofstream log_file;
 
 game_object::game_object(int tile_x, int tile_y, int surface_height, bool is_real, picture image, int number_of_floors, game_object_type type_of_object)
-				: is_real(is_real), image(image), number_of_floors(number_of_floors), type_of_object(type_of_object), draw_green(false)
+				: draw_green(false), type_of_object(type_of_object), number_of_floors(number_of_floors), is_real(is_real), image(image) 
 {	
 	update(tile_x, tile_y, surface_height);
 	drawing_floor = 0;
@@ -34,8 +34,8 @@ void game_object::set_surface_height(int height)
 {
 	this->surface_height = height;
 	
-	if(surface_height > highest_surface)
-		highest_surface = surface_height;
+	if(surface_height > session->highest_surface)
+		session->highest_surface = surface_height;
 	
 }
 

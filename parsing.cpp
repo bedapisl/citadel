@@ -10,10 +10,10 @@ void object_info::load(const std::string & value, const std::string & variable)
 		text = value;
 
 	else if(variable == "life")
-		life = string_to_int(value);
+		life = std::stoi(value);
 
 	else if(variable == "armor")
-		armor = string_to_int(value);
+		armor = std::stoi(value);
 }
 
 void object_info::parse_file(std::ifstream & file)
@@ -65,7 +65,6 @@ std::vector<INFO_TYPE> object_info::load_info(int number_of_enums, std::string f
 		}
 		
 		INFO_TYPE info;
-		bool done = false;
 		
 		info.image = std::get<2>(find<DATABASE_TYPE, 0>(static_cast<ENUM_TYPE>(i)));
 
@@ -80,73 +79,73 @@ void building_info::load(const std::string & value, const std::string & variable
 	object_info::load(value, variable);
 
 	if(variable == "building_wood")
-		building_price[WOOD] = string_to_int(value);
+		building_price[WOOD] = std::stoi(value);
 
 	else if(variable == "building_stone")
-		building_price[STONE] = string_to_int(value);
+		building_price[STONE] = std::stoi(value);
 
 	else if(variable == "building_marble")
-		building_price[MARBLE] = string_to_int(value);
+		building_price[MARBLE] = std::stoi(value);
 
 	else if(variable == "building_bricks")
-		building_price[BRICKS] = string_to_int(value);
+		building_price[BRICKS] = std::stoi(value);
 	
 	
 	if(variable == "first_wood")				//first upgrade
-		first_upgrade_price[WOOD] = string_to_int(value);
+		first_upgrade_price[WOOD] = std::stoi(value);
 
 	else if(variable == "first_stone")
-		first_upgrade_price[STONE] = string_to_int(value);
+		first_upgrade_price[STONE] = std::stoi(value);
 
 	else if(variable == "first_marble")
-		first_upgrade_price[MARBLE] = string_to_int(value);
+		first_upgrade_price[MARBLE] = std::stoi(value);
 
 	else if(variable == "first_bricks")
-		first_upgrade_price[BRICKS] = string_to_int(value);
+		first_upgrade_price[BRICKS] = std::stoi(value);
 	
 	
 	if(variable == "second_wood")				//second upgrade
-		second_upgrade_price[WOOD] = string_to_int(value);
+		second_upgrade_price[WOOD] = std::stoi(value);
 
 	else if(variable == "second_stone")
-		second_upgrade_price[STONE] = string_to_int(value);
+		second_upgrade_price[STONE] = std::stoi(value);
 
 	else if(variable == "second_marble")
-		second_upgrade_price[MARBLE] = string_to_int(value);
+		second_upgrade_price[MARBLE] = std::stoi(value);
 
 	else if(variable == "second_bricks")
-		second_upgrade_price[BRICKS] = string_to_int(value);
+		second_upgrade_price[BRICKS] = std::stoi(value);
 
 
 	if(variable == "third_wood")				//third_upgrade
-		third_upgrade_price[WOOD] = string_to_int(value);
+		third_upgrade_price[WOOD] = std::stoi(value);
 
 	else if(variable == "third_stone")
-		third_upgrade_price[STONE] = string_to_int(value);
+		third_upgrade_price[STONE] = std::stoi(value);
 
 	else if(variable == "third_marble")
-		third_upgrade_price[MARBLE] = string_to_int(value);
+		third_upgrade_price[MARBLE] = std::stoi(value);
 
 	else if(variable == "third_bricks")
-		third_upgrade_price[BRICKS] = string_to_int(value);
+		third_upgrade_price[BRICKS] = std::stoi(value);
 
 	else if(variable == "height_of_life_bar")
-		height_of_life_bar = string_to_int(value);
+		height_of_life_bar = std::stoi(value);
 
 	else if(variable == "number_of_floors")
-		number_of_floors = string_to_int(value);
+		number_of_floors = std::stoi(value);
 
 	else if(variable == "honour_price")
-		honour_price = string_to_int(value);
+		honour_price = std::stoi(value);
 
 	else if(variable == "upgrade_info")
 		upgrade_info = value;
 
 	else if(variable == "number_of_carriers")
-		number_of_carriers = string_to_int(value);
+		number_of_carriers = std::stoi(value);
 
 	else if(variable == "number_of_workers")
-		number_of_workers = string_to_int(value);
+		number_of_workers = std::stoi(value);
 
 	else if(variable == "capacity")
 	{
@@ -154,7 +153,7 @@ void building_info::load(const std::string & value, const std::string & variable
 			capacity = std::numeric_limits<int>::max();
 		
 		else
-			capacity = string_to_int(value);
+			capacity = std::stoi(value);
 	}
 
 	else if(variable == "can_be_upgraded")
@@ -202,25 +201,25 @@ void people_info::load(const std::string & value, const std::string & variable)
 	object_info::load(value, variable);
 
 	if(variable == "attack")
-		attack = string_to_int(value);
+		attack = std::stoi(value);
 
 	else if(variable == "weapons")
-		price[WEAPONS] = string_to_int(value);
+		price[WEAPONS] = std::stoi(value);
 
 	else if(variable == "bows")
-		price[BOWS] = string_to_int(value);
+		price[BOWS] = std::stoi(value);
 
 	else if(variable == "plate_armour")
-		price[PLATE_ARMOR] = string_to_int(value);
+		price[PLATE_ARMOR] = std::stoi(value);
 
 	else if(variable == "frames_to_move")
-		frames_to_move = string_to_int(value);
+		frames_to_move = std::stoi(value);
 	
 	else if(variable == "frames_to_attack")
-		frames_to_attack = string_to_int(value);
+		frames_to_attack = std::stoi(value);
 
 	else if(variable == "honour_price")
-		honour_price = string_to_int(value);
+		honour_price = std::stoi(value);
 }
 
 people_info& people_info::show_people_info(people_type type)

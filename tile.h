@@ -18,7 +18,7 @@ public:
 	std::vector<game_object*> draw(int screen_position_x, int screen_position_y);
 	int set_right_drawing(std::vector<std::vector<boost::shared_ptr<tile>>>& map);
 	void set_accessible_neighbours(std::vector<std::vector<boost::shared_ptr<tile>>> & map);
-	int build(building_type type, player owner);
+	void build(building_type type, player owner);
 	boost::weak_ptr<warrior> warrior_born(people_type type, player owner);
 	int people_die();
 	int people_come(boost::shared_ptr<people> people_which_comes);

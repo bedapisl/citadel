@@ -337,3 +337,22 @@ enum class natural_resources
 	GOLD
 };
 
+enum class can_build_output
+{
+	CAN_BUILD,
+	MISSING_WOOD,
+	MISSING_STONE,
+	MISSING_BRICKS,
+	MISSING_MARBLE,
+	NO_TREES,
+	NO_WATER,
+	NO_FERTILE_LAND,
+	NO_IRON,
+	NO_COAL,
+	NO_MARBLE,
+	NO_GOLD,
+	NO_ROCKS,
+	NO_SPACE,
+	ENEMIES_NEARBY
+};
+

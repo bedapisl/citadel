@@ -103,10 +103,10 @@ boost::shared_ptr<std::vector<boost::shared_ptr<button>>> button::init_buttons()
 	std::vector<std::vector<building_type>> buttons_init_list{food, economy, industry, military};
 
 	boost::shared_ptr<std::vector<boost::shared_ptr<button>>> basic(new std::vector<boost::shared_ptr<button>>());
-	basic->push_back(boost::shared_ptr<button>(new navigation_button(FOOD)));
-	basic->push_back(boost::shared_ptr<button>(new navigation_button(ECONOMY)));
-	basic->push_back(boost::shared_ptr<button>(new navigation_button(INDUSTRY)));
-	basic->push_back(boost::shared_ptr<button>(new navigation_button(MILITARY)));
+	basic->push_back(boost::shared_ptr<button>(new navigation_button(FOOD, "Food production")));
+	basic->push_back(boost::shared_ptr<button>(new navigation_button(ECONOMY, "Economy buildings")));
+	basic->push_back(boost::shared_ptr<button>(new navigation_button(INDUSTRY, "Industry buildings")));
+	basic->push_back(boost::shared_ptr<button>(new navigation_button(MILITARY, "Military buildings")));
 	basic->push_back(boost::shared_ptr<button>(new button_path(true)));
 	basic->push_back(boost::shared_ptr<button>(new button_path(false)));
 
@@ -122,7 +122,7 @@ boost::shared_ptr<std::vector<boost::shared_ptr<button>>> button::init_buttons()
 		{	
 			bool some_buttons_left = true;	
 
-			button_list->push_back(boost::shared_ptr<button>(new navigation_button(BACK)));
+			button_list->push_back(boost::shared_ptr<button>(new navigation_button(BACK, "Previous selection")));
 			(boost::dynamic_pointer_cast<navigation_button>((*button_list)[0]))->set_buttons_after_use(back_button_list);
 
 			for(int j=1; j < max_number_of_buttons; ++j)
@@ -142,7 +142,7 @@ boost::shared_ptr<std::vector<boost::shared_ptr<button>>> button::init_buttons()
 			{
 				button_list->pop_back();
 				--button_index;
-				button_list->push_back(boost::shared_ptr<button>(new navigation_button(FORWARD)));
+				button_list->push_back(boost::shared_ptr<button>(new navigation_button(FORWARD, "Next selection")));
 				boost::shared_ptr<std::vector<boost::shared_ptr<button>>> new_button_list(new std::vector<boost::shared_ptr<button>>);
 				(boost::dynamic_pointer_cast<navigation_button>(button_list->back()))->set_buttons_after_use(new_button_list);
 				back_button_list = button_list;
@@ -299,7 +299,7 @@ void button_build::map_click()
 		int tile_x = tiles_with_action[i]->show_tile_x();
 		int tile_y = tiles_with_action[i]->show_tile_y();
 
-		if(buildings_to_draw[0]->can_build_here(session->tile_list[tile_y][tile_x].get()))
+		if(buildings_to_draw[0]->can_build_here(session->tile_list[tile_y][tile_x].get()) == can_build_output::CAN_BUILD)
 			session->tile_list[tile_y][tile_x]->build(type_of_building, BLUE_PLAYER);
 	}
 }
@@ -312,7 +312,10 @@ void button_build::draw_action(int screen_position_x, int screen_position_y, boo
 		int tile_x = tiles_with_action[i]->show_tile_x();
 		int tile_y = tiles_with_action[i]->show_tile_y();
 
-		buildings_to_draw[i]->draw_green = buildings_to_draw[i]->can_build_here(session->tile_list[tile_y][tile_x].get());
+		if(buildings_to_draw[i]->can_build_here(session->tile_list[tile_y][tile_x].get()) == can_build_output::CAN_BUILD)
+			buildings_to_draw[i]->draw_green = true;
+		else
+			buildings_to_draw[i]->draw_green = false;
 		
 		session->tile_list[tile_y][tile_x]->action_on_tile = this_button;
 		session->tile_list[tile_y][tile_x]->number_of_tile_with_action = i;
@@ -393,7 +396,7 @@ int button_build::scroll()
 }
 
 /*Draws information about building which is build by this button.*/
-int button_build::draw_info(int button_number)
+void button_build::draw_info(int button_number)
 {
 	bool unlocked = session->unlocked_buildings[type_of_building];
 	building_info info = building_info::show_building_info(type_of_building);
@@ -406,7 +409,6 @@ int button_build::draw_info(int button_number)
 	{
 		draw_button_info("Unlock " + info.name, info.text, std::vector<int>(NUMBER_OF_RESOURCES, 0), info.honour_price, 0, button_number*BUTTON_SIZE);
 	}
-	return 0;
 }
 
 void button_build::draw_button(int button_number)
@@ -491,7 +493,7 @@ void button_path::draw_action(int screen_position_x, int screen_position_y, boos
 	}
 }
 
-int button_path::draw_info(int button_number)
+void button_path::draw_info(int button_number)
 {
 	std::string name;
 	std::string text;
@@ -512,8 +514,6 @@ int button_path::draw_info(int button_number)
 	}
 
 	draw_button_info(name, text, prices, 0, 0, button_number*BUTTON_SIZE);
-
-	return 0;
 }
 
 void button_path::draw_button(int button_number)
@@ -546,7 +546,7 @@ void button_path::reset_tiles_with_action()
 }
 
 
-navigation_button::navigation_button(navigation_button_type navigation_type) : navigation_type(navigation_type)
+navigation_button::navigation_button(navigation_button_type navigation_type, const std::string& button_name) : navigation_type(navigation_type), name(button_name)
 {	
 	button::init(image_list[NO_IMAGE], NAVIGATION_BUTTON, false);
 }
@@ -556,6 +556,11 @@ void navigation_button::draw_button(int button_number)
 	al_draw_bitmap_region(image_list[NAVIGATION_BUTTONS_IMAGE], ((int)navigation_type)*70, 0, 70, 70, button_number*BUTTON_SIZE + 5, display_height - BUTTON_SIZE + 5, 0);
 }
 
+void navigation_button::draw_info(int button_number)
+{
+	button::draw_button_info(name, "", std::vector<int>(NUMBER_OF_RESOURCES, 0), 0, 0, BUTTON_SIZE * button_number);
+}
+	
 
 
 

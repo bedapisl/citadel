@@ -265,8 +265,33 @@ int building::draw_life_bar(int screen_position_x, int screen_position_y)
 }
 
 /*Returns true if building can be build on tile defined by parametr here. If not, returns false.*/
-bool building::can_build_here(tile* here)
+can_build_output building::can_build_here(tile* here)
 {
+	for(int i=0; i<NUMBER_OF_RESOURCES; ++i)		//check if player has enough resources
+	{
+		resources resource_type = static_cast<resources>(i);
+		if(show_building_price(type, resource_type, NO_UPGRADE) > session->global_stock->show_amount(resource_type))
+		{
+			switch(resource_type)
+			{
+				case(WOOD):
+					return can_build_output::MISSING_WOOD;
+					break;
+				case(STONE):
+					return can_build_output::MISSING_STONE;
+					break;
+				case(BRICKS):
+					return can_build_output::MISSING_BRICKS;
+					break;
+				case(MARBLE):
+					return can_build_output::MISSING_MARBLE;
+					break;
+				default:
+					throw new std::exception;
+			}
+		}
+	}
+	
 	int end_x = here->show_tile_x();
 	int end_y = here->show_tile_y();
 	int start_x;
@@ -278,7 +303,7 @@ bool building::can_build_here(tile* here)
 		near_tiles[i]->check_death_people_on_tile();
 		if((!near_tiles[i]->people_on_tile.empty()) && (near_tiles[i]->people_on_tile[0].lock()->show_owner() == RED_PLAYER))
 		{
-			return false;
+			return can_build_output::ENEMIES_NEARBY;
 		}
 	}
 
@@ -318,99 +343,36 @@ bool building::can_build_here(tile* here)
 			throw new std::exception;
 	}
 	
-	bool can_build = true;
+	//bool can_build = true;
 
 	if(((start_x < 0) || (end_x > game_info::map_width - 1)) || ((start_y < 0) || (end_y > game_info::map_height - 1)))
-		can_build = false;
+		return can_build_output::NO_SPACE;
 	
-	if(can_build)			//check if tiles are free
+	for(int y=start_y; y <= end_y; y++)
 	{
-		for(int y=start_y; y <= end_y; y++)
+		for(int x=start_x; x <= end_x; x++)
 		{
-			for(int x=start_x; x <= end_x; x++)
+			boost::shared_ptr<tile> t = session->tile_list[y][x];
+			if((t->show_surface_height() != session->tile_list[start_y][start_x]->show_surface_height()) 
+					|| (t->show_type() != GRASS))
 			{
-				boost::shared_ptr<tile> t = session->tile_list[y][x];
-				if((t->show_surface_height() != session->tile_list[start_y][start_x]->show_surface_height()) 
-						|| (t->show_type() != GRASS))
+				return can_build_output::NO_SPACE;
+			}
+			else if(!t->is_free())
+			{
+				if(((size == LEFT_GATE_BUILDING) || (size == RIGHT_GATE_BUILDING)) && (t->building_on_tile.expired()) && (t->object == NOTHING) && ((y == start_y + 1) || (x == start_x + 1)))
 				{
-					can_build = false;
+					//everything ok - building is gate and there are people on gate_tile
 				}
-				else if(!t->is_free())
+				else	//everything else is bad
 				{
-					if(((size == LEFT_GATE_BUILDING) || (size == RIGHT_GATE_BUILDING)) && (t->building_on_tile.expired()) && (t->object == NOTHING) && ((y == start_y + 1) || (x == start_x + 1)))
-					{
-						//everything ok - building is gate and there are people on gate_tile
-					}
-					else	//everything else is bad
-					{
-						can_build = false;
-					}
+					return can_build_output::NO_SPACE;
 				}
 			}
 		}
 	}
-
-	if(can_build)			//check resources
-	{
-		if((type == WOODCUTTER) || (type == IRON_MINE) || (type == COAL_MINE) || (type == GOLD_MINE) || (type == QUARRY) || (type == MARBLE_QUARRY) 
-					|| (type == FISHERMAN) || (type == HUNTER) || (type == CLAY_PIT))
-		{
-			start_x = std::max(0, start_x - 1);
-			start_y = std::max(0, start_y - 1);
-			end_x = std::min(game_info::map_width - 1, end_x + 1);
-			end_y = std::min(game_info::map_height - 1, end_y + 1);
-
-			int number_of_resources = 0;
-
-			for(int y = start_y; y<= end_y; y++)
-			{
-				for(int x = start_x; x <= end_x; x++)
-				{
-					object_on_tile ob = session->tile_list[y][x]->object;
-					if((ob == TREE_TILE) && ((type == WOODCUTTER) || (type == HUNTER)))
-						number_of_resources++;
-					
-					else if(((ob == MARBLE_TILE) || (ob == IRON_TILE) || (ob == COAL_TILE) || (ob == GOLD_TILE)) && (type == QUARRY))
-						number_of_resources++;
-
-					else if((ob == MARBLE_TILE) && (type == MARBLE_QUARRY))
-						number_of_resources++;
-		
-					else if((ob == IRON_TILE) && (type == IRON_MINE))
-						number_of_resources++;
-					
-					else if((ob == COAL_TILE) && (type == COAL_MINE))
-						number_of_resources++;
-					
-					else if((ob == GOLD_TILE) && (type == GOLD_MINE))
-						number_of_resources++;
-
-					else if(session->tile_list[y][x]->is_water_tile() && ((type == FISHERMAN) || (type == CLAY_PIT)))
-						number_of_resources++;
-				}
-			}
-			if(number_of_resources < 1)
-				can_build = false;
-		}
-		if((type == APPLE_FARM) || (type == WHEAT_FARM))
-		{
-			bool fertile_land = false;
-			std::vector<tile*> tiles = tiles_under_building(here->show_tile_x(), here->show_tile_y(), size);
-			
-			for(size_t i=0; i<tiles.size(); ++i)
-			{
-				if(tiles[i]->is_fertile())
-				{
-					fertile_land = true;
-					break;
-				}
-			}
-			if(!fertile_land)
-				can_build = false;
-		}
-	}
-
-	return can_build;
+	
+	return building::enough_resources(type, start_x, start_y, end_x, end_y);
 }
 
 bool building::can_be_upgraded()
@@ -442,7 +404,7 @@ void building::general_upgrade()
 			price = info.third_upgrade_price;
 			break;
 
-		defualt:
+		default:
 			throw new std::exception;
 
 	}
@@ -515,8 +477,7 @@ struct send_workers_order
 struct vertex_info
 {
 public:
-	vertex_info(boost::shared_ptr<building> b, bool is_house, int number_of_workers, int index_in_vertices) : b(b), is_house(is_house), 
-								index_in_vertices(index_in_vertices), being_asked(false) {}
+	vertex_info(boost::shared_ptr<building> b, bool is_house, int number_of_workers, int index_in_vertices) : b(b), is_house(is_house), being_asked(false), index_in_vertices(index_in_vertices) {}
 	boost::shared_ptr<building> b;
 	bool is_house;
 	std::vector<int> connected_indeces;
@@ -556,7 +517,7 @@ int vertex_info::ask_for_workers(std::vector<vertex_info> & vertices, std::vecto
 		if(idle_workers < 0)
 			throw new std::exception;
 		
-		int j=0;
+		size_t j=0;
 		while((idle_workers < workers_needed) && (j < size_of_edge.size()))		 
 		{
 			if(size_of_edge[j] > 0)
@@ -574,7 +535,7 @@ int vertex_info::ask_for_workers(std::vector<vertex_info> & vertices, std::vecto
 	}
 	else
 	{	
-		int j = 0;
+		size_t j = 0;
 		while((idle_workers < workers_needed) && (j < connected_indeces.size()))
 		{
 			int received_workers = vertices[connected_indeces[j]].ask_for_workers(vertices, orders, workers_needed - idle_workers);
@@ -826,7 +787,7 @@ int building::compute_button_number(int mouse_x, int mouse_y)
 {
 	if(mouse_y > display_height - BUTTON_SIZE)
 	{
-		for(size_t i=0; i<display_width*BUTTON_SIZE; ++i)
+		for(int i=0; i<display_width*BUTTON_SIZE; ++i)
 		{
 			if((mouse_x > i*BUTTON_SIZE) && (mouse_x < (i+1)*BUTTON_SIZE))
 			{
@@ -835,6 +796,96 @@ int building::compute_button_number(int mouse_x, int mouse_y)
 		}
 	}
 	return 100;			//this should indicate, that button number cannot be computed
+}
+
+can_build_output building::enough_resources(building_type type, int start_tile_x, int start_tile_y, int end_tile_x, int end_tile_y)
+{
+	if((type == WOODCUTTER) || (type == IRON_MINE) || (type == COAL_MINE) || (type == GOLD_MINE) || (type == QUARRY) || (type == MARBLE_QUARRY) 
+				|| (type == FISHERMAN) || (type == HUNTER) || (type == CLAY_PIT))
+	{
+		int start_x = std::max(0, start_tile_x - 1);
+		int start_y = std::max(0, start_tile_y - 1);
+		int end_x = std::min(game_info::map_width - 1, end_tile_x + 1);
+		int end_y = std::min(game_info::map_height - 1, end_tile_y + 1);
+
+		int number_of_resources = 0;
+
+		for(int y = start_y; y<= end_y; y++)
+		{
+			for(int x = start_x; x <= end_x; x++)
+			{
+				object_on_tile ob = session->tile_list[y][x]->object;
+				if((ob == TREE_TILE) && ((type == WOODCUTTER) || (type == HUNTER)))
+					number_of_resources++;
+				
+				else if(((ob == MARBLE_TILE) || (ob == IRON_TILE) || (ob == COAL_TILE) || (ob == GOLD_TILE)) && (type == QUARRY))
+					number_of_resources++;
+
+				else if((ob == MARBLE_TILE) && (type == MARBLE_QUARRY))
+					number_of_resources++;
+	
+				else if((ob == IRON_TILE) && (type == IRON_MINE))
+					number_of_resources++;
+				
+				else if((ob == COAL_TILE) && (type == COAL_MINE))
+					number_of_resources++;
+				
+				else if((ob == GOLD_TILE) && (type == GOLD_MINE))
+					number_of_resources++;
+
+				else if(session->tile_list[y][x]->is_water_tile() && ((type == FISHERMAN) || (type == CLAY_PIT)))
+					number_of_resources++;
+			}
+		}
+		if(number_of_resources < 1)
+		{
+			switch(type)
+			{
+				case(WOODCUTTER):
+				case(HUNTER):
+					return can_build_output::NO_TREES;
+					break;
+				case(IRON_MINE):
+					return can_build_output::NO_IRON;
+					break;
+				case(COAL_MINE):
+					return can_build_output::NO_COAL;
+					break;
+				case(GOLD_MINE):
+					return can_build_output::NO_GOLD;
+					break;
+				case(QUARRY):
+					return can_build_output::NO_ROCKS;
+					break;
+				case(MARBLE_QUARRY):
+					return can_build_output::NO_MARBLE;
+					break;
+				case(FISHERMAN):
+				case(CLAY_PIT):
+					return can_build_output::NO_WATER;
+					break;
+				default:
+					throw new std::exception;
+			}
+		}
+		else
+			return can_build_output::CAN_BUILD;
+	}
+	if((type == APPLE_FARM) || (type == WHEAT_FARM))
+	{
+		for(int x = start_tile_x; x <= end_tile_x; ++x)
+		{
+			for(int y = start_tile_y; y <= end_tile_y; ++y)
+			{
+				if(session->tile_list[y][x]->is_fertile())
+				{
+					return can_build_output::CAN_BUILD;
+				}
+			}
+		}
+		return can_build_output::NO_FERTILE_LAND;
+	}
+	return can_build_output::CAN_BUILD;
 }
 
 tower::tower(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real) 
@@ -1251,7 +1302,7 @@ production_building::production_building(building_type type, int tile_x, int til
 			: building(type, tile_x, tile_y, surface_height, owner, is_real)
 				
 {
-	ALLEGRO_BITMAP* image;
+	//ALLEGRO_BITMAP* image;
 
 	switch(type)
 	{

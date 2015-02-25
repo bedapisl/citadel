@@ -1,7 +1,5 @@
 #include "core.h"
 
-//extern int display_width;
-//extern int display_height;
 extern ALLEGRO_BITMAP** image_list;
 extern ALLEGRO_FONT* font25;
 extern ALLEGRO_FONT* font15;
@@ -97,9 +95,9 @@ void store_window::specific_function_click(int mouse_x, int mouse_y)
 }
 
 	
-slider::slider(int x, int y, std::string label, int initial_value, int max_value) 
-	: x(x), y(y), label(label), value(initial_value), max_value(max_value), has_focus(false)
-{ };
+slider::slider(std::string label, int initial_value, int max_value) 
+	: x(0), y(0), label(label), value(initial_value), max_value(max_value), has_focus(false)
+{ }
 
 void slider::mouse_down(int mouse_x, int mouse_y)
 {
@@ -127,7 +125,7 @@ void slider::mouse_up(int mouse_x, int mouse_y)
 	has_focus = false;
 }
 
-void slider::draw()
+void slider::draw() const
 {
 	al_draw_textf(font25, WRITING_COLOR, x, y, ALLEGRO_ALIGN_LEFT, "%s", label.c_str());
 	al_draw_filled_rounded_rectangle(x + name_length, y + 4, x + name_length + slider_length, y + height - 4, 4, 4, GREY_COLOR);
@@ -140,7 +138,7 @@ void slider::change_value(int mouse_x)
 	value = (((double)(mouse_x - x - name_length))/(double)(slider_length))*max_value;
 }
 
-text_field::text_field(int x, int y, std::string label, std::string initial_value, int max_size, bool numbers_only) : x(x), y(y), label(label), value(initial_value), max_size(max_size), numbers_only(numbers_only), has_focus(false)
+text_field::text_field(std::string label, std::string initial_value, bool numbers_only) : x(0), y(0), label(label), value(initial_value), max_value_length(field_length/20), numbers_only(numbers_only), has_focus(false)
 { }
 
 void text_field::mouse_down(int mouse_x, int mouse_y)
@@ -151,7 +149,10 @@ void text_field::mouse_down(int mouse_x, int mouse_y)
 	else if(!has_focus)
 	{
 		if((mouse_x > x) && (mouse_x < x + name_length + field_length) && (mouse_y > y) && (mouse_y < y + height))
+		{
 			has_focus = true;
+			value = "";
+		}
 	}
 }
 
@@ -163,7 +164,7 @@ void text_field::key_char(ALLEGRO_EVENT* ev)
 	char c = ev->keyboard.unichar;
 	if(((c >= '0') && (c <= '9')) || (!numbers_only && (((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')))))
 	{
-		if(value.size() < max_size)
+		if(value.size() < max_value_length)
 			value.push_back(c);
 	}
 
@@ -177,7 +178,7 @@ void text_field::key_char(ALLEGRO_EVENT* ev)
 		has_focus = false;
 }
 
-void text_field::draw()
+void text_field::draw() const
 {
 	al_draw_textf(font25, WRITING_COLOR, x, y, ALLEGRO_ALIGN_LEFT, "%s", label.c_str());
 	ALLEGRO_COLOR background_color = BLACK_COLOR;
@@ -191,6 +192,62 @@ void text_field::draw()
 	al_draw_filled_rectangle(x + name_length, y, x + name_length + field_length, y + height, background_color);
 	al_draw_rectangle(x + name_length, y, x + name_length + field_length, y + height, GREY_COLOR, 4);
 	al_draw_textf(font25, text_color, x + name_length + 10, y, ALLEGRO_ALIGN_LEFT, "%s", value.c_str());
+}
+
+bool menu_button::mouse_on_button(int mouse_x, int mouse_y)
+{
+	update_mouse_position(mouse_x, mouse_y);
+	return has_focus;
+}
+
+void menu_button::update_mouse_position(int mouse_x, int mouse_y)
+{
+	if(((mouse_x > x) && (mouse_x < x + length)) && ((mouse_y > y) && (mouse_y < y + height)))
+		has_focus = true;
+	else
+		has_focus = false;
+}
+
+void menu_button::draw() const
+{
+	ALLEGRO_COLOR c = WRITING_COLOR;
+	if(has_focus)
+		c = WHITE_COLOR;
+	al_draw_rectangle(x, y, x + length, y + height, GREY_COLOR, 4);
+	al_draw_textf(font25, c, x + 10, y + 10, ALLEGRO_ALIGN_LEFT, "%s", name.c_str());
+}
+
+void switch_button::mouse_down(int mouse_x, int mouse_y)
+{
+	update_mouse_position(mouse_x, mouse_y);
+	if(has_focus)
+		value = !value;
+}
+
+void switch_button::update_mouse_position(int mouse_x, int mouse_y)
+{
+	if(((mouse_x > x + name_length) && (mouse_x < x + name_length + value_length)) && ((mouse_y > y) && (mouse_y < y + height)))
+		has_focus = true;
+	else
+		has_focus = false;
+}
+
+void switch_button::draw() const
+{
+	std::string text;
+	if(value)
+		text = "Enabled";
+	else
+		text = "Disabled";
+
+	ALLEGRO_COLOR c;
+	if(has_focus)
+		c = WHITE_COLOR;
+	else
+		c = WRITING_COLOR;
+
+	al_draw_text(font25, WRITING_COLOR, x, y, ALLEGRO_ALIGN_LEFT, name.c_str());
+	al_draw_text(font25, c, x + name_length, y, ALLEGRO_ALIGN_LEFT, text.c_str());
 }
 
 music::music() : sample_playing(nullptr), mixer(al_create_mixer(44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2)), 

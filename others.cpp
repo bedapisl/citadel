@@ -4,7 +4,6 @@
 int game_info::map_width = MAP_WIDTH;
 int game_info::map_height = MAP_HEIGHT;
 bool game_info::fullscreen = false;
-//ALLEGRO_TIMER* game_info::timer = NULL;
 int game_info::fps = 60;
 bool game_info::close_display = false;
 bool game_info::music = false;
@@ -14,8 +13,70 @@ extern ALLEGRO_BITMAP** image_list;
 extern std::ofstream log_file;
 extern game_session* session;
 
+void game_info::load_game_info()
+{
+	game_info::fullscreen = true;
+	game_info::fps = 60;
+	game_info::music = false;
+	display_width = 1366;
+	display_height = 768;
+
+	std::ifstream file;
+	file.open("data/config.txt");
+	if(!file)
+		return;
+
+	std::string line;
+
+	while(!file.eof())
+	{
+		getline(file, line);
+		
+		LOG(line);
+
+		std::vector<std::string> words = split(line);
+
+		for(int i=0; i<words.size(); i++)
+			lower_case(words[i]);
+		
+		if(words.size() >= 3)
+		{
+			if(words[1] == "=")
+			{
+				if(words[0] == "fullscreen")
+				{
+					if((words[2] == "true") || (words[2] == "1"))
+						game_info::fullscreen = true;
+					
+					else if((words[2] == "false") || (words[2] == "0"))
+						game_info::fullscreen = false;
+				}
+				
+				if(words[0] == "music")
+				{
+					if((words[2] == "true") || (words[2] == "1"))
+						game_info::music = true;
+					
+					else if((words[2] == "false") || (words[2] == "0"))
+						game_info::music = false;
+				}
+				
+				else if(words[0] == "display_width")
+					display_width = std::stoi(words[2]);
+				
+				else if(words[0] == "display_height")
+					display_height = std::stoi(words[2]);
+				
+				else if(words[0] == "fps")
+					game_info::fps = std::stoi(words[2]);
+			}
+		}
+	}
+}
+
+
 missile::missile(missile_type type, tile* attacker_position, int damage, tile* goal) 
-			: type(type), attacker_position(attacker_position), damage(damage), goal(goal), bIs_death(false)
+			: type(type), damage(damage), attacker_position(attacker_position), goal(goal), bIs_death(false)
 {
 	game_x = compute_game_x(attacker_position->show_tile_x(), attacker_position->show_tile_y());
 	game_y = compute_game_y(attacker_position->show_tile_x(), attacker_position->show_tile_y()) - 32*attacker_position->show_surface_height();
@@ -383,7 +444,7 @@ void stock::increase_capacity(int new_capacity)
 
 
 carrier_output::carrier_output(int capacity, std::vector<resources> in, std::vector<resources> out, int number_of_carriers) 
-	: stock(capacity), in(in), out(out), reserved_in(NUMBER_OF_RESOURCES, 0), reserved_out(NUMBER_OF_RESOURCES, 0),	
+	: stock(capacity), reserved_in(NUMBER_OF_RESOURCES, 0), reserved_out(NUMBER_OF_RESOURCES, 0), in(in), out(out),	
 		max_number_of_carriers(number_of_carriers), time_to_produce_carrier(TIME_TO_PRODUCE_CARRIER)
 {
 

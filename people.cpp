@@ -587,7 +587,6 @@ void warrior::damage(int damage, tile* attacker_position, bool is_ranged)
 	if(life < 0)
 		die();
 	
-	bool target_founded  = false;
 	attacker_position->check_death_people_on_tile();
 	
 	if(attacker_position->people_on_tile.size() > 0)

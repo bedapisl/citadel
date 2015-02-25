@@ -11,7 +11,7 @@ public:
 	virtual int init(bool add) {return 0;}
 	virtual game_object* draw(int tile_x, int tile_y, int surface_height, int number_of_tile) {return 0;}
 	virtual void draw_button(int button_number);
-	virtual int draw_info(int button_number) {return 0;}
+	virtual void draw_info(int button_number) {}
 	virtual bool panel_click() {return true;}		//returns true, if button should become "chosen_button" in mouse 
 	virtual void map_click() {}
 	virtual void draw_action(int screen_position_x, int screen_position_y, boost::shared_ptr<button> this_button) {}
@@ -47,7 +47,7 @@ public:
 	void draw_action(int screen_position_x, int screen_position_y, boost::shared_ptr<button> this_button);
 	int scroll();
 	int show_number_of_floors() {return number_of_floors;}
-	int draw_info(int button_number);
+	void draw_info(int button_number);
 	void draw_button(int button_number);
 	int update_tiles_with_action(bool mouse_button_down, int tile_x, int tile_y, int button_down_tile_x, int button_down_tile_y);
 	void reset_tiles_with_action();
@@ -65,7 +65,7 @@ public:
 	game_object* draw(int tile_x, int tile_y, int surface_height, int number_of_tile);
 	void map_click();
 	void draw_action(int screen_position_x, int screen_position_y, boost::shared_ptr<button> this_button);
-	int draw_info(int button_number);
+	void draw_info(int button_number);
 	void draw_button(int button_number);
 	void reset_tiles_with_action();
 
@@ -76,15 +76,16 @@ private:
 class navigation_button : public button
 {
 public:
-	navigation_button(navigation_button_type navigation_type);
+	navigation_button(navigation_button_type navigation_type, const std::string& button_name);
 	void set_buttons_after_use(boost::shared_ptr<std::vector<boost::shared_ptr<button>>> new_buttons_after_use) {buttons_after_use = new_buttons_after_use;}
 	bool panel_click() {button::button_list = buttons_after_use; return false;}
-	//int draw_action(int screen_position_x, int screen_position_y, boost::shared_ptr<button> this_button) {}
+	void draw_info(int button_number);
 	void draw_button(int button_number);	
 
 private:
 	boost::shared_ptr<std::vector<boost::shared_ptr<button>>> buttons_after_use;
 	navigation_button_type navigation_type;
+	const std::string name;
 };
 
 

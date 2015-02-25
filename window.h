@@ -53,16 +53,18 @@ private:
 class slider
 {
 public:
-	slider(int x, int y, std::string label, int initial_value, int max_value);
+	slider(std::string label, int initial_value, int max_value);
 	void mouse_down(int mouse_x, int mouse_y);
 	void update_mouse_position(int mouse_x, int mouse_y);
 	void mouse_up(int mouse_x, int mouse_y);
 	int get_value() {return value;}
-	void draw();
+	void draw() const;
+	void update_position(int new_x, int new_y) {x = new_x; y = new_y;}
+
 private:
 	void change_value(int mouse_x);
 
-	const int name_length = 150;
+	const int name_length = 200;
 	const int slider_length = 100;
 	const int height = 30;
 
@@ -77,21 +79,62 @@ private:
 class text_field
 {
 public:
-	text_field(int x, int y, std::string label, std::string initial_value, int max_size, bool numbers_only);
+	text_field(std::string label, std::string initial_value, bool numbers_only);
 	void mouse_down(int mouse_x, int mouse_y);
 	void key_char(ALLEGRO_EVENT* ev);
 	std::string get_value() {return value;}
-	void draw();
+	void draw() const;
+	void update_position(int new_x, int new_y) {x = new_x; y = new_y;}
 
 private:
-	const int name_length = 100;		//in pixels
+	const int name_length = 200;		//in pixels
 	const int field_length = 100;		//in pixels
 	const int height = 30;
 	int x, y;
 	std::string label;
 	std::string value;
-	int max_size;
+	int max_value_length;				//max number or max length???
 	bool numbers_only;
+	bool has_focus;
+};
+
+class menu_button
+{
+public:
+	menu_button() : x(0), y(0), has_focus(false), name("Missing name") {}
+	menu_button(const std::string& name) : x(0), y(0), has_focus(false), name(name) {}
+	bool mouse_on_button(int mouse_x, int mouse_y);
+	void update_mouse_position(int mouse_x, int mouse_y);
+	void draw() const;
+	void update_position(int new_x, int new_y) {x = new_x; y = new_y;}
+
+private:
+	const int length = 150;
+	const int height = 50;
+
+	int x, y;
+	bool has_focus;
+	const std::string name;
+};
+
+class switch_button		//button in menu with values: disabled, enabled
+{
+public:
+	switch_button(const std::string& name, bool initial_value) : x(0), y(0), name(name), value(initial_value) {}
+	void mouse_down(int mouse_x, int mouse_y);
+	bool get_value() {return value;}
+	void update_mouse_position(int mouse_x, int mouse_y);
+	void draw() const;
+	void update_position(int new_x, int new_y) {x = new_x; y = new_y;}
+
+private:
+	const int name_length = 200;
+	const int value_length = 100;
+	const int height = 30;
+	
+	int x, y;
+	std::string name;
+	bool value;
 	bool has_focus;
 };
 

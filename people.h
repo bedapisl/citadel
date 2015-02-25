@@ -60,7 +60,7 @@ public:
 	static bool general_can_move(tile* from, tile* to);
 	virtual bool can_go_here(tile* t) = 0;
 	virtual bool can_move(tile* from, tile* to) = 0;
-	int rotate(int tile_x, int tile_y, bool clockwise);
+	void rotate(int tile_x, int tile_y, bool clockwise);
 	
 	friend class boost::serialization::access;
 
