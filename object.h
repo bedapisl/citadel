@@ -25,7 +25,7 @@ public:
 	virtual void set_surface_height(int height);	
 	virtual void rotate(int tile_x, int tile_y, bool clockwise) {update(tile_x, tile_y, this->surface_height);}
 	
-	//static int highest_surface;
+	static int highest_surface;
 	bool draw_green;
 	game_object_type type_of_object;
 	
@@ -34,7 +34,7 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		//ar & highest_surface;
+		ar & highest_surface;
 		ar & draw_green;
 		ar & type_of_object;
 		ar & tile_x;

@@ -1,6 +1,6 @@
 #include "core.h"
 
-//int game_object::highest_surface = 0;
+int game_object::highest_surface = 0;
 
 extern std::ofstream log_file;
 
@@ -34,8 +34,8 @@ void game_object::set_surface_height(int height)
 {
 	this->surface_height = height;
 	
-	if(surface_height > session->highest_surface)
-		session->highest_surface = surface_height;
+	if(surface_height > highest_surface)
+		highest_surface = surface_height;
 	
 }
 

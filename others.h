@@ -21,10 +21,28 @@ public:
 	static bool fullscreen;
 	static bool music;
 
-//	static const int minimal_display_width = 720;
-//	static const int minimal_display_height = 560;
-
 	static void load_game_info();
+};
+
+class graphical_texts
+{
+public:
+	graphical_texts() { }
+	void add_hint(int game_x, int game_y, const std::string& hint_text, ALLEGRO_COLOR color) {hints.push_back(hint(game_x, game_y, hint_text, color));}
+	void draw_and_update(int screen_position_x, int screen_position_y);
+
+private:
+	static const int standard_hint_time = 90;
+	struct hint
+	{
+		hint(int x, int y, std::string text, ALLEGRO_COLOR color) : x(x), y(y), time_left(standard_hint_time), text(text), color(color) { }
+		int x, y;
+		int time_left;
+		std::string text;
+		ALLEGRO_COLOR color;
+	};
+	
+	std::vector<hint> hints;
 };
 
 class missile{

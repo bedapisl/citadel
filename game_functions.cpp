@@ -28,8 +28,8 @@ int draw_map(int screen_position_x, int screen_position_y, game_mouse* mouse)
 
 	int x1 = compute_tile_x(0,0, screen_position_x, screen_position_y) - 3;
 	int y1 = compute_tile_y(0,0, screen_position_x, screen_position_y);
-	int x2 = compute_tile_x(display_width, display_height - BUTTON_SIZE, screen_position_x, screen_position_y) + 5 + session->highest_surface;
-	int y2 = compute_tile_y(display_width, display_height - BUTTON_SIZE, screen_position_x, screen_position_y) + 3 + session->highest_surface;
+	int x2 = compute_tile_x(display_width, display_height - BUTTON_SIZE, screen_position_x, screen_position_y) + 5 + game_object::highest_surface;
+	int y2 = compute_tile_y(display_width, display_height - BUTTON_SIZE, screen_position_x, screen_position_y) + 3 + game_object::highest_surface;
 	
 	std::vector<tile*> tiles_to_check = tiles_in_rectangle(x1, y1, x2, y2);
 
@@ -95,6 +95,8 @@ int draw_map(int screen_position_x, int screen_position_y, game_mouse* mouse)
 		surface++;
 	}
 	
+	session->hints.draw_and_update(screen_position_x, screen_position_y);
+
 	LOG("drawn " << pictures_drawn << " pictures.");
 
 	LOG("drawing finished");	

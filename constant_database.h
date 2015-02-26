@@ -87,7 +87,7 @@ const typename db::value_type &find(const typename std::tuple_element<idx, typen
 }
 
 //databases definitions
-//usage: 	tuple<building_names, std::string> t = find<building_names, 0>(HOUSE);
+//usage: 	tuple<building_type, std::string> t = find<building_names, 0>(HOUSE);
 //		std::string name = get<1>(t);
 
 struct building_names: public base_database<building_names, std::tuple<building_type, std::string, picture>>
@@ -179,5 +179,28 @@ struct resources_names : public base_database<resources_names, std::tuple<resour
 	}
 };
 	
+struct hint_database : public base_database<hint_database, std::tuple<can_build_output, std::string>>
+{
+	typedef std::tuple<can_build_output, std::string> value_type;
 
+	static void init()
+	{
+		insert(can_build_output::CAN_BUILD, "");
+		insert(can_build_output::MISSING_WOOD, "Not enough wood");
+		insert(can_build_output::MISSING_STONE, "Not enough stone");
+		insert(can_build_output::MISSING_BRICKS, "Not enough bricks");
+		insert(can_build_output::MISSING_MARBLE, "Not enough marble");
+		insert(can_build_output::NO_TREES, "No trees nearby");
+		insert(can_build_output::NO_WATER, "No water nearby");
+		insert(can_build_output::NO_FERTILE_LAND, "No fertile land nearby");
+		insert(can_build_output::NO_IRON, "No iron nearby");
+		insert(can_build_output::NO_COAL, "No coal nearby");
+		insert(can_build_output::NO_MARBLE, "No marble nearby");
+		insert(can_build_output::NO_GOLD, "No gold nearby");
+		insert(can_build_output::NO_ROCKS, "No rocks nearby");
+		insert(can_build_output::NO_SPACE, "Not enough space");
+		insert(can_build_output::ENEMIES_NEARBY, "Enemies nearby");
+	}
+};
+	
 #endif

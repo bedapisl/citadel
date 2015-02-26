@@ -4,7 +4,7 @@ extern std::ofstream log_file;
 extern game_session* session;
 
 game_session::game_session(std::vector<int> starting_resources, int starting_honour, int enemies, std::vector<int> natural_resources_amount, int mountains_amount) 
-	: highest_surface(0), tile_list(generate_map(natural_resources_amount, mountains_amount)), unlocked_buildings(set_unlocked_warehouse()), game_started(false)
+	: tile_list(generate_map(natural_resources_amount, mountains_amount)), unlocked_buildings(set_unlocked_warehouse()), game_started(false)
 {
 	std::vector<resources> all_resources;
 	for(int i=0; i<NUMBER_OF_RESOURCES; ++i)

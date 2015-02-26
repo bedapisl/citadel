@@ -9,6 +9,7 @@ bool game_info::close_display = false;
 bool game_info::music = false;
 ALLEGRO_DISPLAY* game_info::display = NULL;
 
+extern ALLEGRO_FONT* font20;
 extern ALLEGRO_BITMAP** image_list;
 extern std::ofstream log_file;
 extern game_session* session;
@@ -74,6 +75,19 @@ void game_info::load_game_info()
 	}
 }
 
+void graphical_texts::draw_and_update(int screen_position_x, int screen_position_y)
+{
+	for(int i=0; i<hints.size(); ++i)
+		hints[i].time_left--;
+	
+	auto it = remove_if(hints.begin(), hints.end(), [] (const hint& h) {return h.time_left == 0;});
+	hints.erase(it, hints.end());
+	
+	for(const hint& h : hints)
+	{
+		al_draw_text(font20, h.color, h.x - screen_position_x, h.y - screen_position_y, ALLEGRO_ALIGN_CENTRE, h.text.c_str());
+	}
+}
 
 missile::missile(missile_type type, tile* attacker_position, int damage, tile* goal) 
 			: type(type), damage(damage), attacker_position(attacker_position), goal(goal), bIs_death(false)

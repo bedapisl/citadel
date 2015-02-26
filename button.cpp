@@ -299,8 +299,17 @@ void button_build::map_click()
 		int tile_x = tiles_with_action[i]->show_tile_x();
 		int tile_y = tiles_with_action[i]->show_tile_y();
 
-		if(buildings_to_draw[0]->can_build_here(session->tile_list[tile_y][tile_x].get()) == can_build_output::CAN_BUILD)
+		can_build_output output = buildings_to_draw[0]->can_build_here(session->tile_list[tile_y][tile_x].get());
+
+		if(output == can_build_output::CAN_BUILD)
 			session->tile_list[tile_y][tile_x]->build(type_of_building, BLUE_PLAYER);
+
+		else
+		{
+			std::tuple<can_build_output, std::string> t = find<hint_database, 0>(output);
+			std::string message = std::get<1>(t);
+			session->hints.add_hint(compute_game_x(tile_x, tile_y), compute_game_y(tile_x, tile_y), message, LIGHT_RED_COLOR);
+		}
 	}
 }
 
