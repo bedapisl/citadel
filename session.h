@@ -20,6 +20,7 @@ public:
 	int invasion();
 	int show_frames_from_start() {return frames_from_start;}
 	int frames_to_invasion() {return time_to_invasion;}
+	void finish_serialization();
 	
 	std::vector<std::vector<boost::shared_ptr<tile>>> tile_list;
 	std::vector<boost::shared_ptr<building>> building_list;
@@ -50,9 +51,13 @@ public:
 		ar & happiness;
 		ar & starving;
 		ar & invasion_number;
+		ar & time_to_invasion;
+		ar & invasion_interval;
 	}
 
 private:
+	game_session() {}
+
 	static std::vector<bool> set_unlocked_buildings();
 	static std::vector<bool> set_unlocked_warehouse();
 	
@@ -61,7 +66,6 @@ private:
 	bool starving; 
 	int invasion_number;
 	int time_to_invasion;
-//	int first_invasion_interval;
 	int invasion_interval;
 };
 

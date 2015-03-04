@@ -7,6 +7,8 @@ class chosen_mouse;
 
 class tile;
 
+extern std::ofstream log_file;
+
 int compute_game_x(int tile_x, int tile_y);		//defined in core.h
 int compute_game_y(int tile_x, int tile_y);
 
@@ -34,6 +36,7 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
+		LOG("serializing");
 		ar & highest_surface;
 		ar & draw_green;
 		ar & type_of_object;

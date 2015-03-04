@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS= -std=c++11 -ggdb -ftemplate-depth=1024	-pedantic -Wall -Wno-sign-compare		#-lprofiler
+CFLAGS= -std=c++11 -ggdb -ftemplate-depth=1024 -pedantic -Wall -Wno-sign-compare	#-lprofiler
 							#clang has low default template depth
 LDFLAGS=
 				#allegro headers are in /usr/include/allegro5

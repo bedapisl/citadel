@@ -231,5 +231,15 @@ std::vector<bool> game_session::set_unlocked_buildings()
 	return unlocked;
 }
 
+void game_session::finish_serialization()
+{
+	button::set_basic_button_list(false);
+	
+	for(int i=0; i<session->tile_list.size(); ++i)
+	{
+		for(int j=0; j<session->tile_list[i].size(); ++j)
+			session->tile_list[i][j]->finish_serialization();
+	}
+}
 
 

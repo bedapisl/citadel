@@ -9,6 +9,9 @@ ALLEGRO_FONT* font15;
 ALLEGRO_FONT* font20;
 ALLEGRO_FONT* font25;
 ALLEGRO_FONT* font30;
+ALLEGRO_FONT* font35;
+ALLEGRO_FONT* font40;
+ALLEGRO_FONT* font45;
 
 ALLEGRO_BITMAP** image_list;
 
@@ -180,6 +183,8 @@ bool load_pictures()
 	image_list[WATER_IMAGE] = al_load_bitmap("data/images/water.png");
 	image_list[NO_WORKERS_IMAGE] = al_load_bitmap("data/images/no_workers.png");
 	image_list[CLOSE_WINDOW_IMAGE] = al_load_bitmap("data/images/close_window.png");
+	image_list[BUTTON_BACKGROUND_IMAGE] = al_load_bitmap("data/images/button_background.png");
+	image_list[BIGGER_BUTTON_BACKGROUND_IMAGE] = al_load_bitmap("data/images/bigger_button_background.png");
 	image_list[NO_IMAGE] = al_load_bitmap("data/images/no_image.png");
 
 	bool ok = true;
@@ -216,7 +221,10 @@ bool load_fonts()
 	font20 = al_load_font("data/arial.ttf", 20, 0);
 	font25 = al_load_font("data/arial.ttf", 25, 0);
 	font30 = al_load_font("data/arial.ttf", 30, 0);
-	
+	font35 = al_load_font("data/arial.ttf", 35, 0);
+	font40 = al_load_font("data/arial.ttf", 40, 0);
+	font45 = al_load_font("data/arial.ttf", 45, 0);
+
 	if(!font15)
 	{
 		LOG("cant load fonts");

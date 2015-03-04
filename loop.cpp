@@ -27,6 +27,8 @@ BOOST_CLASS_EXPORT(stairs)
 BOOST_CLASS_EXPORT(carrier)
 BOOST_CLASS_EXPORT(warrior)
 
+BOOST_CLASS_EXPORT(tile)
+
 event_handler::event_handler() : queue(al_create_event_queue()), ev(new ALLEGRO_EVENT), next_event(new ALLEGRO_EVENT), timer(al_create_timer(1.0 / game_info::fps)), mouse_state(new ALLEGRO_MOUSE_STATE) , current_loop(nullptr), done(false)
 {
 	al_register_event_source(queue, al_get_display_event_source(game_info::display));
@@ -337,6 +339,78 @@ void game_loop::draw()
 	al_flip_display();
 }
 
+void menu_loop::enter_down(ALLEGRO_EVENT* ev)
+{
+	for(int i=0; i<blocks.size(); ++i)
+		blocks[i].enter_down(ev);
+	
+	check_clicked_buttons();
+}
+
+void menu_loop::up_arrow_down(ALLEGRO_EVENT* ev)
+{
+	bool founded_active = false;
+	for(int i=0; i<blocks.size(); ++i)
+	{
+		if(blocks[i].mouse_on_block)
+		{
+			blocks[i].up_arrow_down(ev);
+			founded_active = true;
+			break;
+		}
+	}
+	if(!founded_active)
+		blocks[0].up_arrow_down(ev);
+}
+	
+void menu_loop::down_arrow_down(ALLEGRO_EVENT* ev)
+{	
+	bool founded_active = false;
+	for(int i=0; i<blocks.size(); ++i)
+	{
+		if(blocks[i].mouse_on_block)
+		{
+			blocks[i].down_arrow_down(ev);
+			founded_active = true;
+			break;
+		}
+	}
+	if(!founded_active)
+		blocks[0].down_arrow_down(ev);
+}
+
+void menu_loop::key_char(ALLEGRO_EVENT* ev)
+{
+	for(int i=0; i<blocks.size(); ++i)
+		blocks[i].key_char(ev);
+}
+
+void menu_loop::mouse_axes(ALLEGRO_EVENT* ev)
+{
+	for(int i=0; i<blocks.size(); ++i)
+		blocks[i].mouse_axes(ev);
+}
+
+void menu_loop::mouse_left_down(ALLEGRO_EVENT* ev)
+{
+	for(int i=0; i<blocks.size(); ++i)
+		blocks[i].mouse_down(ev);
+
+	check_clicked_buttons();
+}
+
+void menu_loop::mouse_left_up(ALLEGRO_EVENT* ev)
+{
+	for(int i=0; i<blocks.size(); ++i)
+		blocks[i].mouse_up(ev);
+}
+
+void menu_loop::timer(ALLEGRO_EVENT* ev, int x, int y)
+{
+	update_gui_blocks_position();
+	draw();
+}
+
 ingame_menu::ingame_menu() : chosen_option(ingame_menu_options::CONTINUE)
 { }
 
@@ -463,8 +537,29 @@ ingame_menu_options ingame_menu::compute_ingame_menu_options(int x, int y)
 	return ingame_menu_options::NO_OPTION;
 }
 
-save_menu::save_menu() : writing_name(true), chosen_file(-1), first_file_index(0), highlighted_option(-1)
-{ }
+save_menu::save_menu() : file_name(new text_field("File name", "", false, 30))
+{
+	for(int i=0; i<5; ++i)
+		blocks.push_back(gui_block());
+
+	std::vector<std::string> file_names = find_save_files(); 
+
+	blocks[0].add_gui_element(file_name);
+	
+	for(int i=0; i<file_names.size(); ++i)
+	{
+		file_buttons.push_back(boost::shared_ptr<menu_button>(new menu_button(file_names[i], false, 25)));
+		blocks[0].add_gui_element(file_buttons[i]);
+	}
+
+	for(int i=0; i<option_names.size(); ++i)
+	{
+		real_buttons.push_back(boost::shared_ptr<menu_button>(new menu_button(option_names[i], false, 25)));
+		blocks[i + 1].add_gui_element(real_buttons.back());
+	}
+
+	update_gui_blocks_position();
+}
 
 void save_menu::escape_down(ALLEGRO_EVENT* ev)
 {
@@ -475,161 +570,46 @@ void save_menu::escape_down(ALLEGRO_EVENT* ev)
 		event_handler::get_instance().change_state(game_state::GAME);
 }
 
-void save_menu::enter_down(ALLEGRO_EVENT* ev)
-{
-	writing_name = false;
-}
-
-void save_menu::up_arrow_down(ALLEGRO_EVENT* ev)
-{
-	chosen_file--;
-	if(chosen_file < 0)
-		chosen_file = save_files.size() - 1;
-}
-	
-void save_menu::down_arrow_down(ALLEGRO_EVENT* ev)
-{
-	chosen_file++;
-	if(chosen_file >= save_files.size())
-		chosen_file = 0;
-}
-
-void save_menu::key_char(ALLEGRO_EVENT* ev)
-{
-	if(!writing_name)
-		return;
-
-	char c = ev->keyboard.unichar;
-	if(((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')) || ((c >= '0') && (c <= '9')) || (c == '_') || (c == '-'))
-	{
-		if(current_name.size() < 50)
-			current_name += c;
-	}
-
-	if((ev->keyboard.keycode == ALLEGRO_KEY_BACKSPACE) || (ev->keyboard.keycode == ALLEGRO_KEY_DELETE))
-	{
-		if(current_name.size() > 0)
-			current_name.pop_back();
-	}
-}
-
-void save_menu::mouse_axes(ALLEGRO_EVENT* ev)
-{
-	highlighted_option = compute_highlighted_option(ev->mouse.x, ev->mouse.y);
-}
-
-void save_menu::mouse_left_down(ALLEGRO_EVENT* ev)
-{
-	int new_chosen_file = compute_chosen_file(ev->mouse.x, ev->mouse.y);
-	if(new_chosen_file != -1)
-	{
-		current_name = save_files[new_chosen_file];
-		writing_name = false;
-		chosen_file = new_chosen_file;
-	}
-
-	int new_highlighted_option = compute_highlighted_option(ev->mouse.x, ev->mouse.y);
-	if(new_highlighted_option != -1)
-		execute_save_window_option(new_highlighted_option);
-	
-	if(click_to_writing_name(ev->mouse.x, ev->mouse.y))
-		writing_name = true;
-}
-
-void save_menu::timer(ALLEGRO_EVENT* ev, int x, int y)
-{
-	draw_save_window();
-}
-
 void save_menu::start()
 {
-	current_name = "";
-	writing_name = true;
-	chosen_file = -1;
-	first_file_index = 0;
-	highlighted_option = -1;
+
 }
 
-void save_menu::draw_save_window()
-{	
-	int drawed_x = 0;
-	int drawed_y = 0;
-	while(drawed_y < display_height)
-	{
-		while(drawed_x < display_width)
-		{
-			al_draw_bitmap(image_list[TEXTURE_GREY_IMAGE], drawed_x, drawed_y, 0);
-			drawed_x += 1024;
-		}
-		drawed_y += 1024;
-	}
+void save_menu::draw()
+{
+	al_clear_to_color(BLACK_COLOR);
+	for(int i=0; i<blocks.size(); ++i)
+		blocks[i].draw();
 
-	al_draw_text(font30, WRITING_COLOR, display_width / 2, 40, ALLEGRO_ALIGN_CENTRE, "Load / Save menu");
-	al_draw_filled_rectangle(start_x, start_y, display_width - 100, display_height - space_after_end_y, BLACK_COLOR);
-
-	for(int i=first_file_index; i<save_files.size(); ++i)
-	{
-		if((i - first_file_index) * 30 + start_y > display_height - space_after_end_y)
-			break;
-
-		ALLEGRO_COLOR color = WRITING_COLOR;
-		if(i == chosen_file)
-			color = YELLOW_COLOR;
-
-		al_draw_textf(font20, color, start_x, start_y + (i - first_file_index)*height, ALLEGRO_ALIGN_LEFT, "%s", save_files[i].c_str());
-	}
-
-	al_draw_filled_rectangle(start_x, display_height - space_after_end_y + 30, display_width - 100, display_height - space_after_end_y + 60, BLACK_COLOR);
-	ALLEGRO_COLOR c = WRITING_COLOR;
-	if(writing_name)
-		c = WHITE_COLOR;
-
-	al_draw_textf(font20, c, start_x, display_height - space_after_end_y + 30, ALLEGRO_ALIGN_LEFT, "%s", current_name.c_str());
-
-	for(int i=0; i<option_names.size(); ++i)
-	{
-		al_draw_rectangle(start_x + i*option_distance, display_height - 100, start_x + i*option_distance + option_size, display_height - 40, BLACK_COLOR, 4);
-		ALLEGRO_COLOR color = WRITING_COLOR;
-		if(i == highlighted_option)
-			color = WHITE_COLOR;
-
-		al_draw_textf(font25, color, start_x + i*option_distance + 15, display_height - 100 + 15, ALLEGRO_ALIGN_LEFT, "%s", option_names[i].c_str());
-	}
 	al_flip_display();
 }
 
-int save_menu::compute_chosen_file(int x, int y)
+void save_menu::update_gui_blocks_position()
 {
-	if((y > display_height - space_after_end_y) || (x > display_width - 100) || (x < start_x))
-		return -1;
+	blocks[0].update_position(100, header_height);
+	blocks[0].set_height(std::max(300, display_height - 250));
 
-	for(int i=first_file_index; i<save_files.size(); ++i)
+	int current_x = 100;
+	for(int i=1; i<blocks.size(); ++i)
 	{
-		if((y > start_y + height*i) && (y < start_y + height*(i + 1)))
-			return i;
+		blocks[i].update_position(current_x, std::max(header_height + 50 + blocks[0].height, display_height - 50 - blocks[i].height));
+		current_x += blocks[i].length + 50;
 	}
-	return -1;
 }
 
-int save_menu::compute_highlighted_option(int x, int y)
+void save_menu::check_clicked_buttons()
 {
-	if((y > display_height - 40) || (y < display_height - 100))
-		return -1;
-	
-	for(int i=0; i<option_names.size(); ++i)
+	for(int i=0; i<file_buttons.size(); ++i)
 	{
-		if((x > start_x + i*(option_distance)) && (x < start_x + i*(option_distance) + option_size))
-			return i;
+		if(file_buttons[i]->clicked())
+			file_name->set_value(file_buttons[i]->show_name());
 	}
-	return -1;
-}
 
-bool save_menu::click_to_writing_name(int x, int y)
-{
-	if((x > start_x) && (x < display_width - 100) && (y > display_height - space_after_end_y + 30) && (y < display_height - space_after_end_y + 60))
-		return true;
-	
-	return false;
+	for(int i=0; i<real_buttons.size(); ++i)
+	{
+		if(real_buttons[i]->clicked())
+			execute_save_window_option(i);
+	}
 }
 
 void save_menu::execute_save_window_option(int option)
@@ -639,31 +619,39 @@ void save_menu::execute_save_window_option(int option)
 		case(0):		//load
 		{
 			std::ifstream file_to_load;
-			file_to_load.open("data/saves/" + current_name);
+
+			bool exist = false;
+			for(int i=0; i<file_buttons.size(); ++i)
+			{
+				if(file_buttons[i]->show_name() == file_name->get_value())
+					exist = true;
+			}
+			if(!exist)
+				return;
+
+			file_to_load.open("data/saves/" + file_name->get_value());
 			if(!file_to_load.good())
 			{
-				LOG("cannot load: " << "data/saves/" + current_name);
+				LOG("cannot load: " << "data/saves/" + file_name->get_value());
 				throw new std::exception;
 				return;
 			}
 			boost::archive::text_iarchive archive(file_to_load);
-			delete session;
-			archive >> *session;
-			for(int i=0; i<session->tile_list.size(); ++i)
-			{
-				for(int j=0; j<session->tile_list[i].size(); ++j)
-					session->tile_list[i][j]->finish_serialization();
-			}
+			archive >> session;
+			
+			session->finish_serialization();	
+			event_handler::get_instance().change_state(game_state::GAME);
 		}
 		break;
 		case(1):		//save
 		{
-			if(current_name.size() == 0)
+			if(file_name->get_value().empty())
 				return;
+
 			if(session == nullptr)
 				return;
 
-			std::ofstream file_to_save("data/saves/" + current_name, std::ofstream::out);
+			std::ofstream file_to_save("data/saves/" + file_name->get_value(), std::ofstream::out);
 			if(file_to_save.bad())
 				return;
 			
@@ -674,21 +662,31 @@ void save_menu::execute_save_window_option(int option)
 			}
 
 			boost::archive::text_oarchive archive(file_to_save);
-			archive << *session;
-			if(!contains(save_files, current_name))
-				save_files.push_back(current_name);
+			
+			archive << session;
+
+			bool founded = false;
+			for(int i=0; i<file_buttons.size(); ++i)
+			{
+				if(file_name->get_value() == file_buttons[i]->show_name())
+					founded = true;
+			}
+			if(!founded)
+			{
+				file_buttons.push_back(boost::shared_ptr<menu_button>(new menu_button(file_name->get_value(), false, 25)));
+				blocks[0].add_gui_element(file_buttons.back());
+			}
 		}
 		break;
 		case(2):		//delete
 		{
-			remove(("data/saves/" + current_name).c_str());
-			for(int i=0; i<save_files.size(); ++i)
+			std::remove(("data/saves/" + file_name->get_value()).c_str());
+			for(int i=0; i<file_buttons.size(); ++i)
 			{
-				if(save_files[i] == current_name)
-					save_files.erase(save_files.begin() + i);
+				if(file_buttons[i]->show_name() == file_name->get_value())
+					file_buttons.erase(file_buttons.begin() + i);
 			}
-			chosen_file = -1;
-
+			blocks[0].remove_invalid_elements();
 		}
 		break;
 		case(3):		//return
@@ -721,121 +719,92 @@ std::vector<std::string> save_menu::find_save_files()
 	return file_names;	
 }
 
-main_menu::main_menu() : chosen_option(RANDOM_GAME)
-{ }
+main_menu::main_menu() 
+{ 
+	blocks.push_back(gui_block());
+	std::vector<std::string> options_names{"Random game", "Campaign", "Load game", "Settings", "Quit"};
+	for(int i=0; i<options_names.size(); ++i)
+	{
+		buttons.push_back(boost::shared_ptr<menu_button>(new menu_button(options_names[i], true, 25, 200, 50)));
+		blocks[0].add_gui_element(buttons.back());
+	}
+
+	update_gui_blocks_position();
+}
  
 void main_menu::escape_down(ALLEGRO_EVENT* ev)
 {
 	event_handler::get_instance().quit();
 }
 
-void main_menu::enter_down(ALLEGRO_EVENT* ev)
-{
-	execute_option(chosen_option);
-}
-
-void main_menu::up_arrow_down(ALLEGRO_EVENT* ev)
-{
-	chosen_option = (main_menu_option)((int)chosen_option - 1);			//the same as chosen_option-- 
-	if(chosen_option < 0)
-		chosen_option = QUIT;
-}
-
-void main_menu::down_arrow_down(ALLEGRO_EVENT* ev)
-{
-	chosen_option = (main_menu_option)((int)chosen_option + 1);			//the same as chosen_option++ 
-	if(chosen_option > 4)
-		chosen_option = static_cast<main_menu_option>(0);
-}
-
-void main_menu::mouse_axes(ALLEGRO_EVENT* ev)
-{
-	chosen_option = compute_main_menu_option(ev->mouse.x, ev->mouse.y);
-}
-
-void main_menu::mouse_left_down(ALLEGRO_EVENT* ev)
-{
-	execute_option(compute_main_menu_option(ev->mouse.x, ev->mouse.y));
-}
-
-void main_menu::timer(ALLEGRO_EVENT* ev, int x, int y)
-{
-	draw_main_menu();
-}
-
-void main_menu::execute_option(main_menu_option option)
-{
-	switch(option)
-	{
-		case(RANDOM_GAME):
-		{	
-			event_handler::get_instance().change_state(game_state::RANDOM_GAME_SETTINGS);
-		}
-		break;
-		case(CAMPAIGN):
-		{
-			//todo
-		}
-		break;
-		case(LOAD_GAME):
-		{
-			event_handler::get_instance().change_state(game_state::SAVE_MENU);
-		}
-		break;
-		case(SETTINGS):
-		{
-			event_handler::get_instance().change_state(game_state::SETTINGS);
-		}
-		break;
-		case(QUIT):
-		{
-			event_handler::get_instance().quit();
-		}
-		break;
-		case(NO_OPTION):
-		{ }
-	}
-}
-
-main_menu_option main_menu::compute_main_menu_option(int x, int y)
-{
-	if((x > display_width/2 - 60) & (x < display_width/2 + 60))
-	{
-		if(((y - 100) / 80) < static_cast<int>(NO_OPTION))			
-		{
-			return (main_menu_option)((y - 100) / 80);	//???
-		}
-	}
-	return NO_OPTION;
-}
-
-void main_menu::draw_main_menu()
+void main_menu::draw()
 {
 	al_clear_to_color(al_map_rgb(0,0,0));
-
-	std::vector<std::string> options_names{"Random game", "Campaign", "Load game", "Settings", "Quit"};
-	
-	for(int i=0; i<options_names.size(); i++)
-	{
-		if(chosen_option != i)
-			al_draw_textf(font25, al_map_rgb(150, 150, 150), display_width/2, 100 + 80*i, ALLEGRO_ALIGN_CENTRE, "%s", options_names[i].c_str());  
-		else
-			al_draw_textf(font30, al_map_rgb(200, 200, 200), display_width/2, 100 + 80*i, ALLEGRO_ALIGN_CENTRE, "%s", options_names[i].c_str()); 
-	}
-	
+	blocks[0].draw();
 	al_flip_display();
 }
 
-settings_menu::settings_menu() : done_button("Done")
+void main_menu::update_gui_blocks_position()
 {
-	buttons.push_back(switch_button("Fullscreeen", game_info::fullscreen));
-	buttons.push_back(switch_button("Music", game_info::music));
-	
-	text_fields.push_back(text_field("Display width", std::to_string(display_width), true));
-	text_fields.push_back(text_field("Display height", std::to_string(display_height), true));
-	text_fields.push_back(text_field("FPS", std::to_string(game_info::fps), true));
+	blocks[0].update_position(display_width/2 - blocks[0].length/2, 100); 
+}
 
-	update_gui_elements_position();
+void main_menu::check_clicked_buttons()
+{
+	int chosen_option = -1;
+	for(int i=0; i<buttons.size(); ++i)
+	{
+		if(buttons[i]->clicked())
+		{
+			chosen_option = i;
+			break;
+		}
+	}
+	
+	switch(chosen_option)
+	{
+		case(0):	//Random game
+			event_handler::get_instance().change_state(game_state::RANDOM_GAME_SETTINGS);
+			break;
+		case(1):	//Campaign
+			//todo
+			break;
+		case(2):	//Load game
+			event_handler::get_instance().change_state(game_state::SAVE_MENU);
+			break;
+		case(3):	//Settigns
+			event_handler::get_instance().change_state(game_state::SETTINGS);
+			break;
+		case(4):	//Quit
+			event_handler::get_instance().quit();
+			break;
+		default:
+			{ }
+	}
+}
+	
+settings_menu::settings_menu()
+{
+	for(int i=0; i<2; ++i)
+		blocks.push_back(gui_block());
+
+	buttons.push_back(boost::shared_ptr<switch_button>(new switch_button("Fullscreeen", game_info::fullscreen)));
+	buttons.push_back(boost::shared_ptr<switch_button>(new switch_button("Music", game_info::music)));
+	
+	text_fields.push_back(boost::shared_ptr<text_field>(new text_field("Display width", std::to_string(display_width), true, 6)));
+	text_fields.push_back(boost::shared_ptr<text_field>(new text_field("Display height", std::to_string(display_height), true, 6)));
+	text_fields.push_back(boost::shared_ptr<text_field>(new text_field("FPS", std::to_string(game_info::fps), true, 6)));
+	
+	for(int i=0; i<buttons.size(); ++i)
+		blocks[0].add_gui_element(buttons[i]);
+	
+	for(int i=0; i<text_fields.size(); ++i)
+		blocks[0].add_gui_element(text_fields[i]);
+
+	done_button = boost::shared_ptr<menu_button>(new menu_button("Done", true, 25));
+	blocks[1].add_gui_element(done_button);
+
+	update_gui_blocks_position();
 }
 
 void settings_menu::escape_down(ALLEGRO_EVENT* ev)
@@ -843,78 +812,28 @@ void settings_menu::escape_down(ALLEGRO_EVENT* ev)
 	event_handler::get_instance().change_state(game_state::MAIN_MENU);
 }
 
-void settings_menu::key_char(ALLEGRO_EVENT* ev)
+void settings_menu::draw()
 {
-	for(text_field& f : text_fields)
-		f.key_char(ev);
-}
-
-void settings_menu::mouse_axes(ALLEGRO_EVENT* ev)
-{
-	for(switch_button& b : buttons)
-		b.update_mouse_position(ev->mouse.x, ev->mouse.y);
-
-	done_button.update_mouse_position(ev->mouse.x, ev->mouse.y);
-}
-
-void settings_menu::mouse_left_down(ALLEGRO_EVENT* ev)
-{
-	for(switch_button& b : buttons)
-		b.mouse_down(ev->mouse.x, ev->mouse.y);
-
-	for(text_field& f : text_fields)
-		f.mouse_down(ev->mouse.x, ev->mouse.y);
-
-	if(done_button.mouse_on_button(ev->mouse.x, ev->mouse.y))
-	{
-		event_handler::get_instance().change_state(game_state::MAIN_MENU);
-	}
-}
-
-void settings_menu::timer(ALLEGRO_EVENT* ev, int x, int y)
-{
-	draw_settings();
-}
-
-void settings_menu::draw_settings()
-{
-	update_gui_elements_position();
-	
 	al_clear_to_color(BLACK_COLOR);
 
 	al_draw_text(font30, WRITING_COLOR, display_width/2, header_height / 2, ALLEGRO_ALIGN_CENTRE, "Settings");
+	
+	for(int i=0; i<blocks.size(); ++i)
+		blocks[i].draw();
 
-	for(const switch_button& b : buttons)
-		b.draw();
-	
-	for(const text_field& t : text_fields)
-		t.draw();
-	
-	done_button.draw();
 	al_flip_display();
 }
 
-void settings_menu::update_gui_elements_position()
+void settings_menu::update_gui_blocks_position()
 {
-	int x = 100;
-	int y = header_height;
-	
-	for(switch_button& b : buttons)
-	{
-		b.update_position(x, y);
-		y += 50;
-	}
+	blocks[0].update_position(100, header_height);
+	blocks[1].update_position(display_width - 50 - blocks[1].length, std::max(display_height - 100, blocks[0].height + 50));
+}
 
-	for(text_field& t : text_fields)
-	{
-		t.update_position(x, y);
-		y += 50;
-	}
-
-	x = display_width - 200;
-	y = std::max(display_height - 100, y);
-
-	done_button.update_position(x, y);
+void settings_menu::check_clicked_buttons()
+{
+	if(done_button->clicked())
+		event_handler::get_instance().change_state(game_state::MAIN_MENU);
 }
 
 void settings_menu::start()
@@ -927,15 +846,15 @@ void settings_menu::end()
 	file.open("data/config.txt", std::ios::out);
 
 	file << "fullscreen = ";
-	if(buttons[0].get_value())
+	if(buttons[0]->get_value())
 		file << "true\n";
 
 	else
 		file << "false\n";
 
-	file << "display_width = " << text_fields[0].get_value() << std::endl << "display_height = " << text_fields[1].get_value() << std::endl << "fps = " << text_fields[2].get_value() << std::endl << "music = ";
+	file << "display_width = " << text_fields[0]->get_value() << std::endl << "display_height = " << text_fields[1]->get_value() << std::endl << "fps = " << text_fields[2]->get_value() << std::endl << "music = ";
 
-	if(buttons[1].get_value())
+	if(buttons[1]->get_value())
 		file << "true" << std::endl;	
 	else
 		file << "false" << std::endl;
@@ -945,22 +864,35 @@ void settings_menu::end()
 	
 random_game_settings::random_game_settings()
 {
-	text_fields.push_back(text_field("Honour", "0", true));
-	for(int i=0; i<resources_names.size(); ++i)
-		text_fields.push_back(text_field(resources_names[i], resources_initial_values[i], true));
+	for(int i=0; i<4; ++i)
+		blocks.push_back(gui_block());
 
-	sliders.push_back(slider("Enemies", 1, 2));
-	sliders.push_back(slider("Mountains", 1, 2));
+	text_fields.push_back(boost::shared_ptr<text_field>(new text_field("Honour", "0", true, 6)));
+	for(int i=0; i<resources_names.size(); ++i)
+		text_fields.push_back(boost::shared_ptr<text_field>(new text_field(resources_names[i], resources_initial_values[i], true, 6)));
+
+	for(int i=0; i<text_fields.size(); ++i)
+		blocks[0].add_gui_element(text_fields[i]);
+
+	sliders.push_back(boost::shared_ptr<slider>(new slider("Enemies", 1, 2)));
+	sliders.push_back(boost::shared_ptr<slider>(new slider("Mountains", 1, 2)));
+
+	blocks[0].add_gui_element(sliders[0]);
+	blocks[0].add_gui_element(sliders[1]);
 	
 	for(int i=0; i<natural_resources_names.size(); ++i)
-		sliders.push_back(slider(natural_resources_names[i], 1, 2));
+		sliders.push_back(boost::shared_ptr<slider>(new slider(natural_resources_names[i], 1, 2)));
+
+	for(int i=2; i<sliders.size(); ++i)
+		blocks[1].add_gui_element(sliders[i]);
 	
-	buttons.push_back(menu_button("Back"));
-	buttons.push_back(menu_button("Start game"));
+	buttons.push_back(boost::shared_ptr<menu_button>(new menu_button("Back", true, 25)));
+	buttons.push_back(boost::shared_ptr<menu_button>(new menu_button("Start game", true, 25)));
 
-	highlighted_option = -1;
+	blocks[2].add_gui_element(buttons[0]);
+	blocks[3].add_gui_element(buttons[1]);
 
-	random_game_settings::update_gui_elements_position();
+	random_game_settings::update_gui_blocks_position();
 }
 
 void random_game_settings::escape_down(ALLEGRO_EVENT* ev)
@@ -968,67 +900,37 @@ void random_game_settings::escape_down(ALLEGRO_EVENT* ev)
 	event_handler::get_instance().change_state(game_state::MAIN_MENU);
 }
 
-void random_game_settings::key_char(ALLEGRO_EVENT* ev)
-{
-	for(int i=0; i<text_fields.size(); ++i)
-		text_fields[i].key_char(ev);
-}
-
-void random_game_settings::mouse_axes(ALLEGRO_EVENT* ev)
-{
-	for(int i=0; i<sliders.size(); ++i)
-		sliders[i].update_mouse_position(ev->mouse.x, ev->mouse.y);
-	
-	for(int i=0; i<buttons.size(); ++i)
-		buttons[i].update_mouse_position(ev->mouse.x, ev->mouse.y);
-
-	highlighted_option = compute_button_number(ev->mouse.x, ev->mouse.y);
-}
-
-void random_game_settings::mouse_left_down(ALLEGRO_EVENT* ev)
-{
-	for(int i=0; i<sliders.size(); ++i)
-		sliders[i].mouse_down(ev->mouse.x, ev->mouse.y);
-
-	for(int i=0; i<text_fields.size(); ++i)
-		text_fields[i].mouse_down(ev->mouse.x, ev->mouse.y);
-
-	int execute_option_number = compute_button_number(ev->mouse.x, ev->mouse.y);
-
-	if(execute_option_number == 0)
-		event_handler::get_instance().change_state(game_state::MAIN_MENU);
-
-	else if(execute_option_number == 1)
-		start_new_game();
-}
-
-void random_game_settings::mouse_up(ALLEGRO_EVENT* ev)
-{
-	for(int i=0; i<sliders.size(); ++i)
-		sliders[i].mouse_up(ev->mouse.x, ev->mouse.y);
-}
-
-void random_game_settings::timer(ALLEGRO_EVENT* ev, int x, int y)
-{
-	update_gui_elements_position();
-	draw();
-}
-
 void random_game_settings::draw()
 {
 	al_clear_to_color(BLACK_COLOR);
 	al_draw_textf(font30, WRITING_COLOR, display_width/2, 50, ALLEGRO_ALIGN_CENTRE, "Game settings");
 
-	for(int i=0; i<text_fields.size(); ++i)
-		text_fields[i].draw();
-	
-	for(int i=0; i<sliders.size(); ++i)
-		sliders[i].draw();
+	for(int i=0; i<blocks.size(); ++i)
+		blocks[i].draw();
 
-	for(int i=0; i<buttons.size(); ++i)
-		buttons[i].draw();
-	
 	al_flip_display();
+}
+
+void random_game_settings::update_gui_blocks_position()
+{
+	int min_x_distance = 50;
+	int min_y_distance = 50;
+	int first_column = 100;
+	int second_column = std::max(first_column + blocks[0].length + min_x_distance, display_width/2);
+	int y_of_buttons = std::max(blocks[0].height + header_height + min_y_distance, display_height - 100);
+	blocks[0].update_position(first_column, header_height);
+	blocks[1].update_position(second_column, header_height);
+	blocks[2].update_position(first_column, y_of_buttons);
+	blocks[3].update_position(second_column, y_of_buttons);
+}
+
+void random_game_settings::check_clicked_buttons()
+{
+	if(buttons[0]->clicked())
+		event_handler::get_instance().change_state(game_state::MAIN_MENU);
+
+	else if(buttons[1]->clicked())
+		start_new_game();
 }
 
 void random_game_settings::start_new_game()
@@ -1037,7 +939,7 @@ void random_game_settings::start_new_game()
 	al_draw_textf(font30, WRITING_COLOR, display_width/2, (display_height)/3, ALLEGRO_ALIGN_CENTRE, "Generating map");
 	al_flip_display();			
 
-	int starting_honour = std::stoi(text_fields[0].get_value());
+	int starting_honour = std::stoi(text_fields[0]->get_value());
 	if((starting_honour < 0) || (starting_honour > 1000000))
 		starting_honour = 1000000;
 
@@ -1045,19 +947,19 @@ void random_game_settings::start_new_game()
 	std::vector<resources> resource_type{WOOD, STONE, MARBLE, BRICKS};
 	for(int i=1; i<text_fields.size(); ++i)
 	{
-		int value = std::stoi(text_fields[i].get_value());
+		int value = std::stoi(text_fields[i]->get_value());
 		if((value < 0) || (value > 1000000))
 			value = 1000000;
 		initial_resources[resource_type[i-1]] = value;
 	}
 
-	int amount_of_enemies = sliders[0].get_value();
-	int amount_of_mountains = sliders[1].get_value();
+	int amount_of_enemies = sliders[0]->get_value();
+	int amount_of_mountains = sliders[1]->get_value();
 	
 	std::vector<int> natural_resources;
 	
 	for(int i=2; i<sliders.size(); ++i)
-		natural_resources.push_back(sliders[i].get_value());
+		natural_resources.push_back(sliders[i]->get_value());
 	
 
 	if(session != nullptr)
@@ -1068,35 +970,6 @@ void random_game_settings::start_new_game()
 	event_handler::get_instance().change_state(game_state::GAME);
 }
 
-int random_game_settings::compute_button_number(int x, int y)
-{
-	for(int i=0; i<buttons.size(); ++i)
-	{
-		if(buttons[i].mouse_on_button(x, y))
-			return i;
-	}
-	return -1;
-}
-
-void random_game_settings::update_gui_elements_position()
-{
-	first_column = 100;
-	second_column = std::max(first_column + 400, display_width/2);
-	buttons_y = std::max(static_cast<int>((text_fields.size() + 2)*50 + header_height), display_height - 100);
-
-	for(int i=0; i < text_fields.size(); ++i)
-		text_fields[i].update_position(first_column, header_height + 50 * i);
-	
-	sliders[0].update_position(first_column, text_fields.size()*50 + header_height);		//enemies
-	sliders[1].update_position(first_column, (text_fields.size() + 1)*50 + header_height);		//mountains
-	
-	buttons[0].update_position(first_column, buttons_y);
-	
-	for(int i=2; i < sliders.size(); ++i)
-		sliders[i].update_position(second_column, (i - 2) * 50 + header_height);
-	
-	buttons[1].update_position(second_column, buttons_y);
-}
 
 
 

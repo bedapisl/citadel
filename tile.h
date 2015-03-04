@@ -11,6 +11,8 @@ class people;
 class building;
 class warrior;
 
+extern std::ofstream log_file;
+
 class tile : public game_object
 {
 public:
@@ -62,6 +64,7 @@ public:
 
 	void prepare_serialization();
 	void finish_serialization();
+	void check_consistency();
 	
 	std::vector<std::pair<int, int>> serializable_accessible_neighbours;
 	std::vector<std::pair<int, int>> serializable_neighbours_with_path;
@@ -69,9 +72,12 @@ public:
 	friend class boost::serialization::access;
 
 	template <class Archive>
-	void save(Archive & ar, const unsigned int version) const		//dont forget to prepare_serialization()
-	{					
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		LOG("serializing tile");
+		
 		ar & boost::serialization::base_object<game_object>(*this);
+		
 		ar & building_on_tile;
 		ar & people_on_tile;
 		//ar & action_on_tile;	
@@ -82,38 +88,11 @@ public:
 		ar & stairs_on_tile;
 		ar & tile_object_image;
 		//ar & accessible_neighbours;		//this causes stack overflow
-		ar & serializable_accessible_neighbours;
 		//ar & neighbours_with_path		//causes stack overflow
-		ar & serializable_neighbours_with_path;
 		ar & minimap_updates;
-		ar & path_on_tile;
-		ar & bIs_path_real;
-		ar & visible;
-		ar & border;
-		ar & path_border;
-		ar & type;
-		ar & draw_building;
-		ar & fertile;
-	}
-
-	template <class Archive>
-	void load(Archive & ar, const unsigned int version)		//dont forget to finish_serilaiztion();
-	{
-		ar & boost::serialization::base_object<game_object>(*this);
-		ar & building_on_tile;
-		ar & people_on_tile;
-		//ar & action_on_tile;
-		ar & number_of_tile_with_action;
-		ar & object;
-		ar & can_go_inside_building;
-		ar & can_go_on_building;
-		ar & stairs_on_tile;
-		ar & tile_object_image;
-		//ar & accessible_neighbours;
+		
 		ar & serializable_accessible_neighbours;
-		//ar & neighbours_with_path
 		ar & serializable_neighbours_with_path;
-		ar & minimap_updates;
 		ar & path_on_tile;
 		ar & bIs_path_real;
 		ar & visible;
@@ -123,10 +102,9 @@ public:
 		ar & draw_building;
 		ar & fertile;
 	}
-	
-	BOOST_SERIALIZATION_SPLIT_MEMBER()
 
-private:	
+private:
+public:
 	tile() {}		//for boost serialization
 
 	bool path_on_tile;

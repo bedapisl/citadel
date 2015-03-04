@@ -1,3 +1,4 @@
+/*
 enum main_menu_option{				
 	RANDOM_GAME,
 	CAMPAIGN,
@@ -6,6 +7,7 @@ enum main_menu_option{
 	QUIT,
 	NO_OPTION
 };
+*/
 
 enum building_type{
 	HOUSE,
@@ -146,6 +148,8 @@ enum picture{
 	WATER_IMAGE,
 	NO_WORKERS_IMAGE,
 	CLOSE_WINDOW_IMAGE,
+	BUTTON_BACKGROUND_IMAGE,
+	BIGGER_BUTTON_BACKGROUND_IMAGE,
 	NO_IMAGE,
 	LAST_IMAGE
 };

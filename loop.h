@@ -98,6 +98,36 @@ private:
 	long long int starting_time, drawing_time, people_time, buildings_time, session_time, rest;
 };
 
+class menu_loop : public loop
+{
+public:
+	menu_loop() { }
+	virtual void escape_down(ALLEGRO_EVENT* ev) {}
+	virtual void enter_down(ALLEGRO_EVENT* ev);
+	virtual void up_arrow_down(ALLEGRO_EVENT* ev);
+	virtual void down_arrow_down(ALLEGRO_EVENT* ev);
+	virtual void left_arrow_down(ALLEGRO_EVENT* ev) {}
+	virtual void right_arrow_down(ALLEGRO_EVENT* ev) {}
+	virtual void other_key_down(ALLEGRO_EVENT* ev) {}
+	virtual void key_up(ALLEGRO_EVENT* ev) {}
+	virtual void key_char(ALLEGRO_EVENT* ev);
+	virtual void mouse_axes(ALLEGRO_EVENT* ev);
+	virtual void mouse_left_down(ALLEGRO_EVENT* ev);
+	virtual void mouse_left_up(ALLEGRO_EVENT* ev);
+	virtual void mouse_right_down(ALLEGRO_EVENT* ev) {}
+	virtual void mouse_right_up(ALLEGRO_EVENT* ev) {}
+	virtual void timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y);
+	virtual void start() {}
+	virtual void end() {}
+	
+protected:
+	virtual void draw() = 0;
+	virtual void update_gui_blocks_position() = 0;
+	virtual void check_clicked_buttons() = 0;
+
+	std::vector<gui_block> blocks;
+};
+
 class ingame_menu : public loop
 {
 public:
@@ -130,120 +160,86 @@ private:
 	ingame_menu_options chosen_option;
 };
 
-class save_menu : public loop
+class save_menu : public menu_loop
 {
 public:
 	save_menu();
 	void escape_down(ALLEGRO_EVENT* ev);
-	void enter_down(ALLEGRO_EVENT* ev);
-	void up_arrow_down(ALLEGRO_EVENT* ev);
-	void down_arrow_down(ALLEGRO_EVENT* ev);
-	void key_char(ALLEGRO_EVENT* ev);
-	void mouse_axes(ALLEGRO_EVENT* ev);
-	void mouse_left_down(ALLEGRO_EVENT* ev);
-	void timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y);
 	void start();
 
-private:
-	void draw_save_window();
-	int compute_chosen_file(int x, int y);
-	int compute_highlighted_option(int x, int y);
-	bool click_to_writing_name(int x, int y);
+protected:
+	void draw();
+	void update_gui_blocks_position();
+	void check_clicked_buttons();
 	void execute_save_window_option(int option);
 	std::vector<std::string> find_save_files();
 
-	const int start_x = 100;		//start of window with save files
-	const int start_y = 100;
-	const int height = 30;
-	const int space_after_end_y = 200;
-	const int option_distance = 150;
-	const int option_size = 100;
+	static const int header_height = 100;
 	const std::vector<std::string> option_names{"Load", "Save", "Delete", "Return"};
-
-	std::vector<std::string> save_files;
-	std::string current_name;
-	bool writing_name;
-	int chosen_file;
-	int first_file_index;
-	int highlighted_option;
+	
+	std::vector<boost::shared_ptr<menu_button>> real_buttons;
+	std::vector<boost::shared_ptr<menu_button>> file_buttons;
+	boost::shared_ptr<text_field> file_name;
 };
 
-class main_menu : public loop
+class main_menu : public menu_loop
 {
 public:	
 	main_menu();
 	void escape_down(ALLEGRO_EVENT* ev); 
-	void enter_down(ALLEGRO_EVENT* ev);
-	void up_arrow_down(ALLEGRO_EVENT* ev);
-	void down_arrow_down(ALLEGRO_EVENT* ev);
-	void mouse_axes(ALLEGRO_EVENT* ev);
-	void mouse_left_down(ALLEGRO_EVENT* ev);
-	void timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y);
-	//void start();
 
 private:
-	void execute_option(main_menu_option option);
-	main_menu_option compute_main_menu_option(int x, int y);
-	void draw_main_menu();
-
-	main_menu_option chosen_option;
+	void draw();
+	void update_gui_blocks_position();
+	void check_clicked_buttons();
+	std::vector<boost::shared_ptr<menu_button>> buttons;
+	
+	const int header_height = 100;
+	const int element_height = 90;
 };
 
-class settings_menu : public loop
+class settings_menu : public menu_loop
 {
 public:
 	settings_menu();
 	void escape_down(ALLEGRO_EVENT* ev);
-	void key_char(ALLEGRO_EVENT* ev);
-	void mouse_axes(ALLEGRO_EVENT* ev);
-	void mouse_left_down(ALLEGRO_EVENT* ev);
-	void timer(ALLEGRO_EVENT* ev, int x, int y);
 	void start();
 	void end();
 
 private:
-	void draw_settings();	
-	void update_gui_elements_position();
+	void draw();	
+	void update_gui_blocks_position();
+	void check_clicked_buttons();
 	
 	const int header_height = 100;
 
-	std::vector<switch_button> buttons;
-	std::vector<text_field> text_fields;	
-	menu_button done_button;
+	std::vector<boost::shared_ptr<switch_button>> buttons;
+	std::vector<boost::shared_ptr<text_field>> text_fields;	
+	boost::shared_ptr<menu_button> done_button;
 };
 
 class slider;
 
-class random_game_settings : public loop
+class random_game_settings : public menu_loop
 {
 public:
 	random_game_settings();
 	void escape_down(ALLEGRO_EVENT* ev);
-	void key_char(ALLEGRO_EVENT* ev);
-	void mouse_axes(ALLEGRO_EVENT* ev);
-	void mouse_left_down(ALLEGRO_EVENT* ev);
-	void mouse_up(ALLEGRO_EVENT* ev);
-	void timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y);
 
 private:
-	int first_column;
-	int second_column;
-	int buttons_y;
 	const int header_height = 100;
 
-
 	void draw();
+	void update_gui_blocks_position();
+	void check_clicked_buttons();
 	void start_new_game();
-	int compute_button_number(int x, int y);
-	void update_gui_elements_position();
 	const std::vector<std::string> resources_names{"Wood", "Stone", "Marble", "Bricks"};
 	const std::vector<std::string> resources_initial_values{"200", "100", "10", "10"};
 	const std::vector<std::string> natural_resources_names{"Water", "Wood", "Fertile soil", "Iron", "Coal", "Marble", "Gold"};
-	std::vector<text_field> text_fields;
-	std::vector<slider> sliders;
-	std::vector<menu_button> buttons;
+	std::vector<boost::shared_ptr<text_field>> text_fields;
+	std::vector<boost::shared_ptr<slider>> sliders;
+	std::vector<boost::shared_ptr<menu_button>> buttons;
 	std::vector<std::string> button_names{"Back", "Start game"};
-	int highlighted_option;
 };
 
 

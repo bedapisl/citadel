@@ -1,6 +1,8 @@
 #include "core.h"
 
 extern ALLEGRO_BITMAP** image_list;
+extern ALLEGRO_FONT* font35;
+extern ALLEGRO_FONT* font30;
 extern ALLEGRO_FONT* font25;
 extern ALLEGRO_FONT* font15;
 extern game_session* sesion;
@@ -94,9 +96,231 @@ void store_window::specific_function_click(int mouse_x, int mouse_y)
 	the_store.lock()->window_function_click(mouse_x - start_x, mouse_y - start_y);
 }
 
+void gui_block::mouse_down(ALLEGRO_EVENT* ev)
+{
+	if(is_mouse_on_block(ev->mouse.x, ev->mouse.y))
+	{
+		for(int i=0; i<elements.size(); ++i)
+			elements[i].lock()->mouse_down(ev->mouse.x, ev->mouse.y);
+	}
+	else
+	{
+		for(int i=0; i<elements.size(); ++i)
+			elements[i].lock()->click_out_of_block();
+	}
+}
+
+void gui_block::mouse_axes(ALLEGRO_EVENT* ev)
+{
+	is_mouse_on_block(ev->mouse.x, ev->mouse.y);
+
+	for(int i=0; i<elements.size(); ++i)
+		elements[i].lock()->mouse_axes(ev->mouse.x, ev->mouse.y);
+}
+
+void gui_block::mouse_up(ALLEGRO_EVENT* ev)
+{	
+	if(is_mouse_on_block(ev->mouse.x, ev->mouse.y))
+	{
+		for(int i=0; i<elements.size(); ++i)
+			elements[i].lock()->mouse_up(ev->mouse.x, ev->mouse.y);
+	}
+	else
+	{
+		for(int i=0; i<elements.size(); ++i)
+			elements[i].lock()->click_out_of_block();
+	}
+}
+
+void gui_block::key_char(ALLEGRO_EVENT* ev)
+{
+	for(int i=0; i<elements.size(); ++i)
+		elements[i].lock()->key_char(ev);
+}
+
+void gui_block::enter_down(ALLEGRO_EVENT* ev)
+{
+	for(int i=0; i<elements.size(); ++i)
+	{
+		if(elements[i].lock()->has_focus || elements[i].lock()->highlighted)
+			elements[i].lock()->enter_down();
+	}
+}
+
+void gui_block::up_arrow_down(ALLEGRO_EVENT* ev)
+{
+	bool founded_active = false;
+	for(int i=0; i<elements.size(); ++i)
+	{
+		if(elements[i].lock()->has_focus || elements[i].lock()->highlighted)
+		{
+			elements[i].lock()->has_focus = false;
+			elements[i].lock()->highlighted = false;
+			i--;
+			if(i < 0)
+				i = elements.size() - 1;;
+
+			elements[i].lock()->has_focus = true;
+			elements[i].lock()->highlighted = true;
+			founded_active = true;
+			break;
+		}
+	}
+	if(!founded_active)
+	{
+		elements[0].lock()->has_focus = true;
+		elements[0].lock()->highlighted = true;
+	}
+}
+
+void gui_block::down_arrow_down(ALLEGRO_EVENT* ev)
+{
+	bool founded_active = false;
+	for(int i=0; i<elements.size(); ++i)
+	{
+		if(elements[i].lock()->has_focus || elements[i].lock()->highlighted)
+		{
+			elements[i].lock()->has_focus = false;
+			elements[i].lock()->highlighted = false;
+			i++;
+			if(i == elements.size())
+				i = 0;
+
+			elements[i].lock()->has_focus = true;
+			elements[i].lock()->highlighted = true;
+			founded_active = true;
+			break;
+		}
+	}
+	if(!founded_active)
+	{
+		elements[0].lock()->has_focus = true;
+		elements[0].lock()->highlighted = true;
+	}
+}
+
+void gui_block::draw()
+{
+	if(height == 0)
+		return;
 	
+	if(length < 100)
+		throw new std::exception;
+
+	if(height <= 50)
+		draw_line(image_list[BUTTON_BACKGROUND_IMAGE], 0, y, 50);
+
+	else
+	{
+		int h = 0;		//how much has been drawn vertically		
+
+		draw_line(image_list[BIGGER_BUTTON_BACKGROUND_IMAGE], 0, y, 50);
+		h += 50;
+
+		while(h < height - 100)
+		{
+			draw_line(image_list[BIGGER_BUTTON_BACKGROUND_IMAGE], 50, y + h, 50);
+			h += 50;
+		}
+		
+		draw_line(image_list[BIGGER_BUTTON_BACKGROUND_IMAGE], 50, y + h, height - 50 - h);
+		h += height - 50 - h;
+
+		draw_line(image_list[BIGGER_BUTTON_BACKGROUND_IMAGE], 100, y + h, 50);
+	}
+	
+	for(int i=0; i<elements.size(); ++i)
+	{
+		if(elements[i].lock()->y + elements[i].lock()->height < y + height)
+		{
+			elements[i].lock()->draw();
+		}
+	}
+}
+
+void gui_block::update_position(int new_x, int new_y)
+{
+	x = new_x;
+	y = new_y;
+
+	int element_y = y;
+	for(int i=0; i<elements.size(); ++i)
+	{
+		elements[i].lock()->update_position(x + vertical_border, element_y + horizontal_border);
+		element_y += elements[i].lock()->height + vertical_space_between_elements;
+	}
+}
+
+void gui_block::add_gui_element(boost::shared_ptr<gui_element> e)
+{
+	if(!hardwired_height)
+	{
+		if(elements.size() > 0)
+			height += vertical_space_between_elements;
+		else
+			height += 2 * horizontal_border;
+		
+		height += e->height;
+	}
+	
+	if(!hardwired_length)
+	{
+		if(length < e->length + 2 * vertical_border)
+			length = e->length + 2 * vertical_border;
+	}
+	
+	elements.push_back(e);
+}
+
+void gui_block::remove_invalid_elements()
+{
+	for(int i=0; i<elements.size(); ++i)
+	{
+		if(elements[i].expired())
+			elements.erase(elements.begin() + i);
+	}
+}
+
+void gui_block::draw_line(ALLEGRO_BITMAP* image, int image_region_y, int line_y, int line_height)
+{	
+	if(length < 100)
+		throw new std::exception;
+
+	int l = 0;		//how much has been drawn
+	al_draw_bitmap_region(image, 0, image_region_y, 50, line_height, x + l, line_y, 0);	//draw left border square
+	l += 50;
+
+	while(l < length - 100)
+	{
+		al_draw_bitmap_region(image, 50, image_region_y, 50, line_height, x + l, line_y, 0);		//draw whole middle squares
+		l += 50;
+	}
+	al_draw_bitmap_region(image, 50, image_region_y, length - l - 50, line_height, x + l, line_y, 0);	//draw partial middle square (in fact rectangle)
+	l += length - l - 50;
+
+	al_draw_bitmap_region(image, 100, image_region_y, 50, line_height, x + l, line_y, 0);
+}
+
+bool gui_block::is_mouse_on_block(int mouse_x, int mouse_y)
+{
+	if(((mouse_x >= x) && (mouse_x <= x + length)) && ((mouse_y >= y) && (mouse_y <= y + height)))
+		mouse_on_block = true;
+	else
+		mouse_on_block = false;
+
+	return mouse_on_block;
+}
+
+void gui_element::mouse_axes(int mouse_x, int mouse_y)
+{
+	if((mouse_x > x) && (mouse_x < x + length) && (mouse_y > y) && (mouse_y < y + height))
+		highlighted = true;
+	else
+		highlighted = false;
+}
+
 slider::slider(std::string label, int initial_value, int max_value) 
-	: x(0), y(0), label(label), value(initial_value), max_value(max_value), has_focus(false)
+	: gui_element(name_length + slider_length, slider_height), label(label), value(initial_value), max_value(max_value)
 { }
 
 void slider::mouse_down(int mouse_x, int mouse_y)
@@ -111,8 +335,9 @@ void slider::mouse_down(int mouse_x, int mouse_y)
 	}
 }
 
-void slider::update_mouse_position(int mouse_x, int mouse_y)
-{
+void slider::mouse_axes(int mouse_x, int mouse_y)
+{ 
+	//gui_element::mouse_axes(mouse_x, mouse_y);
 	if(has_focus)
 		change_value(mouse_x);
 }
@@ -125,11 +350,31 @@ void slider::mouse_up(int mouse_x, int mouse_y)
 	has_focus = false;
 }
 
-void slider::draw() const
+void slider::enter_down()
+{
+	if(highlighted)
+		has_focus = !has_focus;
+	
+	else
+		has_focus = false;
+}
+
+void slider::draw()
 {
 	al_draw_textf(font25, WRITING_COLOR, x, y, ALLEGRO_ALIGN_LEFT, "%s", label.c_str());
-	al_draw_filled_rounded_rectangle(x + name_length, y + 4, x + name_length + slider_length, y + height - 4, 4, 4, GREY_COLOR);
-	al_draw_filled_circle(x + name_length + slider_length * ((double)value/(double)max_value), y + height/2, 10, WRITING_COLOR);
+	ALLEGRO_COLOR bar_color, modifier_color;
+	if(has_focus)
+	{
+		bar_color = LIGHT_GREY_COLOR;
+		modifier_color = WHITE_COLOR;
+	}
+	else
+	{
+		bar_color = GREY_COLOR;
+		modifier_color = WRITING_COLOR;
+	}
+	al_draw_filled_rounded_rectangle(x + name_length, y + 4, x + name_length + slider_length, y + height - 4, 4, 4, bar_color);
+	al_draw_filled_circle(x + name_length + slider_length * ((double)value/(double)max_value), y + height/2, 10, modifier_color);
 }
 
 void slider::change_value(int mouse_x)
@@ -138,8 +383,9 @@ void slider::change_value(int mouse_x)
 	value = (((double)(mouse_x - x - name_length))/(double)(slider_length))*max_value;
 }
 
-text_field::text_field(std::string label, std::string initial_value, bool numbers_only) : x(0), y(0), label(label), value(initial_value), max_value_length(field_length/20), numbers_only(numbers_only), has_focus(false)
-{ }
+text_field::text_field(std::string label, std::string initial_value, bool numbers_only, int max_length) : gui_element(name_length + letter_size * max_length + 20, text_field_height), field_length(max_length * letter_size + 20), label(label), value(initial_value), max_value_length(max_length), numbers_only(numbers_only)
+{
+}
 
 void text_field::mouse_down(int mouse_x, int mouse_y)
 {
@@ -151,7 +397,7 @@ void text_field::mouse_down(int mouse_x, int mouse_y)
 		if((mouse_x > x) && (mouse_x < x + name_length + field_length) && (mouse_y > y) && (mouse_y < y + height))
 		{
 			has_focus = true;
-			value = "";
+			//value = "";
 		}
 	}
 }
@@ -178,7 +424,7 @@ void text_field::key_char(ALLEGRO_EVENT* ev)
 		has_focus = false;
 }
 
-void text_field::draw() const
+void text_field::draw()
 {
 	al_draw_textf(font25, WRITING_COLOR, x, y, ALLEGRO_ALIGN_LEFT, "%s", label.c_str());
 	ALLEGRO_COLOR background_color = BLACK_COLOR;
@@ -194,13 +440,25 @@ void text_field::draw() const
 	al_draw_textf(font25, text_color, x + name_length + 10, y, ALLEGRO_ALIGN_LEFT, "%s", value.c_str());
 }
 
-bool menu_button::mouse_on_button(int mouse_x, int mouse_y)
+menu_button::menu_button() : gui_element(200, 30), font_size(25), centre_aligned(true), was_clicked(false), name("Missing name") 
 {
-	update_mouse_position(mouse_x, mouse_y);
-	return has_focus;
 }
 
-void menu_button::update_mouse_position(int mouse_x, int mouse_y)
+menu_button::menu_button(const std::string& name, bool centre_aligned, int font_size_par, int length_par, int height_par) 
+			: gui_element(std::max((int)name.size() * (font_size_par - 10), length_par), height_par)
+				, font_size(font_size_par), centre_aligned(centre_aligned), was_clicked(false), name(name) 
+{
+} 
+	
+
+void menu_button::mouse_down(int mouse_x, int mouse_y)
+{
+	mouse_axes(mouse_x, mouse_y);
+	if(has_focus)
+		was_clicked = true;
+}
+
+void menu_button::mouse_axes(int mouse_x, int mouse_y)
 {
 	if(((mouse_x > x) && (mouse_x < x + length)) && ((mouse_y > y) && (mouse_y < y + height)))
 		has_focus = true;
@@ -208,23 +466,55 @@ void menu_button::update_mouse_position(int mouse_x, int mouse_y)
 		has_focus = false;
 }
 
-void menu_button::draw() const
+void menu_button::enter_down()
+{
+	if(highlighted || has_focus)
+		was_clicked = true;
+}
+
+void menu_button::draw()
 {
 	ALLEGRO_COLOR c = WRITING_COLOR;
 	if(has_focus)
 		c = WHITE_COLOR;
-	al_draw_rectangle(x, y, x + length, y + height, GREY_COLOR, 4);
-	al_draw_textf(font25, c, x + 10, y + 10, ALLEGRO_ALIGN_LEFT, "%s", name.c_str());
+	
+	ALLEGRO_FONT* f;
+	switch(font_size)
+	{
+		case(25):
+			f = font25;
+			break;
+		case(30):
+			f = font30;
+			break;
+		case(35):
+			f = font35;
+			break;
+		default:
+			throw std::exception();
+	}
+
+	if(centre_aligned)
+		al_draw_text(f, c, x + length/2, y, ALLEGRO_ALIGN_CENTRE, name.c_str());
+	else
+		al_draw_text(f, c, x, y, ALLEGRO_ALIGN_LEFT, name.c_str());
+}
+
+bool menu_button::clicked()
+{
+	bool return_value = was_clicked;
+	was_clicked = false;
+	return return_value;
 }
 
 void switch_button::mouse_down(int mouse_x, int mouse_y)
 {
-	update_mouse_position(mouse_x, mouse_y);
+	mouse_axes(mouse_x, mouse_y);
 	if(has_focus)
 		value = !value;
 }
 
-void switch_button::update_mouse_position(int mouse_x, int mouse_y)
+void switch_button::mouse_axes(int mouse_x, int mouse_y)
 {
 	if(((mouse_x > x + name_length) && (mouse_x < x + name_length + value_length)) && ((mouse_y > y) && (mouse_y < y + height)))
 		has_focus = true;
@@ -232,7 +522,13 @@ void switch_button::update_mouse_position(int mouse_x, int mouse_y)
 		has_focus = false;
 }
 
-void switch_button::draw() const
+void switch_button::enter_down()
+{
+	if(highlighted || has_focus)
+		value = !value;
+}
+
+void switch_button::draw()
 {
 	std::string text;
 	if(value)
@@ -245,6 +541,8 @@ void switch_button::draw() const
 		c = WHITE_COLOR;
 	else
 		c = WRITING_COLOR;
+	
+	//al_draw_bitmap(image_list[BUTTON_BACKGROUND_IMAGE], x, y, 0);
 
 	al_draw_text(font25, WRITING_COLOR, x, y, ALLEGRO_ALIGN_LEFT, name.c_str());
 	al_draw_text(font25, c, x + name_length, y, ALLEGRO_ALIGN_LEFT, text.c_str());

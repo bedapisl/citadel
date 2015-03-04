@@ -18,6 +18,7 @@ tile::tile(tile_type type, int tile_x, int tile_y, int surface_height) : game_ob
 	can_go_inside_building = false;
 	can_go_on_building = false;
 	stairs_on_tile = false;
+	tile_object_image = NO_IMAGE;
 	if(type != WATER)
 		image = GRASS_IMAGE;
 
@@ -32,6 +33,8 @@ tile::tile(tile_type type, int tile_x, int tile_y, int surface_height) : game_ob
 		border = GROUND_LEVEL;
 	if(show_surface_height() > 0)
 		border = NO_BORDERS;
+	
+	path_border = UNKNOWN_BORDERS;
 }
 
 std::vector<game_object*> tile::draw(int screen_position_x, int screen_position_y)
@@ -845,6 +848,8 @@ void tile::set_neighbours_with_path()
 
 void tile::prepare_serialization()
 {
+	check_consistency();
+
 	serializable_accessible_neighbours.clear();
 	for(int i=0; i<accessible_neighbours.size(); ++i)
 	{
@@ -873,7 +878,29 @@ void tile::finish_serialization()
 		tile* t = session->tile_list[serializable_neighbours_with_path[i].second][serializable_neighbours_with_path[i].first].get();
 		neighbours_with_path.push_back(t);
 	}
+
+	check_consistency();
 }
+
+void tile::check_consistency()
+{
+	assert(people_on_tile.size() >= 0);
+	assert((object == NOTHING) || (object == IRON_TILE) || (object == MARBLE_TILE) || (object == GOLD_TILE) || (object == COAL_TILE) || (object == TREE_TILE));
+	assert(((unsigned int)can_go_inside_building == 1) || ((unsigned int)can_go_inside_building == 0));
+	assert(((unsigned int)can_go_on_building == 1) || ((unsigned int)can_go_on_building == 0));
+	assert(((unsigned int)stairs_on_tile == 1) || ((unsigned int)stairs_on_tile == 0));
+	assert((((unsigned int)tile_object_image) >= 0) && (((unsigned int)tile_object_image) < LAST_IMAGE));
+	assert(((unsigned int)path_on_tile == 1) || ((unsigned int)path_on_tile == 0));
+	assert(((unsigned int)bIs_path_real == 1) || ((unsigned int)bIs_path_real == 0));
+	assert(((unsigned int)visible == 1) || ((unsigned int)visible == 0));
+	assert((((unsigned int)border) >= 0) && (((unsigned int)border) <= UNKNOWN_BORDERS));
+	assert(((unsigned int)path_border >= 0) && (((unsigned int)path_border) <= UNKNOWN_BORDERS));
+	assert((((unsigned int)type) >= 0) && (((unsigned int)type) <= WATER));
+	assert(((unsigned int)draw_building == 1) || ((unsigned int)draw_building == 0));
+	assert(((unsigned int)fertile == 1) || ((unsigned int)fertile == 0));
+}
+	
+
 
 
 

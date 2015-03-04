@@ -50,92 +50,145 @@ private:
 	static const int store_window_heigth = 600;
 };
 
-class slider
+class gui_element;
+
+class gui_block
+{
+public:
+	gui_block() : length(0), height(0), mouse_on_block(false), hardwired_length(false), hardwired_height(false), x(0), y(0){ } 
+	void mouse_down(ALLEGRO_EVENT* ev);
+	void mouse_axes(ALLEGRO_EVENT* ev);
+	void mouse_up(ALLEGRO_EVENT* ev);
+	void key_char(ALLEGRO_EVENT* ev);
+	void enter_down(ALLEGRO_EVENT* ev);
+	void up_arrow_down(ALLEGRO_EVENT* ev);
+	void down_arrow_down(ALLEGRO_EVENT* ev);
+	void draw();			//draw pro vsechny elementy + nakresli ramecek
+	void update_position(int new_x, int new_y);
+	void add_gui_element(boost::shared_ptr<gui_element> e);
+	void remove_invalid_elements();
+	void set_length(int new_length) {length = new_length; hardwired_length = true;}
+	void set_height(int new_height) {height = new_height; hardwired_height = true;}
+	
+	int length;
+	int height;
+	static const int vertical_space_between_elements = 20;
+	static const int vertical_border = 10;
+	static const int horizontal_border = 10;
+	bool mouse_on_block;
+			
+private:
+	void draw_line(ALLEGRO_BITMAP* image, int image_region_y, int line_y, int line_height);	//horizontal line
+	bool is_mouse_on_block(int mouse_x, int mouse_y);
+	bool hardwired_length;
+	bool hardwired_height;
+	int x;
+	int y;
+	std::vector<boost::weak_ptr<gui_element>> elements;
+};
+
+class gui_element
+{
+public:
+	gui_element(int length, int height) : length(length), height(height), x(0), y(0), has_focus(false), highlighted(false) { }
+	virtual void mouse_down(int mouse_x, int mouse_y) { }
+	virtual void mouse_axes(int mouse_x, int mouse_y);
+	virtual void mouse_up(int mouse_x, int mouse_y) { }
+	virtual void enter_down() { }
+	virtual void key_char(ALLEGRO_EVENT* ev) { }
+	virtual void click_out_of_block() {has_focus = false; highlighted = false;}
+
+	virtual void draw() = 0;
+	virtual void update_position(int new_x, int new_y) {x = new_x; y = new_y;}
+	int length;
+	int height;
+	int x;
+	int y;
+	bool has_focus;
+	bool highlighted;
+};
+
+class slider : public gui_element
 {
 public:
 	slider(std::string label, int initial_value, int max_value);
 	void mouse_down(int mouse_x, int mouse_y);
-	void update_mouse_position(int mouse_x, int mouse_y);
+	void mouse_axes(int mouse_x, int mouse_y);
 	void mouse_up(int mouse_x, int mouse_y);
+	void enter_down();
 	int get_value() {return value;}
-	void draw() const;
-	void update_position(int new_x, int new_y) {x = new_x; y = new_y;}
+	void draw();
 
 private:
 	void change_value(int mouse_x);
 
-	const int name_length = 200;
-	const int slider_length = 100;
-	const int height = 30;
+	static const int name_length = 200;
+	static const int slider_length = 100;
+	static const int slider_height = 30;
 
-	int x;
-	int y;
 	std::string label;
 	int value;
 	int max_value;
-	bool has_focus;
 };
 
-class text_field
+class text_field : public gui_element
 {
 public:
-	text_field(std::string label, std::string initial_value, bool numbers_only);
+	text_field(std::string label, std::string initial_value, bool numbers_only, int max_length);
 	void mouse_down(int mouse_x, int mouse_y);
 	void key_char(ALLEGRO_EVENT* ev);
 	std::string get_value() {return value;}
-	void draw() const;
-	void update_position(int new_x, int new_y) {x = new_x; y = new_y;}
+	void draw();
+	void set_value(const std::string& new_text) {value = new_text;}
 
 private:
-	const int name_length = 200;		//in pixels
-	const int field_length = 100;		//in pixels
-	const int height = 30;
-	int x, y;
+	static const int name_length = 200;		//in pixels
+	int field_length;
+	static const int letter_size = 15;
+	static const int text_field_height = 30;
 	std::string label;
 	std::string value;
-	int max_value_length;				//max number or max length???
+	int max_value_length;				//max length in letters
 	bool numbers_only;
-	bool has_focus;
 };
 
-class menu_button
+class menu_button : public gui_element
 {
 public:
-	menu_button() : x(0), y(0), has_focus(false), name("Missing name") {}
-	menu_button(const std::string& name) : x(0), y(0), has_focus(false), name(name) {}
-	bool mouse_on_button(int mouse_x, int mouse_y);
-	void update_mouse_position(int mouse_x, int mouse_y);
-	void draw() const;
-	void update_position(int new_x, int new_y) {x = new_x; y = new_y;}
-
+	menu_button();
+	menu_button(const std::string& name, bool centre_aligned, int font_size_par = 25, int length_par = 200, int height_par = 30);
+	
+	void mouse_down(int mouse_x, int mouse_y);
+	void mouse_axes(int mouse_x, int mouse_y);
+	void enter_down();
+	void draw();
+	bool clicked();
+	std::string show_name() {return name;}
+	
+	int font_size;
 private:
-	const int length = 150;
-	const int height = 50;
-
-	int x, y;
-	bool has_focus;
+	bool centre_aligned;
+	bool was_clicked;
 	const std::string name;
 };
 
-class switch_button		//button in menu with values: disabled, enabled
+class switch_button : public gui_element		//button in menu with values: disabled, enabled
 {
 public:
-	switch_button(const std::string& name, bool initial_value) : x(0), y(0), name(name), value(initial_value) {}
+	switch_button(const std::string& name, bool initial_value) : gui_element(name_length + value_length, button_height), name(name), value(initial_value) {}
 	void mouse_down(int mouse_x, int mouse_y);
 	bool get_value() {return value;}
-	void update_mouse_position(int mouse_x, int mouse_y);
-	void draw() const;
-	void update_position(int new_x, int new_y) {x = new_x; y = new_y;}
+	void mouse_axes(int mouse_x, int mouse_y);
+	void enter_down();
+	void draw();
 
 private:
-	const int name_length = 200;
-	const int value_length = 100;
-	const int height = 30;
+	static const int name_length = 200;
+	static const int value_length = 100;
+	static const int button_height = 30;
 	
-	int x, y;
 	std::string name;
 	bool value;
-	bool has_focus;
 };
 
 class music
