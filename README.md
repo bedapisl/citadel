@@ -28,7 +28,7 @@ To install all dependecies on Debian run command:
 
 	su apt-get update && apt-get install g++ git make libboost-serialization-dev libboost-system-dev libboost-filesystem-dev libboost-iostreams-dev liballegro-acodec5-dev liballegro-audio5-dev liballegro-dialog5-dev liballegro-image5-dev liballegro-physfs5-dev liballegro-ttf5-dev liballegro5-dev
 
-or 
+or if you have already downloaded source:
 
 	su
 	./install_lib_debian_ubuntu.sh
@@ -37,7 +37,7 @@ On Fedora:
 
 	su yum install gcc-c++ git make boost-devel allegro5-devel allegro5-addon-acodec-devel allegro5-addon-audio-devel allegro5-addon-dialog-devel allegro5-addon-image-devel allegro5-addon-physfs-devel allegro5-addon-ttf-devel
 
-or
+or if you have already downloaded source:
 	
 	su
 	./install_lib_fedora.sh
