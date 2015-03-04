@@ -35,7 +35,7 @@ game_session::game_session(std::vector<int> starting_resources, int starting_hon
 		}
 		break;
 		default:
-			throw new std::exception;
+			throw std::exception();
 	}
 
 	frames_from_start = 0;

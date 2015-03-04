@@ -65,7 +65,7 @@ event_handler& event_handler::get_instance()
 void event_handler::run()
 {
 	if(current_loop == nullptr)
-		throw new std::exception;
+		throw std::exception();
 
 	done = false;
 
@@ -485,7 +485,7 @@ void ingame_menu::execute_option(ingame_menu_options option)
 		case(ingame_menu_options::NO_OPTION):
 			break;
 		default:
-			throw new std::exception;
+			throw std::exception();
 	}
 }
 
@@ -633,7 +633,7 @@ void save_menu::execute_save_window_option(int option)
 			if(!file_to_load.good())
 			{
 				LOG("cannot load: " << "data/saves/" + file_name->get_value());
-				throw new std::exception;
+				throw std::exception();
 				return;
 			}
 			boost::archive::text_iarchive archive(file_to_load);
@@ -963,7 +963,7 @@ void random_game_settings::start_new_game()
 	
 
 	if(session != nullptr)
-		throw new std::exception;		//session wasnt deleted!!!
+		throw std::exception();		//session wasnt deleted!!!
 
 	session = new game_session(initial_resources, starting_honour, amount_of_enemies, natural_resources, amount_of_mountains);
 	

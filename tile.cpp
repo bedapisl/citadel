@@ -152,7 +152,7 @@ std::vector<game_object*> tile::draw(int screen_position_x, int screen_position_
 		if(building_on_tile.expired())
 		{
 			LOG("error");
-			throw new std::exception;
+			throw std::exception();
 		}
 		objects.push_back(building_on_tile.lock().get());
 	}
@@ -181,7 +181,7 @@ std::vector<game_object*> tile::draw(int screen_position_x, int screen_position_
 					drawing_floor++;
 				}
 				else
-					throw new std::exception;
+					throw std::exception();
 			}
 			else
 			{
@@ -212,7 +212,7 @@ std::vector<game_object*> tile::draw(int screen_position_x, int screen_position_
 	for(int i=0; i<objects.size(); ++i)
 	{
 		if(objects[i] == NULL)
-			throw new std::exception;
+			throw std::exception();
 	}
 
 	return objects;
@@ -220,17 +220,6 @@ std::vector<game_object*> tile::draw(int screen_position_x, int screen_position_
 
 void tile::build(building_type type, player owner)
 {
-	/*
-	for(int i=0; i<NUMBER_OF_RESOURCES; ++i)		//check if player has enough resources
-	{
-		resources resource_type = static_cast<resources>(i);
-		if(show_building_price(type, resource_type, NO_UPGRADE) > session->global_stock->show_amount(resource_type))
-		{
-			LOG("Not enough resources");
-			return 0;
-		}
-	}
-	*/
 	for(int i=0; i<NUMBER_OF_RESOURCES; ++i)		//subtract resources
 	{
 		resources resource_type = static_cast<resources>(i);

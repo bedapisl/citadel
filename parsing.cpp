@@ -61,7 +61,7 @@ std::vector<INFO_TYPE> object_info::load_info(int number_of_enums, std::string f
 		if(!file)
 		{
 			LOG("error - cant open file " + file_name);
-			throw new std::exception;
+			throw std::exception();
 		}
 		
 		INFO_TYPE info;
@@ -185,7 +185,7 @@ void building_info::load(const std::string & value, const std::string & variable
 		else
 		{
 			LOG("error in parsing - wrong size");
-			throw new std::exception;
+			throw std::exception();
 		}
 	}
 }

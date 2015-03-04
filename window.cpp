@@ -205,7 +205,7 @@ void gui_block::draw()
 		return;
 	
 	if(length < 100)
-		throw new std::exception;
+		throw std::exception();
 
 	if(height <= 50)
 		draw_line(image_list[BUTTON_BACKGROUND_IMAGE], 0, y, 50);
@@ -284,7 +284,7 @@ void gui_block::remove_invalid_elements()
 void gui_block::draw_line(ALLEGRO_BITMAP* image, int image_region_y, int line_y, int line_height)
 {	
 	if(length < 100)
-		throw new std::exception;
+		throw std::exception();
 
 	int l = 0;		//how much has been drawn
 	al_draw_bitmap_region(image, 0, image_region_y, 50, line_height, x + l, line_y, 0);	//draw left border square

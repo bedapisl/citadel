@@ -86,7 +86,7 @@ int draw_map(int screen_position_x, int screen_position_y, game_mouse* mouse)
 				{
 					next_objects_to_draw.push_back(objects[j]);
 					if(objects[j] == NULL)
-						throw new std::exception;
+						throw std::exception();
 				}
 			}
 		}
@@ -314,7 +314,7 @@ void draw_tile_to_minimap(tile* t, float size_increase)
 				color = DARK_GREEN_COLOR;
 				break;
 			default:
-				throw new std::exception;
+				throw std::exception();
 		}
 	}
 	else if(t->is_fertile())
@@ -495,7 +495,7 @@ std::vector<tile*> tiles_in_rectangle(int x1, int y1, int x2, int y2)
 
 	if((rectangle_height*rectangle_width*2 > 1000000) || (rectangle_height < 0) || (rectangle_width < 0))
 	{
-		throw new std::exception;
+		throw std::exception();
 		return std::vector<tile*>();
 	}
 	std::vector<tile*> tiles_in_rectangle;

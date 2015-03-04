@@ -92,7 +92,7 @@ boost::shared_ptr<std::vector<boost::shared_ptr<button>>> button::init_buttons()
 	if(max_number_of_buttons < 3)
 	{
 		LOG("display is too small");
-		throw new std::exception;
+		throw std::exception();
 	}
 	
 	std::vector<building_type> food{HUNTER, FISHERMAN, APPLE_FARM, DAIRY_FARM, WHEAT_FARM, WINDMILL};
@@ -250,7 +250,7 @@ game_object* button_build::draw(int tile_x, int tile_y, int surface_height, int 
 	buildings_to_draw[number_of_tile]->game_object::update(tile_x, tile_y, surface_height);
 	building* return_value = buildings_to_draw[number_of_tile].get();
 	if(return_value == nullptr)
-		throw new std::exception;
+		throw std::exception();
 	
 	return return_value;
 }

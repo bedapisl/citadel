@@ -26,7 +26,7 @@ void enemy_ai::update()
 		std::vector<std::vector<tile*>> paths_to_buildings = pathfinding::breadth_first_search(starting_tile, [waiting_units](tile* from, tile* to){return waiting_units[0]->can_move(from, to);}, pathfinding::any_building_goal_functor(), true, false);
 			
 		if(paths_to_buildings.size() == 0)
-			throw new std::exception;
+			throw std::exception();
 
 		int random_index = rand() % paths_to_buildings.size();
 		

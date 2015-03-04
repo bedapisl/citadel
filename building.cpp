@@ -141,7 +141,7 @@ void building::draw_function_info(int mouse_x, int mouse_y)
 						price = info.third_upgrade_price;
 						break;
 					default:
-						throw new std::exception;
+						throw std::exception();
 				}
 				button::draw_button_info("Upgrade", info.upgrade_info, price, 0, 0, x - BUTTON_SIZE);
 			}
@@ -287,7 +287,7 @@ can_build_output building::can_build_here(tile* here)
 					return can_build_output::MISSING_MARBLE;
 					break;
 				default:
-					throw new std::exception;
+					throw std::exception();
 			}
 		}
 	}
@@ -340,7 +340,7 @@ can_build_output building::can_build_here(tile* here)
 		}
 		break;
 		default:
-			throw new std::exception;
+			throw std::exception();
 	}
 	
 	//bool can_build = true;
@@ -405,7 +405,7 @@ void building::general_upgrade()
 			break;
 
 		default:
-			throw new std::exception;
+			throw std::exception();
 
 	}
 	bool success = session->global_stock->try_subtract_list(price);
@@ -459,7 +459,7 @@ void building::set_drawing_tile()
 	if(session->tile_list[drawing_tile_y][drawing_tile_x]->building_on_tile.expired())
 	{
 		LOG("error");
-		throw new std::exception;
+		throw std::exception();
 	}
 }
 
@@ -515,7 +515,7 @@ int vertex_info::ask_for_workers(std::vector<vertex_info> & vertices, std::vecto
 		idle_workers = std::min(idle_workers, workers_needed);
 
 		if(idle_workers < 0)
-			throw new std::exception;
+			throw std::exception();
 		
 		size_t j=0;
 		while((idle_workers < workers_needed) && (j < size_of_edge.size()))		 
@@ -549,7 +549,7 @@ int vertex_info::ask_for_workers(std::vector<vertex_info> & vertices, std::vecto
 	}
 
 	if(idle_workers > workers_needed)
-		throw new std::exception;
+		throw std::exception();
 
 	return idle_workers;
 }
@@ -690,7 +690,7 @@ void building::assign_workers()
 				idle_workers -= vertices[i].size_of_edge[j];
 			}
 			if(idle_workers < 0)
-				throw new std::exception;
+				throw std::exception();
 
 			house_ptr->set_idle_workers(idle_workers);
 		}
@@ -774,7 +774,7 @@ boost::shared_ptr<building> building::create_building(building_type type, int ti
 	default:
 		{
 			LOG("button_build::init - error not defined building class " << type);
-			throw new std::exception;
+			throw std::exception();
 		}
 	}
 	if((new_building->has_carrier_output()) && (is_real))
@@ -865,7 +865,7 @@ can_build_output building::enough_resources(building_type type, int start_tile_x
 					return can_build_output::NO_WATER;
 					break;
 				default:
-					throw new std::exception;
+					throw std::exception();
 			}
 		}
 		else
@@ -922,7 +922,7 @@ tower::tower(building_type type, int tile_x, int tile_y, int surface_height, pla
 			}
 			break;
 			default:
-				throw new std::exception;
+				throw std::exception();
 		}
 	}
 }
@@ -958,7 +958,7 @@ std::vector<game_object*> tower::draw(int screen_position_x, int screen_position
 			region_y = 0;
 			break;
 		default:
-			throw new std::exception;
+			throw std::exception();
 	}
 	
 	ALLEGRO_COLOR color;
@@ -1405,7 +1405,7 @@ production_building::production_building(building_type type, int tile_x, int til
 	default:
 	{
 		LOG("production_building::production_building - unknown type of building");
-		throw new std::exception;
+		throw std::exception();
 	}
 	}
 	
@@ -1596,7 +1596,7 @@ gate::~gate()
 int gate::specific_update()
 {
 	if(gate_tile->building_on_tile.expired())
-		throw new std::exception;
+		throw std::exception();
 
 	if(action_duration > 0)				
 		action_duration--;
@@ -1961,7 +1961,7 @@ void great_hall::specific_draw_function_info(int mouse_x, int mouse_y)
 		}
 		break;
 		default:
-			throw new std::exception;
+			throw std::exception();
 	}
 
 	button::draw_button_info(name, text, prices, 0, 0, number_of_function*BUTTON_SIZE);
@@ -2353,7 +2353,7 @@ int show_building_price(building_type type, resources resource_type, upgrade_lev
 		default:
 		{
 			LOG("");
-			throw new std::exception;
+			throw std::exception();
 		}
 	}
 

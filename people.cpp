@@ -39,7 +39,7 @@ people::people(people_type type, int tile_x, int tile_y, int surface_height, pla
 	if(!image)
 	{	
 		LOG("error failed to load people image");
-		throw new std::exception;
+		throw std::exception();
 	}
 }
 
@@ -351,7 +351,7 @@ int people::height_difference_for_moving(tile* from, tile* to)
 						break;
 
 					default:
-						throw new std::exception;
+						throw std::exception();
 				}
 			}
 		}				
@@ -435,7 +435,7 @@ warrior::warrior(people_type type, int tile_x, int tile_y, int surface_height, p
 		}
 		break;
 		default:
-			throw new std::exception;
+			throw std::exception();
 	}
 	
 }
@@ -483,7 +483,7 @@ void warrior::update()
 				time_to_search_for_enemies--;
 
 			if(time_to_search_for_enemies < 0)
-				throw new std::exception;
+				throw std::exception();
 		}
 
 		if((current_target != nullptr) && (path.empty()) && (next_tile_to_attack == NULL))
@@ -502,13 +502,13 @@ void warrior::update()
 				if(next_tile_to_attack != NULL)
 				{
 					if(!try_attack_tile(next_tile_to_attack))
-						throw new std::exception;
+						throw std::exception();
 				}
 
 				else if(!path.empty())
 				{
 					if(!move_to_next_tile())
-						throw new std::exception;
+						throw std::exception();
 				}
 			}
 		}
@@ -523,12 +523,12 @@ void warrior::update()
 				if(next_tile_to_attack != NULL)
 				{	
 					if(!try_attack_tile(next_tile_to_attack))
-						throw new std::exception;
+						throw std::exception();
 				}
 				else if(!path.empty())
 				{	
 					if(!move_to_next_tile())
-						throw new std::exception;
+						throw std::exception();
 				}
 			}
 		}
@@ -550,7 +550,7 @@ void warrior::damage(int damage, tile* attacker_position, bool is_ranged)
 	if((is_ranged) && (t->can_go_on_building))
 	{
 		if(t->building_on_tile.expired())	
-			throw new std::exception;
+			throw std::exception();
 		
 		switch(t->building_on_tile.lock()->type)
 		{
@@ -567,7 +567,7 @@ void warrior::damage(int damage, tile* attacker_position, bool is_ranged)
 				evasion_chance = 90;
 				break;
 			default:
-				throw new std::exception;
+				throw std::exception();
 		}
 	}
 	
@@ -899,7 +899,7 @@ void warrior::execute_attack()
 						session->missile_list.push_back(boost::shared_ptr<missile>(new missile(CATAPULT_SHOT, from, attack, to)));
 						break;
 					default:
-						throw new std::exception;
+						throw std::exception();
 				}
 				return;
 			}
@@ -929,7 +929,7 @@ void warrior::execute_attack()
 						session->missile_list.push_back(boost::shared_ptr<missile>(new missile(CATAPULT_SHOT, from, attack, to)));
 						break;
 					default:
-						throw new std::exception;
+						throw std::exception();
 				}
 				return;
 			}
@@ -1036,9 +1036,9 @@ bool warrior::can_attack_people(tile* from, tile* enemy_tile)
 			return can_attack_ranged(from, enemy_tile);
 		break;
 		default:
-			throw new std::exception;
+			throw std::exception();
 	}
-	throw new std::exception;
+	throw std::exception();
 	return 0;
 }
 
@@ -1078,9 +1078,9 @@ bool warrior::can_attack_building(tile* from, tile* enemy_tile)
 		}
 		break;
 		default:
-			throw new std::exception;
+			throw std::exception();
 	}
-	throw new std::exception;
+	throw std::exception();
 	return false;
 }
 
@@ -1100,7 +1100,7 @@ void carrier::update()
 {
 	if((previous_tile != nullptr) && (next_tile != nullptr))
 		if((abs(previous_tile->show_tile_x() - next_tile->show_tile_x()) > 1) || (abs(next_tile->show_tile_y() - previous_tile->show_tile_y()) > 1))
-			throw new std::exception;
+			throw std::exception();
 
 	if(bIs_death)
 		return;
@@ -1149,7 +1149,7 @@ void carrier::update()
 		}
 	}
 	if(hidden)
-		throw new std::exception;
+		throw std::exception();
 }
 
 void carrier::specific_draw_interface()
@@ -1165,7 +1165,7 @@ void carrier::specific_draw_interface()
 void carrier::give_task(resources resource_type, int amount, transaction_type type, boost::shared_ptr<building> target, std::vector<tile*> path_to_target)
 {
 	if(!target->has_carrier_output())
-		throw new std::exception;
+		throw std::exception();
 
 	resource_carried = resource_type;
 	transaction_size = amount;
@@ -1185,12 +1185,12 @@ void carrier::give_task(resources resource_type, int amount, transaction_type ty
 	bool success_2 = target->show_carrier_output()->reserve_transaction(resource_type, amount, reversed_transaction);
 	
 	if((!success_1) || (!success_2))
-		throw new std::exception;
+		throw std::exception();
 
 	if(type == OUT_TRANSACTION)
 		home_building.lock()->show_carrier_output()->accomplish_transaction(resource_type, amount, type);	//subtract resources which should be carried away
 	if(path_to_target.size() == 0)
-		throw new std::exception;
+		throw std::exception();
 
 	if(in_building)
 	{
@@ -1272,7 +1272,7 @@ bool carrier::static_can_move(tile* from, tile* to)
 bool carrier::find_path_to_target()
 {
 	if(target.expired())
-		throw new std::exception;
+		throw std::exception();
 	
 	std::vector<tile*> starting_tiles(1, session->tile_list[tile_y][tile_x].get());
 	tile* target_tile = session->tile_list[target.lock()->show_tile_y()][target.lock()->show_tile_x()].get();
@@ -1286,7 +1286,7 @@ bool carrier::is_target_adjacent()
 {
 	boost::shared_ptr<building> target_building = target.lock();
 	if(target_building == NULL)
-		throw new std::exception;
+		throw std::exception();
 
 	std::vector<tile*> target_tiles = tiles_under_building(target_building->show_tile_x(), target_building->show_tile_y(), target_building->show_size());
 	std::vector<tile*> adjacent_tiles = session->tile_list[tile_y][tile_x]->accessible_neighbours;
