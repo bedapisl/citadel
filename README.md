@@ -26,7 +26,7 @@ To download and compile this game you will need:
 
 To install all dependecies on Debian run command:
 
-	su apt-get update && apt-get install g++ git make boost-serialization-dev boost-system-dev boost-filesystem-dev boost-iostreams-dev liballegro-acodec5-dev liballegro-audio5-dev liballegro-dialog5-dev liballegro-image5-dev liballegro-physfs5-dev liballegro-ttf5-dev liballegro5-dev
+	su apt-get update && apt-get install g++ git make libboost-serialization-dev libboost-system-dev libboost-filesystem-dev libboost-iostreams-dev liballegro-acodec5-dev liballegro-audio5-dev liballegro-dialog5-dev liballegro-image5-dev liballegro-physfs5-dev liballegro-ttf5-dev liballegro5-dev
 
 
 On Fedora:
