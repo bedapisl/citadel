@@ -24,7 +24,7 @@ To download and compile this game you will need:
 
 4. Allegro library version 5
 
-To install all dependecies on Debian run command:
+To install all dependecies on Debian or Ubuntu run command:
 
 	su apt-get update && apt-get install g++ git make libboost-serialization-dev libboost-system-dev libboost-filesystem-dev libboost-iostreams-dev liballegro-acodec5-dev liballegro-audio5-dev liballegro-dialog5-dev liballegro-image5-dev liballegro-physfs5-dev liballegro-ttf5-dev liballegro5-dev
 
@@ -51,6 +51,20 @@ or if you have already downloaded source:
 ###Run
 	./a.out
 
+##Known problems
+On newly installed Ubuntu installing dependencies may give you error like:
+	The following packages have unmet dependencies:
+		libcheese-gtk23 : Depends: ...
+			...
+	Error, pkgProblemResolver::Resolve generated breaks, ...
+
+This can be solved by:
+
+	sudo apt-get remove libcheese-gtk23
+
+And then run again command to install dependencies.
+
 ##Troubleshooting
 In case of any problems you can contact me on bedapisl@gmail.com.
+
 
