@@ -16,8 +16,10 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		ar & units;
-		ar & main_target;
+		using boost::serialization::make_nvp;
+
+		ar & make_nvp("units", units);
+		ar & make_nvp("main_target", main_target);
 	}
 		
 protected:

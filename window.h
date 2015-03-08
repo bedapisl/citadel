@@ -55,7 +55,7 @@ class gui_element;
 class gui_block
 {
 public:
-	gui_block() : length(0), height(0), mouse_on_block(false), hardwired_length(false), hardwired_height(false), x(0), y(0){ } 
+	gui_block(int vertical_border = 10, int horizontal_border = 10) : length(0), height(0), vertical_border(vertical_border), horizontal_border(horizontal_border), mouse_on_block(false), x(0), y(0), hardwired_length(false), hardwired_height(false) { } 
 	void mouse_down(ALLEGRO_EVENT* ev);
 	void mouse_axes(ALLEGRO_EVENT* ev);
 	void mouse_up(ALLEGRO_EVENT* ev);
@@ -73,18 +73,18 @@ public:
 	int length;
 	int height;
 	static const int vertical_space_between_elements = 20;
-	static const int vertical_border = 10;
-	static const int horizontal_border = 10;
+	int vertical_border = 10;
+	int horizontal_border = 10;
 	bool mouse_on_block;
+	int x;
+	int y;
 			
 private:
-	void draw_line(ALLEGRO_BITMAP* image, int image_region_y, int line_y, int line_height);	//horizontal line
+	//void draw_line(ALLEGRO_BITMAP* image, int image_region_y, int line_y, int line_height);	//horizontal line
 	bool is_mouse_on_block(int mouse_x, int mouse_y);
 	bool hardwired_length;
 	bool hardwired_height;
-	int x;
-	int y;
-	std::vector<boost::weak_ptr<gui_element>> elements;
+std::vector<boost::weak_ptr<gui_element>> elements;
 };
 
 class gui_element

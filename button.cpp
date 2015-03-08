@@ -30,6 +30,7 @@ int button::init(ALLEGRO_BITMAP* image, button_type type, bool multiple_selectio
 
 int button::general_update_tiles_with_action(bool mouse_button_down, int tile_x, int tile_y, int button_down_tile_x, int button_down_tile_y)
 {
+	LOG("updating tiles tile_x: " << tile_x << " tile_y: " << tile_y << " button_x: " << button_down_tile_x << " button_y " << button_down_tile_y);
 	reset_tiles_with_action();
 	
 	tile_x = std::min(game_info::map_width - 1, std::max(0, tile_x));			//tile_x should be valid tile coordinate
@@ -96,7 +97,7 @@ boost::shared_ptr<std::vector<boost::shared_ptr<button>>> button::init_buttons()
 	}
 	
 	std::vector<building_type> food{HUNTER, FISHERMAN, APPLE_FARM, DAIRY_FARM, WHEAT_FARM, WINDMILL};
-	std::vector<building_type> economy{HOUSE, MARKET, GREAT_HALL, CHURCH, STORE, SCOUT, WAREHOUSE};
+	std::vector<building_type> economy{HOUSE, MARKET, GREAT_HALL, CHURCH, STORE, WAREHOUSE};
 	std::vector<building_type> industry{QUARRY, WOODCUTTER, CLAY_PIT, POTTERY_WORKSHOP, BRICKMAKER, MARBLE_QUARRY, GOLD_MINE, COAL_MINE, IRON_MINE};
 	std::vector<building_type> military{BARRACKS, PALISADE, WALL, LEFT_GATE, NORTHWEST_TOWER, NORTHWEST_STAIRS, SMITH, ARMOURER, FLETCHER};
 	
@@ -452,7 +453,6 @@ int button_build::update_tiles_with_action(bool mouse_button_down, int tile_x, i
 		{
 			if((type_of_building == WALL) || (type_of_building == PALISADE))
 			{
-				//building* new_building = new wall(WALL, 0, 0, 0, BLUE_PLAYER, false);
 				buildings_to_draw.push_back(building::create_building(type_of_building, 0, 0, 0, BLUE_PLAYER, false));
 			}
 		}
@@ -478,9 +478,10 @@ game_object* button_path::draw(int tile_x, int tile_y, int surface_height, int n
 
 void button_path::map_click()
 {
+	LOG("button path::map_click(), first x: " << tiles_with_action[0]->show_tile_x() << " first y: " << tiles_with_action[0]->show_tile_y());
+
 	for(size_t i=0; i<tiles_with_action.size(); ++i)
 	{
-	
 		if(add)
 			tiles_with_action[i]->add_path(true);
 		

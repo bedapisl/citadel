@@ -10,6 +10,7 @@ extern ALLEGRO_FONT* font20;
 extern ALLEGRO_FONT* font25;
 extern ALLEGRO_FONT* font30;
 
+//for each derived class which is serialized
 BOOST_CLASS_EXPORT(warehouse)
 BOOST_CLASS_EXPORT(tower)
 BOOST_CLASS_EXPORT(barracks)
@@ -27,7 +28,10 @@ BOOST_CLASS_EXPORT(stairs)
 BOOST_CLASS_EXPORT(carrier)
 BOOST_CLASS_EXPORT(warrior)
 
+BOOST_CLASS_EXPORT(game_object)
 BOOST_CLASS_EXPORT(tile)
+
+BOOST_CLASS_EXPORT(carrier_output)
 
 event_handler::event_handler() : queue(al_create_event_queue()), ev(new ALLEGRO_EVENT), next_event(new ALLEGRO_EVENT), timer(al_create_timer(1.0 / game_info::fps)), mouse_state(new ALLEGRO_MOUSE_STATE) , current_loop(nullptr), done(false)
 {
@@ -229,7 +233,7 @@ void game_loop::other_key_down(ALLEGRO_EVENT* ev)
 
 void game_loop::mouse_axes(ALLEGRO_EVENT* ev)
 {
-	mouse->move(ev->mouse.x, ev->mouse.y);
+	mouse->move(screen_position_x, screen_position_y);
 }
 
 void game_loop::mouse_left_down(ALLEGRO_EVENT* ev)
@@ -246,6 +250,12 @@ void game_loop::mouse_left_down(ALLEGRO_EVENT* ev)
 void game_loop::mouse_left_up(ALLEGRO_EVENT* ev)
 {
 	mouse->left_button_go_up(screen_position_x, screen_position_y);
+
+	if(((ev->mouse.x > display_width - 3*BUTTON_SIZE) && (ev->mouse.x < display_width - 2*BUTTON_SIZE)) &&
+		((ev->mouse.y > display_height - BUTTON_SIZE) && (ev->mouse.y < display_height - BUTTON_SIZE/2)))
+	{
+		event_handler::get_instance().change_state(game_state::INGAME_MENU);
+	}
 }
 
 void game_loop::mouse_right_down(ALLEGRO_EVENT* ev)
@@ -411,53 +421,26 @@ void menu_loop::timer(ALLEGRO_EVENT* ev, int x, int y)
 	draw();
 }
 
-ingame_menu::ingame_menu() : chosen_option(ingame_menu_options::CONTINUE)
-{ }
+ingame_menu::ingame_menu()
+{
+	blocks.push_back(gui_block(50, 50));
+	for(int i=0; i<options_names.size(); ++i)
+	{
+		buttons.push_back(boost::shared_ptr<menu_button>(new menu_button(options_names[i], true)));
+		blocks[0].add_gui_element(buttons[i]);
+	}
+	update_gui_blocks_position();
+}
+
 
 void ingame_menu::escape_down(ALLEGRO_EVENT* ev)
 {
 	event_handler::get_instance().change_state(game_state::GAME);
 }
 
-void ingame_menu::enter_down(ALLEGRO_EVENT* ev)
-{
-	execute_option(chosen_option);
-}
-
-void ingame_menu::up_arrow_down(ALLEGRO_EVENT* ev)
-{
-	chosen_option = static_cast<ingame_menu_options>(static_cast<int>(chosen_option) - 1);
-	if(static_cast<int>(chosen_option) < 0)
-		chosen_option = ingame_menu_options::EXIT;
-}
-
-void ingame_menu::down_arrow_down(ALLEGRO_EVENT* ev)
-{
-	chosen_option = static_cast<ingame_menu_options>(static_cast<int>(chosen_option) + 1);
-	if(static_cast<int>(chosen_option) > static_cast<int>(ingame_menu_options::EXIT))
-		chosen_option = ingame_menu_options::CONTINUE;
-}
-
-void ingame_menu::mouse_axes(ALLEGRO_EVENT* ev)
-{
-	chosen_option = compute_ingame_menu_options(ev->mouse.x, ev->mouse.y);
-}
-
-void ingame_menu::mouse_left_down(ALLEGRO_EVENT* ev)
-{
-	ingame_menu_options clicked_option = compute_ingame_menu_options(ev->mouse.x, ev->mouse.y);
-	execute_option(clicked_option);
-}
-
-void ingame_menu::timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y)
-{
-	draw_ingame_menu();
-}
-
 void ingame_menu::start()
 {
 	game_bitmap = al_clone_bitmap(al_get_backbuffer(game_info::display));
-	chosen_option = ingame_menu_options::CONTINUE;
 }
 
 void ingame_menu::end()
@@ -465,6 +448,57 @@ void ingame_menu::end()
 	al_destroy_bitmap(game_bitmap);
 }
 
+void ingame_menu::draw()
+{
+	al_draw_bitmap(game_bitmap, 0, 0, 0);		//draws map and panel
+
+	int black_vertical_border = 0;
+	int black_horizontal_border = 0;
+	al_draw_filled_rectangle(blocks[0].x - black_horizontal_border, blocks[0].y - black_vertical_border, blocks[0].x + blocks[0].length + black_horizontal_border, blocks[0].y + blocks[0].height + black_vertical_border, BLACK_COLOR);
+
+	for(int i=0; i<blocks.size(); ++i)
+		blocks[i].draw();
+
+	al_flip_display();
+}
+
+void ingame_menu::update_gui_blocks_position()
+{
+	blocks[0].update_position((display_width - blocks[0].length)/2, (display_height - blocks[0].height)/2);
+}
+
+void ingame_menu::check_clicked_buttons()
+{
+	int chosen_option = -1;
+	for(int i=0; i<buttons.size(); ++i)
+	{
+		if(buttons[i]->clicked())
+			chosen_option = i;
+	}
+	
+	switch(chosen_option)
+	{
+		case(0):
+			event_handler::get_instance().change_state(game_state::GAME);
+			break;
+		case(1):
+			event_handler::get_instance().change_state(game_state::SAVE_MENU);
+			break;
+		case(2):
+		{
+			delete session;
+			session = nullptr;
+			event_handler::get_instance().change_state(game_state::MAIN_MENU);
+		}
+			break;
+		default:
+		 	{ };
+	}
+}
+
+
+
+/*
 void ingame_menu::execute_option(ingame_menu_options option)
 {
 	switch(option)
@@ -488,35 +522,9 @@ void ingame_menu::execute_option(ingame_menu_options option)
 			throw std::exception();
 	}
 }
+*/
 
-void ingame_menu::draw_ingame_menu()
-{
-	al_draw_bitmap(game_bitmap, 0, 0, 0);		//draws map and panel
-
-	int menu_start_x = (display_width - menu_width) / 2;
-	int menu_end_x = (display_width + menu_width) / 2;
-	al_draw_bitmap_region(image_list[TEXTURE_GREY_IMAGE], 0, 0, menu_width, options_names.size() * button_distance, menu_start_x, menu_start_y, 0);
-
-	int chosen_option_number = static_cast<int>(chosen_option);
-	
-	for(int i=0; i<options_names.size(); ++i)
-	{
-		int start_y = menu_start_y + button_start_y + i*button_distance;
-		al_draw_filled_rectangle(menu_start_x + button_start_x, start_y, menu_end_x - button_start_x, start_y + button_heigth, BLACK_COLOR);
-		
-		ALLEGRO_COLOR color = WRITING_COLOR;
-		ALLEGRO_FONT* font = font25;
-		if(chosen_option_number == i)
-		{
-			color = WHITE_COLOR;
-			font = font30;
-		}
-
-		al_draw_text(font, color, display_width / 2, start_y + 10, ALLEGRO_ALIGN_CENTRE, options_names[i].c_str());
-	}
-	al_flip_display();
-}
-
+/*
 ingame_menu_options ingame_menu::compute_ingame_menu_options(int x, int y)
 {
 	if(x < ((display_width - menu_width)/2 + button_start_x) ||
@@ -536,6 +544,7 @@ ingame_menu_options ingame_menu::compute_ingame_menu_options(int x, int y)
 	}
 	return ingame_menu_options::NO_OPTION;
 }
+*/
 
 save_menu::save_menu() : file_name(new text_field("File name", "", false, 30))
 {
@@ -636,9 +645,10 @@ void save_menu::execute_save_window_option(int option)
 				throw std::exception();
 				return;
 			}
-			boost::archive::text_iarchive archive(file_to_load);
-			archive >> session;
-			
+			//boost::archive::text_iarchive archive(file_to_load);
+			boost::archive::xml_iarchive archive(file_to_load);
+			archive >> boost::serialization::make_nvp("session", session);
+
 			session->finish_serialization();	
 			event_handler::get_instance().change_state(game_state::GAME);
 		}
@@ -661,9 +671,10 @@ void save_menu::execute_save_window_option(int option)
 					session->tile_list[i][j]->prepare_serialization();
 			}
 
-			boost::archive::text_oarchive archive(file_to_save);
-			
-			archive << session;
+			//boost::archive::text_oarchive archive(file_to_save);
+			boost::archive::xml_oarchive archive(file_to_save);
+
+			archive << boost::serialization::make_nvp("session", session);
 
 			bool founded = false;
 			for(int i=0; i<file_buttons.size(); ++i)
@@ -722,7 +733,7 @@ std::vector<std::string> save_menu::find_save_files()
 main_menu::main_menu() 
 { 
 	blocks.push_back(gui_block());
-	std::vector<std::string> options_names{"Random game", "Campaign", "Load game", "Settings", "Quit"};
+	std::vector<std::string> options_names{"Random game", "Load game", "Settings", "Quit"};
 	for(int i=0; i<options_names.size(); ++i)
 	{
 		buttons.push_back(boost::shared_ptr<menu_button>(new menu_button(options_names[i], true, 25, 200, 50)));
@@ -746,7 +757,8 @@ void main_menu::draw()
 
 void main_menu::update_gui_blocks_position()
 {
-	blocks[0].update_position(display_width/2 - blocks[0].length/2, 100); 
+	int y = std::max(100, (display_height - blocks[0].height) / 2);
+	blocks[0].update_position(display_width/2 - blocks[0].length/2, y); 
 }
 
 void main_menu::check_clicked_buttons()
@@ -766,16 +778,13 @@ void main_menu::check_clicked_buttons()
 		case(0):	//Random game
 			event_handler::get_instance().change_state(game_state::RANDOM_GAME_SETTINGS);
 			break;
-		case(1):	//Campaign
-			//todo
-			break;
-		case(2):	//Load game
+		case(1):	//Load game
 			event_handler::get_instance().change_state(game_state::SAVE_MENU);
 			break;
-		case(3):	//Settigns
+		case(2):	//Settigns
 			event_handler::get_instance().change_state(game_state::SETTINGS);
 			break;
-		case(4):	//Quit
+		case(3):	//Quit
 			event_handler::get_instance().quit();
 			break;
 		default:

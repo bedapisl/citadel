@@ -220,10 +220,13 @@ std::vector<game_object*> tile::draw(int screen_position_x, int screen_position_
 
 void tile::build(building_type type, player owner)
 {
-	for(int i=0; i<NUMBER_OF_RESOURCES; ++i)		//subtract resources
+	if(session->game_started)
 	{
-		resources resource_type = static_cast<resources>(i);
-		session->global_stock->subtract(resource_type, show_building_price(type, resource_type, NO_UPGRADE));
+		for(int i=0; i<NUMBER_OF_RESOURCES; ++i)		//subtract resources
+		{
+			resources resource_type = static_cast<resources>(i);
+			session->global_stock->subtract(resource_type, show_building_price(type, resource_type, NO_UPGRADE));
+		}
 	}
 	
 	building_size size = building_info::show_building_info(type).size;

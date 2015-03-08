@@ -6,9 +6,7 @@ RTS game written in C++
 Not supported
 
 ##Download binaries on Linux
-This is the easiest option of trying this game. It should work on recent Linux distributions (with glibc version at least 2.15, tested on Debian Jessie and Fedora 21).
-
-Download [Linux binaries](https://sourceforge.net/projects/citadel-game/files/), unzip downloaded file and run "./run.sh" script.
+Download [Linux binaries](https://sourceforge.net/projects/citadel-game/files/), unzip downloaded file and run executable file with name similar to "citadel_0.1_32bit.out".
 
 ##Compilation on Linux
 This guide was tested with Debian Jessie and Fedora 21. It should also work with minor changes on other recent distros. 
@@ -26,11 +24,11 @@ To download and compile this game you will need:
 
 To install all dependecies on Debian or Ubuntu run command:
 
-	su apt-get update && apt-get install g++ git make libboost-serialization-dev libboost-system-dev libboost-filesystem-dev libboost-iostreams-dev liballegro-acodec5-dev liballegro-audio5-dev liballegro-dialog5-dev liballegro-image5-dev liballegro-physfs5-dev liballegro-ttf5-dev liballegro5-dev
+	sudo apt-get update && apt-get install g++ git make libboost-serialization-dev libboost-system-dev libboost-filesystem-dev libboost-iostreams-dev liballegro-acodec5-dev liballegro-audio5-dev liballegro-dialog5-dev liballegro-image5-dev liballegro-physfs5-dev liballegro-ttf5-dev liballegro5-dev
 
 or if you have already downloaded source:
 
-	su
+	sudo
 	./install_lib_debian_ubuntu.sh
 
 On Fedora:
@@ -54,13 +52,13 @@ or if you have already downloaded source:
 ##Known problems
 On newly installed Ubuntu installing dependencies may give you error like:
 
-The following packages have unmet dependencies:
+	The following packages have unmet dependencies:
 
-libcheese-gtk23 : Depends: ...
+	libcheese-gtk23 : Depends: ...
 
-...
+	...
 
-Error, pkgProblemResolver::Resolve generated breaks, ...
+	Error, pkgProblemResolver::Resolve generated breaks, ...
 
 This can be solved by:
 

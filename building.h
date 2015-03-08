@@ -70,22 +70,23 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		ar & boost::serialization::base_object<game_object>(*this);
-		ar & actual_workers;
-		ar & size;
-		ar & type;
-		ar & id;
-		ar & next_id;
-		ar & action_duration;
-		ar & life;
-		ar & armor;
-		ar & height_of_life_bar;
-		ar & max_life;
-		ar & owner;
-		ar & bIs_death;
-		ar & required_workers;
-		ar & stopped;
-		ar & upgrade_level;
+		using boost::serialization::make_nvp;
+		ar & make_nvp("game_object", boost::serialization::base_object<game_object>(*this));
+		ar & make_nvp("actual_workers", actual_workers);
+		ar & make_nvp("size", size);
+		ar & make_nvp("type", type);
+		ar & make_nvp("id", id);
+		ar & make_nvp("next_id", next_id);
+		ar & make_nvp("action_duration", action_duration);
+		ar & make_nvp("life", life);
+		ar & make_nvp("armor", armor);
+		ar & make_nvp("height_of_life_bar", height_of_life_bar);
+		ar & make_nvp("max_life", max_life);
+		ar & make_nvp("owner", owner);
+		ar & make_nvp("bIs_death", bIs_death);
+		ar & make_nvp("required_workers", required_workers);
+		ar & make_nvp("stopped", stopped);
+		ar & make_nvp("upgrade_level", upgrade_level);
 	}
 
 protected:
@@ -125,8 +126,9 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{	
-		ar & boost::serialization::base_object<building>(*this);
-		ar & people_to_draw;
+		using boost::serialization::make_nvp;
+		ar & make_nvp("building", boost::serialization::base_object<building>(*this));
+		ar & make_nvp("people_to_draw", people_to_draw);
 	}
 
 private:
@@ -155,11 +157,12 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{	
-		ar & boost::serialization::base_object<building>(*this);
-		ar & supported_units;
-		ar & actions;
-		ar & output;
-		ar & number_of_functions;
+		using boost::serialization::make_nvp;
+		ar & make_nvp("building", boost::serialization::base_object<building>(*this));
+		ar & make_nvp("supported_units", supported_units);
+		ar & make_nvp("actions", actions);
+		ar & make_nvp("output", output);
+		ar & make_nvp("number_of_functions", number_of_functions);
 	}
 private:	
 	barracks() {}	//for boost serialization
@@ -189,8 +192,9 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{	
-		ar & boost::serialization::base_object<building>(*this);
-		ar & output;	
+		using boost::serialization::make_nvp;
+		ar & make_nvp("building", boost::serialization::base_object<building>(*this));
+		ar & make_nvp("output", output);	
 	}
 private:
 	warehouse() {}
@@ -214,12 +218,13 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		ar & boost::serialization::base_object<building>(*this);
-		ar & output;
-		ar & resource_produced;
-		ar & needed_resources;
-		ar & current_time_to_produce;
-		ar & amount_produced;
+		using boost::serialization::make_nvp; 
+		ar & make_nvp("building", boost::serialization::base_object<building>(*this));
+		ar & make_nvp("output", output);
+		ar & make_nvp("resource_produced", resource_produced);
+		ar & make_nvp("needed_resources", needed_resources);
+		ar & make_nvp("current_time_to_produce", current_time_to_produce);
+		ar & make_nvp("amount_produced", amount_produced);
 	}
 
 private:	
@@ -247,9 +252,10 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{	
-		ar & boost::serialization::base_object<building>(*this);
-		ar & people_to_draw;
-		ar & borders;
+		using boost::serialization::make_nvp;
+		ar & make_nvp("building", boost::serialization::base_object<building>(*this));
+		ar & make_nvp("people_to_draw", people_to_draw);
+		ar & make_nvp("borders", borders);
 	}
 
 private:
@@ -277,11 +283,12 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		ar & boost::serialization::base_object<building>(*this);
-		ar & open;
-		ar & image_to_draw;
-		ar & northeast_southwest;
-		ar & gate_tile;
+		using boost::serialization::make_nvp;
+		ar & make_nvp("building", boost::serialization::base_object<building>(*this));
+		ar & make_nvp("open", open);
+		ar & make_nvp("image_to_draw", image_to_draw);
+		ar & make_nvp("northeast_southwest", northeast_southwest);
+		ar & make_nvp("gate_tile", gate_tile);
 	}
 
 private:
@@ -308,11 +315,12 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{	
-		ar & boost::serialization::base_object<building>(*this);
-		ar & starving;
-		ar & has_market;
-		ar & missing_resources;
-		ar & idle_workers;
+		using boost::serialization::make_nvp;
+		ar & make_nvp("building", boost::serialization::base_object<building>(*this));
+		ar & make_nvp("starving", starving);
+		ar & make_nvp("has_market", has_market);
+		ar & make_nvp("missing_resources", missing_resources);
+		ar & make_nvp("idle_workers", idle_workers);
 	}
 
 private:
@@ -342,9 +350,10 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{	
-		ar & boost::serialization::base_object<building>(*this);
-		ar & max_distance_to_house;
-		ar & output;
+		using boost::serialization::make_nvp;
+		ar & make_nvp("building", boost::serialization::base_object<building>(*this));
+		ar & make_nvp("max_distance_to_house", max_distance_to_house);
+		ar & make_nvp("output", output);
 	}
 
 private:
@@ -373,8 +382,9 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		ar & boost::serialization::base_object<building>(*this);
-		ar & output;
+		using boost::serialization::make_nvp;
+		ar & make_nvp("building", boost::serialization::base_object<building>(*this));
+		ar & make_nvp("output", output);
 	}
 
 private:
@@ -399,7 +409,8 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		ar & boost::serialization::base_object<building>(*this);
+		using boost::serialization::make_nvp;
+		ar & make_nvp("building", boost::serialization::base_object<building>(*this));
 	}
 
 private:
@@ -428,9 +439,10 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		ar & boost::serialization::base_object<building>(*this);
-		ar & output;
-		ar & buying;
+		using boost::serialization::make_nvp;
+		ar & make_nvp("building", boost::serialization::base_object<building>(*this));
+		ar & make_nvp("output", output);
+		ar & make_nvp("buying", buying);
 	}
 
 private:
@@ -464,8 +476,9 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		ar & boost::serialization::base_object<building>(*this);
-		ar & output;
+		using boost::serialization::make_nvp;
+		ar & make_nvp("building", boost::serialization::base_object<building>(*this));
+		ar & make_nvp("output", output);
 	}
 
 private:
@@ -488,7 +501,8 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		ar & boost::serialization::base_object<building>(*this);
+		using boost::serialization::make_nvp;
+		ar & make_nvp("building", boost::serialization::base_object<building>(*this));
 	}
 
 private:

@@ -12,6 +12,7 @@ public:
 	void left_button_go_up(int screen_position_x, int screen_position_y);
 	void right_button_go_up();
 	int move(int & screen_position_x, int & screen_position_y); 
+	std::pair<int, int> find_mouse_location(int screen_position_x, int screen_position_y);
 	int draw_mouse(int screen_position_x, int screen_position_y);
 	ALLEGRO_MOUSE_STATE* state;
 	int show_tile_x() {return tile_x;}

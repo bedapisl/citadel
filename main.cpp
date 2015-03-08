@@ -76,6 +76,14 @@ void create_display()
 	al_set_new_window_position(10, 10);
 
 	game_info::display = al_create_display(display_width, display_height);
+
+	if(!game_info::fullscreen)		//Dont delete this. It looks useless, but it probably prevents bug in Allegro, which causes
+						//wrong mouse cursor location. I don't know how to reproduce this bug, it sometimes happens, so even if game works
+						//without this, dont delete it.
+	{
+		al_acknowledge_resize(game_info::display);
+		al_resize_display(game_info::display, display_width, display_height);
+	}
 }
 
 //Initialize allegro. If not succesfull, returns -1.

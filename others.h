@@ -57,17 +57,18 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		ar & game_x;
-		ar & game_y;
-		ar & damage;
-		ar & attacker_position;
-		ar & angle;
-		ar & game_x_change;
-		ar & game_y_change;
-		ar & frames_to_goal;
-		ar & goal;
-		ar & image;
-		ar & bIs_death;
+		using boost::serialization::make_nvp;
+		ar & make_nvp("game_x", game_x);
+		ar & make_nvp("game_y", game_y);
+		ar & make_nvp("damage", damage);
+		ar & make_nvp("attacker_position", attacker_position);
+		ar & make_nvp("angle", angle);
+		ar & make_nvp("game_x_change", game_x_change);
+		ar & make_nvp("game_y_change", game_y_change);
+		ar & make_nvp("frames_to_goal", frames_to_goal);
+		ar & make_nvp("goal", goal);
+		ar & make_nvp("image", image);
+		ar & make_nvp("bIs_death", bIs_death);
 	}
 private:
 	missile() {}	//for boost::serialization
@@ -118,8 +119,9 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		ar & capacity;
-		ar & stored;
+		using boost::serialization::make_nvp;
+		ar & make_nvp("capacity", capacity);
+		ar & make_nvp("stored", stored);
 	}
 
 protected:
@@ -149,16 +151,17 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		ar & boost::serialization::base_object<stock>(*this);
-		ar & reserved_in;
-		ar & reserved_out;
-		ar & in;
-		ar & out;
-		ar & carriers;
-		ar & idle_carriers;
-		ar & this_building;
-		ar & max_number_of_carriers;
-		ar & time_to_produce_carrier;
+		using boost::serialization::make_nvp;
+		ar & make_nvp("stock", boost::serialization::base_object<stock>(*this));
+		ar & make_nvp("reserved_in", reserved_in);
+		ar & make_nvp("reserved_out", reserved_out);
+		ar & make_nvp("in", in);
+		ar & make_nvp("out", out);
+		ar & make_nvp("carriers", carriers);
+		ar & make_nvp("idle_carriers", idle_carriers);
+		ar & make_nvp("this_building", this_building);
+		ar & make_nvp("max_number_of_carriers", max_number_of_carriers);
+		ar & make_nvp("time_to_produce_carrier", time_to_produce_carrier);
 	}
 
 private:
