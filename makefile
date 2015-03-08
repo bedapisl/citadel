@@ -7,6 +7,16 @@ LDFLAGS=
 all: ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o tile.o window.o
 	$(CC) ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o window.o tile.o $(LDFLAGS)  -lallegro_acodec -lallegro_audio -lallegro_color -lallegro_dialog -lallegro_font -lallegro_ttf -lallegro_image -lallegro_primitives -lallegro_main -lallegro -lboost_iostreams -lboost_serialization -lboost_system -lboost_filesystem
 
+ARCHITECTURE=$(shell uname -m | sed 's@x86_64@64@' | sed 's@i686@32@')
+BINARY_NAME=citadel_$(shell $(shell pwd)/a.out -v)_$(ARCHITECTURE)bit
+				
+				#create distributable binaries. Needs up-to-date 'a.out' file in this directory.
+binaries: ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o tile.o window.o 
+	$(CC) ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o window.o tile.o $(LDFLAGS) -Wl,-rpath=\$$ORIGIN/lib$(ARCHITECTURE)/ -lallegro_acodec -lallegro_audio -lallegro_color -lallegro_dialog -lallegro_font -lallegro_ttf -lallegro_image -lallegro_primitives -lallegro_main -lallegro -lboost_iostreams -lboost_serialization -lboost_system -lboost_filesystem -o citadel.out
+	cp citadel.out $(BINARY_NAME).out
+	zip -r $(BINARY_NAME).zip $(BINARY_NAME).out data lib$(ARCHITECTURE)
+	echo -e "\n Don't forget VERSION"
+
 ai.o: ai.cpp $(HEADERS)
 	$(CC) $(CFLAGS) -c ai.cpp
 
