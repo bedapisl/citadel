@@ -5,8 +5,8 @@
 
 //dont use function stoi() from standard library - it doesnt work with MinGW
 
-#ifndef main_h
-#define main_h
+#ifndef main_h_bedas_guard
+#define main_h_bedas_guard
 
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/utility.hpp>

@@ -1,5 +1,5 @@
-#ifndef game_functions_h
-#define game_functions_h
+#ifndef game_functions_h_bedas_guard
+#define game_functions_h_bedas_guard
 
 #define TILE_WIDTH 64					//real width of one image in pixels
 #define TILE_HEIGHT 32

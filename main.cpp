@@ -1,7 +1,7 @@
 #include "core.h"
 
 std::ofstream log_file("log", std::ios::out); 
- 
+
 int display_width;
 int display_height;
 
@@ -17,8 +17,14 @@ ALLEGRO_BITMAP** image_list;
 
 game_session* session = NULL;
 
-int main()
+int main(int argc, char** argv)
 {
+	if((argc == 2) && (std::strcmp(argv[1], "-v")  || std::strcmp(argv[1], "--version")))
+	{
+		std::cout << VERSION << std::endl;
+		return 0;
+	}
+
 	if(!init_allegro())
 	{
 		log_file.close();

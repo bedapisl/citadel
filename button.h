@@ -1,5 +1,5 @@
-#ifndef button_h
-#define button_h
+#ifndef button_h_bedas_guard
+#define button_h_bedas_guard
 
 	//button pointers are in chosen_mouse and tile::action_on_tile - so when deleting buttons take care of them
 

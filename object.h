@@ -1,5 +1,5 @@
-#ifndef object_h
-#define object_h
+#ifndef object_h_bedas_guard
+#define object_h_bedas_guard
 
 #include "core.h"
 

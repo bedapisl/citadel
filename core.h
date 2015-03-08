@@ -7,8 +7,10 @@
 	
 /* This is major header file, which includes all other header files.*/
 
-#ifndef core
-#define core
+#ifndef core_bedas_guard
+#define core_bedas_guard
+
+#define VERSION 0.1
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>

@@ -1,5 +1,5 @@
-#ifndef ai_h
-#define ai_h
+#ifndef ai_h_bedas_guard
+#define ai_h_bedas_guard
 
 #include "core.h"
 

@@ -1,5 +1,5 @@
-#ifndef mouse_h
-#define mouse_h
+#ifndef mouse_h_bedas_guard
+#define mouse_h_bedas_guard
 
 #include "core.h"
 #include "others.h"

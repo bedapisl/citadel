@@ -1,5 +1,5 @@
-#ifndef building_h
-#define building_h
+#ifndef building_h_bedas_guard
+#define building_h_bedas_guard
 
 #include "core.h"
 

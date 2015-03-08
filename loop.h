@@ -1,5 +1,5 @@
-#ifndef loop_h
-#define loop_h
+#ifndef loop_h_bedas_guard
+#define loop_h_bedas_guard
 
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/utility.hpp>
