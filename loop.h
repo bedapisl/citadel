@@ -128,36 +128,47 @@ protected:
 	std::vector<gui_block> blocks;
 };
 
-class ingame_menu : public loop
+class ingame_menu : public menu_loop
 {
 public:
 	ingame_menu();
 	void escape_down(ALLEGRO_EVENT* ev); 
-	void enter_down(ALLEGRO_EVENT* ev);
-	void up_arrow_down(ALLEGRO_EVENT* ev);
-	void down_arrow_down(ALLEGRO_EVENT* ev);
-	void mouse_axes(ALLEGRO_EVENT* ev);
-	void mouse_left_down(ALLEGRO_EVENT* ev);
-	void timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y);
+	//void enter_down(ALLEGRO_EVENT* ev);
+	//void up_arrow_down(ALLEGRO_EVENT* ev);
+	//void down_arrow_down(ALLEGRO_EVENT* ev);
+	//void mouse_axes(ALLEGRO_EVENT* ev);
+	//void mouse_left_down(ALLEGRO_EVENT* ev);
+	//void timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y);
 	void start();
 	void end();
 
 private:
+	void draw();
+	void update_gui_blocks_position();
+	void check_clicked_buttons();
+
+	std::vector<boost::shared_ptr<menu_button>> buttons;
+	const std::vector<std::string> options_names{"Continue", "Save", "Exit"};
+
+	ALLEGRO_BITMAP* game_bitmap;
+
+	/*
 	const int menu_width = 400;
 	const int menu_start_y = 100;
 	const int button_start_x = 20;
 	const int button_start_y = 20;
 	const int button_distance = 100;
 	const int button_heigth = 60;
-	const std::vector<std::string> options_names{"Continue", "Save", "Exit"};
+	*/
+//	const std::vector<std::string> options_names{"Continue", "Save", "Exit"};
 
-	ALLEGRO_BITMAP* game_bitmap;
+//	ALLEGRO_BITMAP* game_bitmap;
 
-	void execute_option(ingame_menu_options option);
-	void draw_ingame_menu();
-	ingame_menu_options compute_ingame_menu_options(int x, int y);
+//	void execute_option(ingame_menu_options option);
+//	void draw_ingame_menu();
+//	ingame_menu_options compute_ingame_menu_options(int x, int y);
 
-	ingame_menu_options chosen_option;
+	//ingame_menu_options chosen_option;
 };
 
 class save_menu : public menu_loop

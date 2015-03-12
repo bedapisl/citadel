@@ -96,7 +96,7 @@ boost::shared_ptr<std::vector<boost::shared_ptr<button>>> button::init_buttons()
 	}
 	
 	std::vector<building_type> food{HUNTER, FISHERMAN, APPLE_FARM, DAIRY_FARM, WHEAT_FARM, WINDMILL};
-	std::vector<building_type> economy{HOUSE, MARKET, GREAT_HALL, CHURCH, STORE, SCOUT, WAREHOUSE};
+	std::vector<building_type> economy{HOUSE, MARKET, GREAT_HALL, CHURCH, STORE, WAREHOUSE};
 	std::vector<building_type> industry{QUARRY, WOODCUTTER, CLAY_PIT, POTTERY_WORKSHOP, BRICKMAKER, MARBLE_QUARRY, GOLD_MINE, COAL_MINE, IRON_MINE};
 	std::vector<building_type> military{BARRACKS, PALISADE, WALL, LEFT_GATE, NORTHWEST_TOWER, NORTHWEST_STAIRS, SMITH, ARMOURER, FLETCHER};
 	

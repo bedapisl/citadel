@@ -310,7 +310,7 @@ enum class target_priority
 	ATTACKED_BY_ENEMY,
 	PLAYER_ORDER
 };
-
+/*
 enum class ingame_menu_options
 {
 	CONTINUE,
@@ -318,7 +318,7 @@ enum class ingame_menu_options
 	EXIT,
 	NO_OPTION
 };
-
+*/
 enum class game_state
 {
 	GAME,

@@ -76,6 +76,14 @@ void create_display()
 	al_set_new_window_position(10, 10);
 
 	game_info::display = al_create_display(display_width, display_height);
+
+	if(!game_info::fullscreen)
+	{
+		al_acknowledge_resize(game_info::display);
+		al_resize_display(game_info::display, display_width, display_height);
+		//display_height = ev->display.height;
+		//display_width = ev->display.width;
+	}
 }
 
 //Initialize allegro. If not succesfull, returns -1.

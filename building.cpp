@@ -267,27 +267,30 @@ int building::draw_life_bar(int screen_position_x, int screen_position_y)
 /*Returns true if building can be build on tile defined by parametr here. If not, returns false.*/
 can_build_output building::can_build_here(tile* here)
 {
-	for(int i=0; i<NUMBER_OF_RESOURCES; ++i)		//check if player has enough resources
+	if(session->game_started)
 	{
-		resources resource_type = static_cast<resources>(i);
-		if(show_building_price(type, resource_type, NO_UPGRADE) > session->global_stock->show_amount(resource_type))
+		for(int i=0; i<NUMBER_OF_RESOURCES; ++i)		//check if player has enough resources
 		{
-			switch(resource_type)
+			resources resource_type = static_cast<resources>(i);
+			if(show_building_price(type, resource_type, NO_UPGRADE) > session->global_stock->show_amount(resource_type))
 			{
-				case(WOOD):
-					return can_build_output::MISSING_WOOD;
-					break;
-				case(STONE):
-					return can_build_output::MISSING_STONE;
-					break;
-				case(BRICKS):
-					return can_build_output::MISSING_BRICKS;
-					break;
-				case(MARBLE):
-					return can_build_output::MISSING_MARBLE;
-					break;
-				default:
-					throw std::exception();
+				switch(resource_type)
+				{
+					case(WOOD):
+						return can_build_output::MISSING_WOOD;
+						break;
+					case(STONE):
+						return can_build_output::MISSING_STONE;
+						break;
+					case(BRICKS):
+						return can_build_output::MISSING_BRICKS;
+						break;
+					case(MARBLE):
+						return can_build_output::MISSING_MARBLE;
+						break;
+					default:
+						throw std::exception();
+				}
 			}
 		}
 	}
