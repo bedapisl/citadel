@@ -21,6 +21,9 @@ struct target
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
+		LOG("serializing people");
+
+		ar & boost::serialization::base_object<game_object>(*this);
 		ar & type;
 		ar & tile_target;
 		ar & people_target;
