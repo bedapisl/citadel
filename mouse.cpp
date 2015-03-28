@@ -9,14 +9,15 @@ extern game_session* session;
 /*Handles press of mouse left button. To work well it needs actual information in mouse->state.*/
 void game_mouse::left_button_go_down(int &screen_position_x, int &screen_position_y, rotation* rotate)
 {
-
 	LOG("left button down");
 	is_left_button_down = true;
-	
+		
+	std::pair<int, int> mouse_location = find_mouse_location(screen_position_x, screen_position_y);
+
 	button_down_game_x = state->x + screen_position_x;
 	button_down_game_y = state->y + screen_position_y;
-	button_down_tile_x = tile_x;
-	button_down_tile_y = tile_y;
+	button_down_tile_x = mouse_location.first;
+	button_down_tile_y = mouse_location.second;
 
 	if(window::active_windows_function_click(state->x, state->y))
 	{
@@ -303,10 +304,7 @@ int game_mouse::move(int &screen_position_x, int &screen_position_y)
 	{
 		mouse_wheel_position = state->z;
 		if(!chosen_button.expired())
-		{
-			if(!chosen_button.expired())
-				chosen_button.lock()->scroll();
-		}
+			chosen_button.lock()->scroll();
 	}
 
 	if(state->y > display_height - BUTTON_SIZE)		//in panel
@@ -320,67 +318,96 @@ int game_mouse::move(int &screen_position_x, int &screen_position_y)
 	}
 	else							//click in map - find tile where is mouse
 	{
-		int mouse_real_x = state->x + screen_position_x;
-		int mouse_real_y = state->y + screen_position_y;
-		int start_tile_x = compute_tile_x(mouse_real_x, mouse_real_y);
-		int start_tile_y = compute_tile_y(mouse_real_x, mouse_real_y);
-
-		int new_tile_x;
-		int new_tile_y;
-		if(compute_game_x(start_tile_x, start_tile_y) >= mouse_real_x)
-		{
-			new_tile_x = start_tile_x + game_object::highest_surface;
-			new_tile_y = start_tile_y + game_object::highest_surface;
-		}
-		else
-		{
-			new_tile_x = start_tile_x + game_object::highest_surface + 1;
-			new_tile_y = start_tile_y + game_object::highest_surface;
-		}
-
-		if(new_tile_x > game_info::map_width - 1)
-			new_tile_x = game_info::map_width - 1;
-		if(new_tile_y > game_info::map_height - 1)
-			new_tile_y = game_info::map_height - 1;
-
-		while(1)
-		{
-			if((new_tile_x < 0) || (new_tile_y < 0))		//didnt find any satisfactory tile 
-			{
-				tile_x = start_tile_x;
-				tile_y = start_tile_y;
-				break;
-			}
-		
-			if(abs(compute_game_x(new_tile_x, new_tile_y) - mouse_real_x) + 2*abs(compute_game_y(new_tile_x, new_tile_y) - 32*session->tile_list[new_tile_y][new_tile_x]->show_effective_height() - mouse_real_y) < 33)
-			{
-				tile_x = new_tile_x;
-				tile_y = new_tile_y;
-				break;
-			}
-			new_tile_x--;
-			
-			if(new_tile_x < 0)
-			{
-				tile_x = start_tile_x;
-				tile_y = start_tile_y;
-				break;
-			}
-
-			if(abs(compute_game_x(new_tile_x, new_tile_y) - mouse_real_x) + 2*abs(compute_game_y(new_tile_x, new_tile_y) - 32*session->tile_list[new_tile_y][new_tile_x]->show_effective_height() - mouse_real_y) < 33)
-			{
-				tile_x = new_tile_x;
-				tile_y = new_tile_y;
-				break;
-			}
-			new_tile_y--;
-		}
+		//LOG("mouse x: " << state->x << " mouse y: " << state->y << " screen_position_x: " << screen_position_x << " screen_position_y: " << screen_position_y);
+		std::pair<int, int> mouse_location = find_mouse_location(screen_position_x, screen_position_y);
+		tile_x = mouse_location.first;
+		tile_y = mouse_location.second;
+		//LOG("tile_x: " << tile_x << " tile_y: " << tile_y);
+	
+		if((tile_x < 0) || (tile_y < 0))
+			throw std::exception();
 	}
 
 	if(!chosen_button.expired())
 		chosen_button.lock()->update_tiles_with_action(is_left_button_down, tile_x, tile_y, button_down_tile_x, button_down_tile_y);
 
 	return 0;
+}
+
+//Returns tile_x and tile_y of current mouse location
+std::pair<int, int> game_mouse::find_mouse_location(int screen_position_x, int screen_position_y)
+{
+	al_get_mouse_state(state);
+
+	int mouse_game_x = state->x + screen_position_x;
+	int mouse_game_y = state->y + screen_position_y;
+
+	int lowest_tile_x = compute_tile_x(mouse_game_x, mouse_game_y);
+	int lowest_tile_y = compute_tile_y(mouse_game_x, mouse_game_y);
+
+	if((lowest_tile_x >= game_info::map_width) || (lowest_tile_y >= game_info::map_height))		//under the map
+	{
+		return std::pair<int, int>(std::min(lowest_tile_x, game_info::map_width - 1), std::min(lowest_tile_y, game_info::map_height - 1));
+	}
+
+	std::vector<std::pair<int, int>> possible_tiles;
+	for(int i=0; i <= game_object::highest_surface; ++i)
+	{
+			
+		possible_tiles.push_back(std::pair<int, int>(lowest_tile_x, lowest_tile_y));
+		possible_tiles.push_back(std::pair<int, int>(lowest_tile_x + 1, lowest_tile_y));
+		possible_tiles.push_back(std::pair<int, int>(lowest_tile_x, lowest_tile_y + 1));
+		lowest_tile_x++;
+		lowest_tile_y++;
+	}
+	
+	std::pair<int, int> founded_tile;
+	bool founded = false;
+	bool secondary_founded = false;		//if mouse is not on top of tile but on side of tile
+	for(auto coordinates : possible_tiles)
+	{
+		int x = coordinates.first;
+		int y = coordinates.second;
+	
+		if(((x >= 0) && (x < game_info::map_width)) && ((y >= 0) && (y < game_info::map_height)))
+		{
+			tile* t = session->tile_list[y][x].get();
+				
+				//correct tile? (maybe it should also take in account buildings on this tile
+			if(std::abs(mouse_game_x - t->show_game_x()) + 2*(std::abs(mouse_game_y - t->show_game_y() + t->show_surface_height() * 32)) <= 32)
+			{
+				founded_tile = coordinates;
+				founded = true;
+				break;
+			}
+
+			else if((std::abs(mouse_game_x - t->show_game_x()) <= 32) && (mouse_game_y >= t->show_game_y() - t->show_surface_height() * 32) && (!founded))
+			{
+				secondary_founded = true;
+				founded_tile = coordinates;
+				//no break because I want the last one (it should be nearest to mouse location)
+			}
+		}
+	}
+
+	if((!founded) && (!secondary_founded))
+	{
+		int x = possible_tiles[0].first;
+		int y = possible_tiles[0].second;
+
+		if((x < 0) && (y < 0))
+			return std::pair<int, int>(0, 0);
+		
+		else if(x < 0)
+			return std::pair<int, int>(0, y);
+
+		else if(y < 0)
+			return std::pair<int, int>(x, 0);
+				
+		else
+			throw std::exception();
+	}
+	return founded_tile;
 }
 
 /* Removes pointers to dead object from game_mouse, so dead object can be deleted.*/

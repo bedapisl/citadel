@@ -361,6 +361,12 @@ can_build_output building::can_build_here(tile* here)
 			{
 				return can_build_output::NO_SPACE;
 			}
+			if(t->real_path_on_tile() && (((type != LEFT_GATE) && (type != RIGHT_GATE)) 
+						|| (((type == LEFT_GATE) && (x != start_x + 1)) || ((type == RIGHT_GATE) && (y != start_y + 1)))))
+			{
+				return can_build_output::NO_SPACE;
+			}
+
 			else if(!t->is_free())
 			{
 				if(((size == LEFT_GATE_BUILDING) || (size == RIGHT_GATE_BUILDING)) && (t->building_on_tile.expired()) && (t->object == NOTHING) && ((y == start_y + 1) || (x == start_x + 1)))

@@ -229,7 +229,7 @@ void game_loop::other_key_down(ALLEGRO_EVENT* ev)
 
 void game_loop::mouse_axes(ALLEGRO_EVENT* ev)
 {
-	mouse->move(ev->mouse.x, ev->mouse.y);
+	mouse->move(screen_position_x, screen_position_y);
 }
 
 void game_loop::mouse_left_down(ALLEGRO_EVENT* ev)
@@ -410,14 +410,10 @@ void menu_loop::timer(ALLEGRO_EVENT* ev, int x, int y)
 	update_gui_blocks_position();
 	draw();
 }
-/*
-ingame_menu::ingame_menu() : chosen_option(ingame_menu_options::CONTINUE)
-{ }
-*/
 
 ingame_menu::ingame_menu()
 {
-	blocks.push_back(gui_block());
+	blocks.push_back(gui_block(50, 50));
 	for(int i=0; i<options_names.size(); ++i)
 	{
 		buttons.push_back(boost::shared_ptr<menu_button>(new menu_button(options_names[i], true)));
@@ -431,46 +427,10 @@ void ingame_menu::escape_down(ALLEGRO_EVENT* ev)
 {
 	event_handler::get_instance().change_state(game_state::GAME);
 }
-/*
-void ingame_menu::enter_down(ALLEGRO_EVENT* ev)
-{
-	execute_option(chosen_option);
-}
 
-void ingame_menu::up_arrow_down(ALLEGRO_EVENT* ev)
-{
-	chosen_option = static_cast<ingame_menu_options>(static_cast<int>(chosen_option) - 1);
-	if(static_cast<int>(chosen_option) < 0)
-		chosen_option = ingame_menu_options::EXIT;
-}
-
-void ingame_menu::down_arrow_down(ALLEGRO_EVENT* ev)
-{
-	chosen_option = static_cast<ingame_menu_options>(static_cast<int>(chosen_option) + 1);
-	if(static_cast<int>(chosen_option) > static_cast<int>(ingame_menu_options::EXIT))
-		chosen_option = ingame_menu_options::CONTINUE;
-}
-
-void ingame_menu::mouse_axes(ALLEGRO_EVENT* ev)
-{
-	chosen_option = compute_ingame_menu_options(ev->mouse.x, ev->mouse.y);
-}
-
-void ingame_menu::mouse_left_down(ALLEGRO_EVENT* ev)
-{
-	ingame_menu_options clicked_option = compute_ingame_menu_options(ev->mouse.x, ev->mouse.y);
-	execute_option(clicked_option);
-}
-
-void ingame_menu::timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y)
-{
-	draw_ingame_menu();
-}
-*/
 void ingame_menu::start()
 {
 	game_bitmap = al_clone_bitmap(al_get_backbuffer(game_info::display));
-	//chosen_option = ingame_menu_options::CONTINUE;
 }
 
 void ingame_menu::end()
@@ -482,35 +442,13 @@ void ingame_menu::draw()
 {
 	al_draw_bitmap(game_bitmap, 0, 0, 0);		//draws map and panel
 
-//	int menu_start_x = (display_width - menu_width) / 2;
-//	int menu_end_x = (display_width + menu_width) / 2;
-	//al_draw_bitmap_region(image_list[TEXTURE_GREY_IMAGE], 0, 0, menu_width, options_names.size() * button_distance, menu_start_x, menu_start_y, 0);
-	int black_vertical_border = 100;
-	int black_horizontal_border = 100;
+	int black_vertical_border = 0;
+	int black_horizontal_border = 0;
 	al_draw_filled_rectangle(blocks[0].x - black_horizontal_border, blocks[0].y - black_vertical_border, blocks[0].x + blocks[0].length + black_horizontal_border, blocks[0].y + blocks[0].height + black_vertical_border, BLACK_COLOR);
 
 	for(int i=0; i<blocks.size(); ++i)
 		blocks[i].draw();
 
-	/*
-	int chosen_option_number = static_cast<int>(chosen_option);
-	
-	for(int i=0; i<options_names.size(); ++i)
-	{
-		int start_y = menu_start_y + button_start_y + i*button_distance;
-		al_draw_filled_rectangle(menu_start_x + button_start_x, start_y, menu_end_x - button_start_x, start_y + button_heigth, BLACK_COLOR);
-		
-		ALLEGRO_COLOR color = WRITING_COLOR;
-		ALLEGRO_FONT* font = font25;
-		if(chosen_option_number == i)
-		{
-			color = WHITE_COLOR;
-			font = font30;
-		}
-
-		al_draw_text(font, color, display_width / 2, start_y + 10, ALLEGRO_ALIGN_CENTRE, options_names[i].c_str());
-	}
-	*/
 	al_flip_display();
 }
 

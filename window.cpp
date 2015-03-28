@@ -201,34 +201,29 @@ void gui_block::down_arrow_down(ALLEGRO_EVENT* ev)
 
 void gui_block::draw()
 {
-	if(height == 0)
-		return;
-	
-	if(length < 100)
-		throw std::exception();
+	int x_drawn = 0;
+	int y_drawn = 0;
+	ALLEGRO_BITMAP* image = image_list[TEXTURE_GREY_IMAGE];
+	int image_length = 1024;
+	int image_height = 1024;
 
-	if(height <= 50)
-		draw_line(image_list[BUTTON_BACKGROUND_IMAGE], 0, y, 50);
-
-	else
+	while(y_drawn < height)
 	{
-		int h = 0;		//how much has been drawn vertically		
+		int height_to_draw = std::min(image_height, height - y_drawn);
 
-		draw_line(image_list[BIGGER_BUTTON_BACKGROUND_IMAGE], 0, y, 50);
-		h += 50;
-
-		while(h < height - 100)
+		x_drawn = 0;
+		while(x_drawn < length)
 		{
-			draw_line(image_list[BIGGER_BUTTON_BACKGROUND_IMAGE], 50, y + h, 50);
-			h += 50;
-		}
-		
-		draw_line(image_list[BIGGER_BUTTON_BACKGROUND_IMAGE], 50, y + h, height - 50 - h);
-		h += height - 50 - h;
+			int length_to_draw = std::min(image_length, length - x_drawn);
 
-		draw_line(image_list[BIGGER_BUTTON_BACKGROUND_IMAGE], 100, y + h, 50);
+			al_draw_bitmap_region(image, 0, 0, length_to_draw, height_to_draw, x + x_drawn, y + y_drawn, 0);
+
+			x_drawn += length_to_draw;
+		}
+
+		y_drawn += height_to_draw;
 	}
-	
+
 	for(int i=0; i<elements.size(); ++i)
 	{
 		if(elements[i].lock()->y + elements[i].lock()->height < y + height)
@@ -281,26 +276,6 @@ void gui_block::remove_invalid_elements()
 	}
 }
 
-void gui_block::draw_line(ALLEGRO_BITMAP* image, int image_region_y, int line_y, int line_height)
-{	
-	if(length < 100)
-		throw std::exception();
-
-	int l = 0;		//how much has been drawn
-	al_draw_bitmap_region(image, 0, image_region_y, 50, line_height, x + l, line_y, 0);	//draw left border square
-	l += 50;
-
-	while(l < length - 100)
-	{
-		al_draw_bitmap_region(image, 50, image_region_y, 50, line_height, x + l, line_y, 0);		//draw whole middle squares
-		l += 50;
-	}
-	al_draw_bitmap_region(image, 50, image_region_y, length - l - 50, line_height, x + l, line_y, 0);	//draw partial middle square (in fact rectangle)
-	l += length - l - 50;
-
-	al_draw_bitmap_region(image, 100, image_region_y, 50, line_height, x + l, line_y, 0);
-}
-
 bool gui_block::is_mouse_on_block(int mouse_x, int mouse_y)
 {
 	if(((mouse_x >= x) && (mouse_x <= x + length)) && ((mouse_y >= y) && (mouse_y <= y + height)))
@@ -337,7 +312,6 @@ void slider::mouse_down(int mouse_x, int mouse_y)
 
 void slider::mouse_axes(int mouse_x, int mouse_y)
 { 
-	//gui_element::mouse_axes(mouse_x, mouse_y);
 	if(has_focus)
 		change_value(mouse_x);
 }

@@ -1,13 +1,5 @@
-/*
-enum main_menu_option{				
-	RANDOM_GAME,
-	CAMPAIGN,
-	LOAD_GAME,
-	SETTINGS,
-	QUIT,
-	NO_OPTION
-};
-*/
+#ifndef BEDAS_ENUM_H
+#define BEDAS_ENUM_H
 
 enum building_type{
 	HOUSE,
@@ -359,4 +351,6 @@ enum class can_build_output
 	NO_SPACE,
 	ENEMIES_NEARBY
 };
+
+#endif
 
