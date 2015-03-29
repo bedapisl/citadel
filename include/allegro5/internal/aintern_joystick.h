@@ -27,7 +27,7 @@ typedef struct ALLEGRO_JOYSTICK_DRIVER
 } ALLEGRO_JOYSTICK_DRIVER;
 
 
-extern _AL_DRIVER_INFO _al_joystick_driver_list[];
+AL_ARRAY(_AL_DRIVER_INFO, _al_joystick_driver_list);
 
 
 /* macros for constructing the driver list */
@@ -74,12 +74,9 @@ typedef struct _AL_JOYSTICK_INFO
 } _AL_JOYSTICK_INFO;
 
 
-/* Joystick has a driver field for per-device drivers,
- * needed on some platforms. */
 struct ALLEGRO_JOYSTICK
 {
    _AL_JOYSTICK_INFO info;
-   ALLEGRO_JOYSTICK_DRIVER * driver;
 };
 
 void _al_generate_joystick_event(ALLEGRO_EVENT *event);

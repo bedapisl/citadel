@@ -8,26 +8,25 @@
  *                                           /\____/
  *                                           \_/__/
  *
- *      Configuration defines for use on GP2X Wiz
+ *      Inline functions (generic C).
  *
- *      By Trent Gamblin
+ *      By Shawn Hargreaves.
  *
  *      See readme.txt for copyright information.
  */
 
 
-#include <fcntl.h>
-#include <unistd.h>
+#include "allegro5/inline/gfx.inl"
 
-/* Describe this platform.  */
-#define ALLEGRO_PLATFORM_STR  "GP2XWIZ"
+#include "allegro5/inline/color.inl"
 
-#define ALLEGRO_EXTRA_HEADER "allegro5/platform/alwiz.h"
-#define ALLEGRO_INTERNAL_HEADER "allegro5/platform/aintwiz.h"
-#define ALLEGRO_INTERNAL_THREAD_HEADER "allegro5/platform/aintuthr.h"
+#include "allegro5/inline/draw.inl"
 
-/* Include configuration information.  */
-#include "allegro5/platform/alplatf.h"
+#include "allegro5/inline/fmaths.inl"
 
-/* No GLX on the Wiz */
-#define ALLEGRO_EXCLUDE_GLX
+#include "allegro5/inline/3dmaths.inl"
+
+#include "allegro5/inline/matrix.inl"
+
+/* alcompat.h includes some inline functions */
+#include "allegro5/alcompat.h"

@@ -2,27 +2,16 @@
 /* #undef ALLEGRO_MINGW32 */
 #define ALLEGRO_UNIX
 /* #undef ALLEGRO_MSVC */
+/* #undef ALLEGRO_CFG_D3D */
+/* #undef ALLEGRO_CFG_D3D9EX */
+#define ALLEGRO_CFG_OPENGL
 /* #undef ALLEGRO_MACOSX */
 /* #undef ALLEGRO_BCC32 */
+/* #undef ALLEGRO_GP2XWIZ */
 /* #undef ALLEGRO_IPHONE */
-/* #undef ALLEGRO_ANDROID */
-/* #undef ALLEGRO_RASPBERRYPI */
 /* #undef ALLEGRO_CFG_NO_FPU */
 /* #undef ALLEGRO_CFG_DLL_TLS */
 /* #undef ALLEGRO_CFG_PTHREADS_TLS */
-/* #undef ALLEGRO_CFG_RELEASE_LOGGING */
-
-/* #undef ALLEGRO_CFG_D3D */
-/* #undef ALLEGRO_CFG_D3D9EX */
-/* #undef ALLEGRO_CFG_XINPUT */
-#define ALLEGRO_CFG_OPENGL
-/* #undef ALLEGRO_CFG_OPENGLES */
-/* #undef ALLEGRO_CFG_OPENGLES2 */
-#define ALLEGRO_CFG_OPENGL_PROGRAMMABLE_PIPELINE
-#define ALLEGRO_CFG_SHADER_GLSL
-/* #undef ALLEGRO_CFG_SHADER_HLSL */
-
-/* #undef ALLEGRO_CFG_ANDROID_LEGACY */
 
 /*---------------------------------------------------------------------------*/
 
@@ -30,7 +19,8 @@
 #define ALLEGRO_HAVE_DIRENT_H
 #define ALLEGRO_HAVE_INTTYPES_H
 /* #undef ALLEGRO_HAVE_LINUX_AWE_VOICE_H */
-#define ALLEGRO_HAVE_LINUX_INPUT_H
+/* #undef ALLEGRO_HAVE_LINUX_INPUT_H */
+#define ALLEGRO_HAVE_LINUX_JOYSTICK_H
 #define ALLEGRO_HAVE_LINUX_SOUNDCARD_H
 /* #undef ALLEGRO_HAVE_MACHINE_SOUNDCARD_H */
 /* #undef ALLEGRO_HAVE_SOUNDCARD_H */
@@ -46,7 +36,7 @@
 #define ALLEGRO_HAVE_SYS_TYPES_H
 /* #undef ALLEGRO_HAVE_OSATOMIC_H */
 #define ALLEGRO_HAVE_SYS_INOTIFY_H
-/* #undef ALLEGRO_HAVE_SAL_H */
+#define ALLEGRO_HAVE_SYS_TIMERFD_H
 
 /* Define to 1 if the corresponding functions are available. */
 /* #undef ALLEGRO_HAVE_GETEXECNAME */
@@ -57,8 +47,6 @@
 #define ALLEGRO_HAVE_SYSCONF
 #define ALLEGRO_HAVE_FSEEKO
 #define ALLEGRO_HAVE_FTELLO
-#define ALLEGRO_HAVE_STRERROR_R
-/* #undef ALLEGRO_HAVE_STRERROR_S */
 #define ALLEGRO_HAVE_VA_COPY
 
 /* Define to 1 if procfs reveals argc and argv */
@@ -99,9 +87,6 @@
 
 /* Define if target platform is linux. */
 /* #undef ALLEGRO_LINUX */
-
-/* Define if we are building with SDL backend. */
-/* #undef ALLEGRO_SDL */
 
 /*---------------------------------------------------------------------------*/
 /* vi: set ft=c ts=3 sts=3 sw=3 et: */
