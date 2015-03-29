@@ -1,14 +1,13 @@
-CC=g++
-CFLAGS= -std=c++11 -ggdb -ftemplate-depth=1024 -pedantic -Wall -Wno-sign-compare	#-lprofiler
-							#clang has low default template depth
-LDFLAGS=
+
+ARCHITECTURE=$(shell uname -m | sed 's@x86_64@64@' | sed 's@i686@32@')
+CC=g++ -Iinclude
+CFLAGS= -std=c++11 -ggdb -ftemplate-depth=1024 -pedantic -Wall -Wno-sign-compare 	#-lprofiler
+LDFLAGS=-Llib$(ARCHITECTURE)
+BINARY_NAME=citadel_$(shell $(shell pwd)/citadel.out -v)_$(ARCHITECTURE)bit
 				#allegro headers are in /usr/include/allegro5
 
 all: ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o tile.o window.o
-	$(CC) ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o window.o tile.o $(LDFLAGS)  -lallegro_acodec -lallegro_audio -lallegro_color -lallegro_dialog -lallegro_font -lallegro_ttf -lallegro_image -lallegro_primitives -lallegro_main -lallegro -lboost_iostreams -lboost_serialization -lboost_system -lboost_filesystem
-
-ARCHITECTURE=$(shell uname -m | sed 's@x86_64@64@' | sed 's@i686@32@')
-BINARY_NAME=citadel_$(shell $(shell pwd)/citadel.out -v)_$(ARCHITECTURE)bit
+	$(CC) ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o window.o tile.o $(LDFLAGS)  -Wl,-rpath=\$$ORIGIN/lib$(ARCHITECTURE)/ -lallegro_acodec -lallegro_audio -lallegro_color -lallegro_dialog -lallegro_font -lallegro_ttf -lallegro_image -lallegro_primitives -lallegro_main -lallegro -lboost_iostreams -lboost_serialization -lboost_system -lboost_filesystem -ldumb -lopenal -ljpeg
 				
 				#create distributable binaries. Needs up-to-date 'a.out' file in this directory.
 binaries: ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o tile.o window.o 
