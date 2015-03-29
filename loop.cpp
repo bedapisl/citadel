@@ -10,6 +10,7 @@ extern ALLEGRO_FONT* font20;
 extern ALLEGRO_FONT* font25;
 extern ALLEGRO_FONT* font30;
 
+//for each derived class which is serialized
 BOOST_CLASS_EXPORT(warehouse)
 BOOST_CLASS_EXPORT(tower)
 BOOST_CLASS_EXPORT(barracks)
@@ -27,7 +28,10 @@ BOOST_CLASS_EXPORT(stairs)
 BOOST_CLASS_EXPORT(carrier)
 BOOST_CLASS_EXPORT(warrior)
 
+BOOST_CLASS_EXPORT(game_object)
 BOOST_CLASS_EXPORT(tile)
+
+BOOST_CLASS_EXPORT(carrier_output)
 
 event_handler::event_handler() : queue(al_create_event_queue()), ev(new ALLEGRO_EVENT), next_event(new ALLEGRO_EVENT), timer(al_create_timer(1.0 / game_info::fps)), mouse_state(new ALLEGRO_MOUSE_STATE) , current_loop(nullptr), done(false)
 {
@@ -246,6 +250,12 @@ void game_loop::mouse_left_down(ALLEGRO_EVENT* ev)
 void game_loop::mouse_left_up(ALLEGRO_EVENT* ev)
 {
 	mouse->left_button_go_up(screen_position_x, screen_position_y);
+
+	if(((ev->mouse.x > display_width - 3*BUTTON_SIZE) && (ev->mouse.x < display_width - 2*BUTTON_SIZE)) &&
+		((ev->mouse.y > display_height - BUTTON_SIZE) && (ev->mouse.y < display_height - BUTTON_SIZE/2)))
+	{
+		event_handler::get_instance().change_state(game_state::INGAME_MENU);
+	}
 }
 
 void game_loop::mouse_right_down(ALLEGRO_EVENT* ev)
@@ -635,9 +645,10 @@ void save_menu::execute_save_window_option(int option)
 				throw std::exception();
 				return;
 			}
-			boost::archive::text_iarchive archive(file_to_load);
-			archive >> session;
-			
+			//boost::archive::text_iarchive archive(file_to_load);
+			boost::archive::xml_iarchive archive(file_to_load);
+			archive >> boost::serialization::make_nvp("session", session);
+
 			session->finish_serialization();	
 			event_handler::get_instance().change_state(game_state::GAME);
 		}
@@ -660,9 +671,10 @@ void save_menu::execute_save_window_option(int option)
 					session->tile_list[i][j]->prepare_serialization();
 			}
 
-			boost::archive::text_oarchive archive(file_to_save);
-			
-			archive << session;
+			//boost::archive::text_oarchive archive(file_to_save);
+			boost::archive::xml_oarchive archive(file_to_save);
+
+			archive << boost::serialization::make_nvp("session", session);
 
 			bool founded = false;
 			for(int i=0; i<file_buttons.size(); ++i)

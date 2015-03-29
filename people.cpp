@@ -14,7 +14,9 @@ people::people(people_type type, int tile_x, int tile_y, int surface_height, pla
 	people_info info = people_info::show_people_info(type);
 
 	this->type = type;
+	this->moving_diagonally = false;
 	this->movement_direction = NO_DIRECTION;
+	this->movement_elevation = NO_ELEVATION;
 	this->action_duration = 0;
 	this->max_action_duration = 0;
 	this->owner = owner;

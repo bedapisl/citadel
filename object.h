@@ -37,18 +37,21 @@ public:
 	void serialize(Archive & ar, const unsigned int version)
 	{
 		LOG("serializing");
-		ar & highest_surface;
-		ar & draw_green;
-		ar & type_of_object;
-		ar & tile_x;
-		ar & tile_y;
-		ar & game_x;
-		ar & game_y;
-		ar & number_of_floors;
-		ar & drawing_floor;
-		ar & is_real;
-		ar & image;
-		ar & surface_height;
+		
+		using boost::serialization::make_nvp;
+		
+		ar & make_nvp("highest_surface", highest_surface);
+		ar & make_nvp("draw_green", draw_green);
+		ar & make_nvp("type_of_object", type_of_object);
+		ar & make_nvp("tile_x", tile_x);
+		ar & make_nvp("tile_y", tile_y);
+		ar & make_nvp("game_x", game_x);
+		ar & make_nvp("game_y", game_y);
+		ar & make_nvp("number_of_floors", number_of_floors);
+		ar & make_nvp("drawing_floor", drawing_floor);
+		ar & make_nvp("is_real", is_real);
+		ar & make_nvp("image", image);
+		ar & make_nvp("surface_height", surface_height);
 	}
 
 protected:

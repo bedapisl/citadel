@@ -76,31 +76,34 @@ public:
 	{
 		LOG("serializing tile");
 		
-		ar & boost::serialization::base_object<game_object>(*this);
-		
-		ar & building_on_tile;
-		ar & people_on_tile;
-		//ar & action_on_tile;	
-		ar & number_of_tile_with_action;
-		ar & object;
-		ar & can_go_inside_building;
-		ar & can_go_on_building;
-		ar & stairs_on_tile;
-		ar & tile_object_image;
-		//ar & accessible_neighbours;		//this causes stack overflow
+		using boost::serialization::make_nvp;
+
+		//ar & make_nvp("boost::serialization::base_object<game_object>(*this)", boost::serialization::base_object<game_object>(*this));
+		ar & make_nvp("game_object", boost::serialization::base_object<game_object>(*this));
+
+		ar & make_nvp("building_on_tile", building_on_tile);
+		ar & make_nvp("people_on_tile", people_on_tile);
+		//ar & make_nvp("action_on_tile", action_on_tile);	
+		ar & make_nvp("number_of_tile_with_action", number_of_tile_with_action);
+		ar & make_nvp("object", object);
+		ar & make_nvp("can_go_inside_building", can_go_inside_building);
+		ar & make_nvp("can_go_on_building", can_go_on_building);
+		ar & make_nvp("stairs_on_tile", stairs_on_tile);
+		ar & make_nvp("tile_object_image", tile_object_image);
+		//ar & make_nvp("accessible_neighbours", accessible_neighbours);		//this causes stack overflow
 		//ar & neighbours_with_path		//causes stack overflow
-		ar & minimap_updates;
+		ar & make_nvp("minimap_updates", minimap_updates);
 		
-		ar & serializable_accessible_neighbours;
-		ar & serializable_neighbours_with_path;
-		ar & path_on_tile;
-		ar & bIs_path_real;
-		ar & visible;
-		ar & border;
-		ar & path_border;
-		ar & type;
-		ar & draw_building;
-		ar & fertile;
+		ar & make_nvp("serializable_accessible_neighbours", serializable_accessible_neighbours);
+		ar & make_nvp("serializable_neighbours_with_path", serializable_neighbours_with_path);
+		ar & make_nvp("path_on_tile", path_on_tile);
+		ar & make_nvp("bIs_path_real", bIs_path_real);
+		ar & make_nvp("visible", visible);
+		ar & make_nvp("border", border);
+		ar & make_nvp("path_border", path_border);
+		ar & make_nvp("type", type);
+		ar & make_nvp("draw_building", draw_building);
+		ar & make_nvp("fertile", fertile);
 	}
 
 private:

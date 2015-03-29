@@ -21,15 +21,14 @@ struct target
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		LOG("serializing people");
+		using boost::serialization::make_nvp;
 
-		ar & boost::serialization::base_object<game_object>(*this);
-		ar & type;
-		ar & tile_target;
-		ar & people_target;
-		ar & building_target;
-		ar & number;
-		ar & priority;
+		ar & make_nvp("type", type);
+		ar & make_nvp("tile_target", tile_target);
+		ar & make_nvp("people_target", people_target);
+		ar & make_nvp("building_target", building_target);
+		ar & make_nvp("number", number);
+		ar & make_nvp("priority", priority);
 	}
 
 	game_object_type type;
@@ -69,28 +68,32 @@ public:
 
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
-	{
-		ar & boost::serialization::base_object<game_object>(*this);
-		ar & frames_to_move;
-		ar & frames_to_attack;
-		ar & action_duration;
-		ar & max_action_duration;
-		ar & type;
-		ar & previous_tile;
-		ar & next_tile;
-		ar & moving_diagonally;
-		ar & movement_direction;
-		ar & movement_elevation;
-		ar & path;
-		ar & owner;
-		ar & max_life;
-		ar & life;
-		ar & armor;
-		ar & attack;
-		ar & bIs_death;
-		ar & bMoving;
-		ar & bAttacking;
-		ar & hidden;
+	{	
+		LOG("serializing people");
+		
+		using boost::serialization::make_nvp;
+
+		ar & make_nvp("game_object", boost::serialization::base_object<game_object>(*this));
+		ar & make_nvp("frames_to_move", frames_to_move);
+		ar & make_nvp("frames_to_attack", frames_to_attack);
+		ar & make_nvp("action_duration", action_duration);
+		ar & make_nvp("max_action_duration", max_action_duration);
+		ar & make_nvp("type", type);
+		ar & make_nvp("previous_tile", previous_tile);
+		ar & make_nvp("next_tile", next_tile);
+		ar & make_nvp("moving_diagonally", moving_diagonally);
+		ar & make_nvp("movement_direction", movement_direction);
+		ar & make_nvp("movement_elevation", movement_elevation);
+		ar & make_nvp("path", path);
+		ar & make_nvp("owner", owner);
+		ar & make_nvp("max_life", max_life);
+		ar & make_nvp("life", life);
+		ar & make_nvp("armor", armor);
+		ar & make_nvp("attack", attack);
+		ar & make_nvp("bIs_death", bIs_death);
+		ar & make_nvp("bMoving", bMoving);
+		ar & make_nvp("bAttacking", bAttacking);
+		ar & make_nvp("hidden", hidden);
 	}
 
 protected:
@@ -155,17 +158,19 @@ public:
 
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
-	{
-		ar & boost::serialization::base_object<people>(*this);
-		ar & starving;
-		ar & target_number;
-		ar & time_to_search_for_enemies;
-		ar & next_tile_to_attack;
-		ar & attacking_here;
-		ar & current_target;
-		ar & regeneration_time;
-		ar & is_ranged;
-		ar & range;
+	{		
+		using boost::serialization::make_nvp;
+
+		ar & make_nvp("people", boost::serialization::base_object<people>(*this));
+		ar & make_nvp("starving", starving);
+		ar & make_nvp("target_number", target_number);
+		ar & make_nvp("time_to_search_for_enemies", time_to_search_for_enemies);
+		ar & make_nvp("next_tile_to_attack", next_tile_to_attack);
+		ar & make_nvp("attacking_here", attacking_here);
+		ar & make_nvp("current_target", current_target);
+		ar & make_nvp("regeneration_time", regeneration_time);
+		ar & make_nvp("is_ranged", is_ranged);
+		ar & make_nvp("range", range);
 	}
 
 
@@ -219,13 +224,15 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		ar & boost::serialization::base_object<people>(*this);
-		ar & home_building;
-		ar & target;
-		ar & transaction_size;
-		ar & resource_carried;
-		ar & waiting;
-		ar & type_of_transaction;
+		using boost::serialization::make_nvp;
+
+		ar & make_nvp("people", boost::serialization::base_object<people>(*this));
+		ar & make_nvp("home_building", home_building);
+		ar & make_nvp("target", target);
+		ar & make_nvp("transaction_size", transaction_size);
+		ar & make_nvp("resource_carried", resource_carried);
+		ar & make_nvp("waiting", waiting);
+		ar & make_nvp("type_of_transaction", type_of_transaction);
 	}
 
 

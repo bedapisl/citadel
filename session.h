@@ -38,21 +38,22 @@ public:
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		ar & tile_list;
-		ar & building_list;
-		ar & people_list;
-		ar & missile_list;
-		ar & unlocked_buildings;
-		ar & global_stock;
-		ar & ai;
-		ar & honour;
-		ar & game_started;
-		ar & frames_from_start;
-		ar & happiness;
-		ar & starving;
-		ar & invasion_number;
-		ar & time_to_invasion;
-		ar & invasion_interval;
+		using boost::serialization::make_nvp;
+		ar & make_nvp("tile_list", tile_list);
+		ar & make_nvp("building_list", building_list);
+		ar & make_nvp("people_list", people_list);
+		ar & make_nvp("missile_list", missile_list);
+		ar & make_nvp("unlocked_buildings", unlocked_buildings);
+		ar & make_nvp("global_stock", global_stock);
+		ar & make_nvp("ai", ai);
+		ar & make_nvp("honour", honour);
+		ar & make_nvp("game_started", game_started);
+		ar & make_nvp("frames_from_start", frames_from_start);
+		ar & make_nvp("happiness", happiness);
+		ar & make_nvp("starving", starving);
+		ar & make_nvp("invasion_number", invasion_number);
+		ar & make_nvp("time_to_invasion", time_to_invasion);
+		ar & make_nvp("invasion_interval", invasion_interval);
 	}
 
 private:

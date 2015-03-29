@@ -1,5 +1,5 @@
 fullscreen = false
-display_width = 800
+display_width = 1000
 display_height = 700
 fps = 60
 music = true
