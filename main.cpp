@@ -197,8 +197,9 @@ bool load_pictures()
 	image_list[WATER_IMAGE] = al_load_bitmap("data/images/water.png");
 	image_list[NO_WORKERS_IMAGE] = al_load_bitmap("data/images/no_workers.png");
 	image_list[CLOSE_WINDOW_IMAGE] = al_load_bitmap("data/images/close_window.png");
-	image_list[BUTTON_BACKGROUND_IMAGE] = al_load_bitmap("data/images/button_background.png");
-	image_list[BIGGER_BUTTON_BACKGROUND_IMAGE] = al_load_bitmap("data/images/bigger_button_background.png");
+	image_list[BUILDING_SELECTION_IMAGE] = al_load_bitmap("data/images/building_selection.png");
+	//image_list[BUTTON_BACKGROUND_IMAGE] = al_load_bitmap("data/images/button_background.png");
+	//image_list[BIGGER_BUTTON_BACKGROUND_IMAGE] = al_load_bitmap("data/images/bigger_button_background.png");
 	image_list[NO_IMAGE] = al_load_bitmap("data/images/no_image.png");
 
 	bool ok = true;

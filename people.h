@@ -46,6 +46,7 @@ class people : public game_object, public boost::enable_shared_from_this<people>
 {
 public:
 	people(people_type type, int tile_x, int tile_y, int surface_height, player owner);
+	virtual ~people() {}
 	std::vector<game_object*> draw(int screen_position_x, int screen_position_y);
 	player show_owner() {return owner;}
 	direction show_direction() {return movement_direction;}

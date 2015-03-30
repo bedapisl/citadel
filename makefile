@@ -1,7 +1,8 @@
 
+INCLUDE_DIR= -Iinclude
 ARCHITECTURE=$(shell uname -m | sed 's@x86_64@64@' | sed 's@i686@32@')
-CC=g++ -Iinclude
-CFLAGS= -std=c++11 -ggdb -ftemplate-depth=1024 -pedantic -Wall -Wno-sign-compare 	#-lprofiler
+CC=g++
+CFLAGS= -std=c++11 -ggdb -ftemplate-depth=1024 -pedantic -Wall -Wno-sign-compare $(INCLUDE_DIR)	#-lprofiler
 LDFLAGS=-Llib$(ARCHITECTURE)
 BINARY_NAME=citadel_$(shell $(shell pwd)/citadel.out -v)_$(ARCHITECTURE)bit
 				#allegro headers are in /usr/include/allegro5
@@ -9,7 +10,6 @@ BINARY_NAME=citadel_$(shell $(shell pwd)/citadel.out -v)_$(ARCHITECTURE)bit
 all: ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o tile.o window.o
 	$(CC) ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o window.o tile.o $(LDFLAGS)  -Wl,-rpath=\$$ORIGIN/lib$(ARCHITECTURE)/ -lallegro_acodec -lallegro_audio -lallegro_color -lallegro_dialog -lallegro_font -lallegro_ttf -lallegro_image -lallegro_primitives -lallegro_main -lallegro -lboost_iostreams -lboost_serialization -lboost_system -lboost_filesystem -ldumb -lopenal -ljpeg -lpng12 -lbz2
 	
-
 binaries: ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o tile.o window.o 
 	$(CC) ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o window.o tile.o $(LDFLAGS) -Wl,-rpath=\$$ORIGIN/lib$(ARCHITECTURE)/ -lallegro_acodec -lallegro_audio -lallegro_color -lallegro_dialog -lallegro_font -lallegro_ttf -lallegro_image -lallegro_primitives -lallegro_main -lallegro -lboost_iostreams -lboost_serialization -lboost_system -lboost_filesystem -o citadel.out
 	cp citadel.out $(BINARY_NAME).out

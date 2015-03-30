@@ -15,6 +15,7 @@ int compute_game_y(int tile_x, int tile_y);
 class game_object {
 public:
 	game_object(int tile_x, int tile_y, int surface_height, bool is_real, picture image, int number_of_floors, game_object_type type_of_object);
+	virtual ~game_object() {}
 	int update(int tile_x, int tile_y, int surface_height);
 	virtual std::vector<game_object*> draw(int screen_position_x, int screen_position_y) = 0;
 	int show_surface_height() {return surface_height;}

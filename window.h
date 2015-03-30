@@ -55,7 +55,7 @@ class gui_element;
 class gui_block
 {
 public:
-	gui_block(int vertical_border = 10, int horizontal_border = 10) : length(0), height(0), vertical_border(vertical_border), horizontal_border(horizontal_border), mouse_on_block(false), x(0), y(0), hardwired_length(false), hardwired_height(false) { } 
+	gui_block(int vertical_border = 10, int horizontal_border = 10) : length(0), height(0), vertical_border(vertical_border), horizontal_border(horizontal_border), mouse_on_block(false), x(0), y(0), hardwired_length(false), hardwired_height(false) { }
 	void mouse_down(ALLEGRO_EVENT* ev);
 	void mouse_axes(ALLEGRO_EVENT* ev);
 	void mouse_up(ALLEGRO_EVENT* ev);
@@ -91,6 +91,7 @@ class gui_element
 {
 public:
 	gui_element(int length, int height) : length(length), height(height), x(0), y(0), has_focus(false), highlighted(false) { }
+	virtual ~gui_element() { };
 	virtual void mouse_down(int mouse_x, int mouse_y) { }
 	virtual void mouse_axes(int mouse_x, int mouse_y);
 	virtual void mouse_up(int mouse_x, int mouse_y) { }

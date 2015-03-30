@@ -32,6 +32,7 @@ building::building(building_type type, int tile_x, int tile_y, int surface_heigh
 	actual_workers = 0;
 	bIs_death = false;
 	stopped = false;
+	draw_selection = false;
 	upgrade_level = 0;
 }
 
@@ -170,6 +171,13 @@ std::vector<game_object*> building::draw(int screen_position_x, int screen_posit
 {
 	int drawing_x = game_x - screen_position_x - 96;
 	int drawing_y = game_y - screen_position_y - show_surface_height()*32 - 80 - drawing_floor*32;
+
+	if(draw_selection)
+	{
+		draw_selection = false;
+		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 192, drawing_x, drawing_y, 0);
+	}
+
 	if(is_real)
 	{
 		al_draw_bitmap_region(image_list[image], 64 + 192*drawing_floor, 0, 192, 128, drawing_x, drawing_y, 0);
@@ -251,7 +259,7 @@ int building::draw_life_bar(int screen_position_x, int screen_position_y)
 {
 	int drawing_x = game_x - screen_position_x - 96;
 	int drawing_y = game_y - screen_position_y - show_surface_height()*32 - 80 - number_of_floors*32;
-
+	
 	if(size == FOUR_TILE_BUILDING)
 		drawing_y += 32;
 	

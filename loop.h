@@ -47,6 +47,8 @@ private:
 class loop
 {
 public:
+	loop() {}
+	virtual ~loop() {}
 	virtual void escape_down(ALLEGRO_EVENT* ev) {}
 	virtual void enter_down(ALLEGRO_EVENT* ev) {}
 	virtual void up_arrow_down(ALLEGRO_EVENT* ev) {}
@@ -73,7 +75,7 @@ class game_loop : public loop
 {
 public:
 	game_loop();
-	~game_loop();
+	virtual ~game_loop();
 	void escape_down(ALLEGRO_EVENT* ev); 
 	void enter_down(ALLEGRO_EVENT* ev);
 	void other_key_down(ALLEGRO_EVENT* ev);

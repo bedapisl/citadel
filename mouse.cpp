@@ -318,14 +318,17 @@ int game_mouse::move(int &screen_position_x, int &screen_position_y)
 	}
 	else							//click in map - find tile where is mouse
 	{
-		//LOG("mouse x: " << state->x << " mouse y: " << state->y << " screen_position_x: " << screen_position_x << " screen_position_y: " << screen_position_y);
 		std::pair<int, int> mouse_location = find_mouse_location(screen_position_x, screen_position_y);
 		tile_x = mouse_location.first;
 		tile_y = mouse_location.second;
-		//LOG("tile_x: " << tile_x << " tile_y: " << tile_y);
 	
 		if((tile_x < 0) || (tile_y < 0))
 			throw std::exception();
+		
+		if(!session->tile_list[tile_y][tile_x]->building_on_tile.expired())
+		{
+			session->tile_list[tile_y][tile_x]->building_on_tile.lock()->draw_selection = true;
+		}
 	}
 
 	if(!chosen_button.expired())

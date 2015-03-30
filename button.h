@@ -6,6 +6,7 @@
 class button{
 public:
 	int init(ALLEGRO_BITMAP* image, button_type type, bool multiple_selection);
+	virtual ~button() {}
 	virtual int init(building_type type_of_building, int number_of_floors)
 		{return 0;}
 	virtual int init(bool add) {return 0;}

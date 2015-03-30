@@ -61,6 +61,7 @@ public:
 	int actual_workers;
 	building_size size;
 	building_type type;
+	bool draw_selection;
 	int id;
 	static int next_id;
 	const int minimal_distance_from_enemies_for_building = 10;

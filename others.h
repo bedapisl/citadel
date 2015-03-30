@@ -104,6 +104,7 @@ class stock
 {
 public:
 	stock(int capacity) : capacity(capacity), stored(NUMBER_OF_RESOURCES, 0) {}	
+	virtual ~stock() {}
 	virtual int save(resources type, int amount);	//if cant save everyhing, returns how much remainds
 	void save_list(std::vector<int> prices);		//what cant be saved is thrown away
 	virtual bool try_subtract(resources type, int amount);	//if can subtract, returns true, otherwise returns false
