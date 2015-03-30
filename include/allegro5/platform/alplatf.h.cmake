@@ -2,16 +2,27 @@
 #cmakedefine ALLEGRO_MINGW32
 #cmakedefine ALLEGRO_UNIX
 #cmakedefine ALLEGRO_MSVC
-#cmakedefine ALLEGRO_CFG_D3D
-#cmakedefine ALLEGRO_CFG_D3D9EX
-#cmakedefine ALLEGRO_CFG_OPENGL
 #cmakedefine ALLEGRO_MACOSX
 #cmakedefine ALLEGRO_BCC32
-#cmakedefine ALLEGRO_GP2XWIZ
 #cmakedefine ALLEGRO_IPHONE
+#cmakedefine ALLEGRO_ANDROID
+#cmakedefine ALLEGRO_RASPBERRYPI
 #cmakedefine ALLEGRO_CFG_NO_FPU
 #cmakedefine ALLEGRO_CFG_DLL_TLS
 #cmakedefine ALLEGRO_CFG_PTHREADS_TLS
+#cmakedefine ALLEGRO_CFG_RELEASE_LOGGING
+
+#cmakedefine ALLEGRO_CFG_D3D
+#cmakedefine ALLEGRO_CFG_D3D9EX
+#cmakedefine ALLEGRO_CFG_XINPUT
+#cmakedefine ALLEGRO_CFG_OPENGL
+#cmakedefine ALLEGRO_CFG_OPENGLES
+#cmakedefine ALLEGRO_CFG_OPENGLES2
+#cmakedefine ALLEGRO_CFG_OPENGL_PROGRAMMABLE_PIPELINE
+#cmakedefine ALLEGRO_CFG_SHADER_GLSL
+#cmakedefine ALLEGRO_CFG_SHADER_HLSL
+
+#cmakedefine ALLEGRO_CFG_ANDROID_LEGACY
 
 /*---------------------------------------------------------------------------*/
 
@@ -20,7 +31,6 @@
 #cmakedefine ALLEGRO_HAVE_INTTYPES_H
 #cmakedefine ALLEGRO_HAVE_LINUX_AWE_VOICE_H
 #cmakedefine ALLEGRO_HAVE_LINUX_INPUT_H
-#cmakedefine ALLEGRO_HAVE_LINUX_JOYSTICK_H
 #cmakedefine ALLEGRO_HAVE_LINUX_SOUNDCARD_H
 #cmakedefine ALLEGRO_HAVE_MACHINE_SOUNDCARD_H
 #cmakedefine ALLEGRO_HAVE_SOUNDCARD_H
@@ -36,7 +46,7 @@
 #cmakedefine ALLEGRO_HAVE_SYS_TYPES_H
 #cmakedefine ALLEGRO_HAVE_OSATOMIC_H
 #cmakedefine ALLEGRO_HAVE_SYS_INOTIFY_H
-#cmakedefine ALLEGRO_HAVE_SYS_TIMERFD_H
+#cmakedefine ALLEGRO_HAVE_SAL_H
 
 /* Define to 1 if the corresponding functions are available. */
 #cmakedefine ALLEGRO_HAVE_GETEXECNAME
@@ -47,6 +57,8 @@
 #cmakedefine ALLEGRO_HAVE_SYSCONF
 #cmakedefine ALLEGRO_HAVE_FSEEKO
 #cmakedefine ALLEGRO_HAVE_FTELLO
+#cmakedefine ALLEGRO_HAVE_STRERROR_R
+#cmakedefine ALLEGRO_HAVE_STRERROR_S
 #cmakedefine ALLEGRO_HAVE_VA_COPY
 
 /* Define to 1 if procfs reveals argc and argv */
@@ -87,6 +99,9 @@
 
 /* Define if target platform is linux. */
 #cmakedefine ALLEGRO_LINUX
+
+/* Define if we are building with SDL backend. */
+#cmakedefine ALLEGRO_SDL
 
 /*---------------------------------------------------------------------------*/
 /* vi: set ft=c ts=3 sts=3 sw=3 et: */

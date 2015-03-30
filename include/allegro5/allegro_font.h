@@ -68,6 +68,8 @@ struct ALLEGRO_FONT_VTABLE
    ALLEGRO_FONT_METHOD(void, destroy, (ALLEGRO_FONT *f));
    ALLEGRO_FONT_METHOD(void, get_text_dimensions, (const ALLEGRO_FONT *f,
       const ALLEGRO_USTR *text, int *bbx, int *bby, int *bbw, int *bbh));
+   ALLEGRO_FONT_METHOD(int, get_font_ranges, (ALLEGRO_FONT *font,
+      int ranges_count, int *ranges));
 };
 
 enum {
@@ -80,6 +82,7 @@ enum {
 
 ALLEGRO_FONT_FUNC(bool, al_register_font_loader, (const char *ext, ALLEGRO_FONT *(*load)(const char *filename, int size, int flags)));
 ALLEGRO_FONT_FUNC(ALLEGRO_FONT *, al_load_bitmap_font, (const char *filename));
+ALLEGRO_FONT_FUNC(ALLEGRO_FONT *, al_load_bitmap_font_flags, (const char *filename, int flags));
 ALLEGRO_FONT_FUNC(ALLEGRO_FONT *, al_load_font, (const char *filename, int size, int flags));
 
 ALLEGRO_FONT_FUNC(ALLEGRO_FONT *, al_grab_font_from_bitmap, (ALLEGRO_BITMAP *bmp, int n, const int ranges[]));
@@ -103,9 +106,25 @@ ALLEGRO_FONT_FUNC(void, al_get_ustr_dimensions, (const ALLEGRO_FONT *f,
 ALLEGRO_FONT_FUNC(void, al_get_text_dimensions, (const ALLEGRO_FONT *f,
    char const *text,
    int *bbx, int *bby, int *bbw, int *bbh));
-ALLEGRO_FONT_FUNC(void, al_init_font_addon, (void));
+ALLEGRO_FONT_FUNC(bool, al_init_font_addon, (void));
 ALLEGRO_FONT_FUNC(void, al_shutdown_font_addon, (void));
 ALLEGRO_FONT_FUNC(uint32_t, al_get_allegro_font_version, (void));
+ALLEGRO_FONT_FUNC(int, al_get_font_ranges, (ALLEGRO_FONT *font,
+   int ranges_count, int *ranges));
+
+ALLEGRO_FONT_FUNC(void, al_draw_multiline_text, (const ALLEGRO_FONT *font, ALLEGRO_COLOR color, float x, float y, float max_width, float line_height, int flags, const char *text));
+ALLEGRO_FONT_FUNC(void, al_draw_multiline_textf, (const ALLEGRO_FONT *font, ALLEGRO_COLOR color, float x, float y, float max_width, float line_height, int flags, const char *format, ...));
+ALLEGRO_FONT_FUNC(void, al_draw_multiline_ustr, (const ALLEGRO_FONT *font, ALLEGRO_COLOR color, float x, float y, float max_width, float line_height, int flags, const ALLEGRO_USTR *text));
+
+ALLEGRO_FONT_FUNC(void, al_do_multiline_text, (const ALLEGRO_FONT *font,
+   float max_width, const char *text,
+   bool (*cb)(int line_num, const char *line, int size, void *extra),
+   void *extra));
+
+ALLEGRO_FONT_FUNC(void, al_do_multiline_ustr, (const ALLEGRO_FONT *font,
+   float max_width, const ALLEGRO_USTR *ustr,
+   bool (*cb)(int line_num, const ALLEGRO_USTR *line, void *extra),
+   void *extra));
 
 
 #ifdef __cplusplus
