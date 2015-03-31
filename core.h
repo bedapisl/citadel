@@ -10,7 +10,7 @@
 #ifndef core_bedas_guard
 #define core_bedas_guard
 
-#define VERSION 0.1
+#define VERSION 0.2
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
