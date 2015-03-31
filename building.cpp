@@ -960,6 +960,12 @@ std::vector<game_object*> tower::draw(int screen_position_x, int screen_position
 	int drawing_y = game_y - screen_position_y - show_surface_height()*32 - 80 - drawing_floor*32;
 	int region_y;
 
+	if(draw_selection)
+	{
+		draw_selection = false;
+		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 192, drawing_x, drawing_y, 0);
+	}
+
 	switch(type)
 	{
 		case(NORTHWEST_TOWER):
@@ -1539,6 +1545,12 @@ std::vector<game_object*> wall::draw(int screen_position_x, int screen_position_
 	int drawing_x = game_x - screen_position_x - 32;
 	int drawing_y = game_y - screen_position_y - show_surface_height()*32 - 16 - drawing_floor*32;
 	
+	if(draw_selection)
+	{
+		draw_selection = false;
+		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 192, drawing_x - 64, drawing_y - 64, 0);
+	}
+
 	ALLEGRO_COLOR color;
 
 	if(is_real)
@@ -1674,6 +1686,12 @@ std::vector<game_object*> gate::draw(int screen_position_x, int screen_position_
 	int drawing_x = game_x - screen_position_x - 96;
 	int drawing_y = game_y - screen_position_y - show_surface_height()*32 - 80;
 	
+	if(draw_selection)
+	{
+		draw_selection = false;
+		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 192, drawing_x, drawing_y, 0);
+	}
+
 	if(type == RIGHT_GATE)
 	{
 		drawing_x += 64;
@@ -2272,6 +2290,12 @@ std::vector<game_object*> stairs::draw(int screen_position_x, int screen_positio
 	int drawing_x = game_x - screen_position_x - 32;
 	int drawing_y = game_y - screen_position_y - show_surface_height()*32 - 16 - drawing_floor*32;
 	
+	if(draw_selection)
+	{
+		draw_selection = false;
+		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 192, drawing_x - 64, drawing_y - 64, 0);
+	}
+
 	if(is_real)
 	{
 		al_draw_bitmap_region(image_list[image], region_start_x, 0, 64, 64, drawing_x, drawing_y, 0);
