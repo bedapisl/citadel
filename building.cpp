@@ -1069,9 +1069,9 @@ barracks::barracks(building_type type, int tile_x, int tile_y, int surface_heigh
 					std::vector<resources>(0), building_info::show_building_info(type).number_of_carriers))
 {
 	number_of_functions = 1;
-	output->save(WEAPONS, 20);
-	output->save(BOWS, 20);
-	output->save(PLATE_ARMOR, 20);
+	//output->save(WEAPONS, 20);
+	//output->save(BOWS, 20);
+	//output->save(PLATE_ARMOR, 20);
 }
 
 /*Checks time to create warrior ot archer and eventually creates them.*/
