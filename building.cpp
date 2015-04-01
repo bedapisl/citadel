@@ -1207,6 +1207,11 @@ void barracks::specific_draw_function_info(int mouse_x, int mouse_y)
 		case(3):
 			type = SWORDSMAN;
 		break;
+		default:
+		{
+			throw std::exception();
+			return;
+		}
 	}
 
 	people_info info = people_info::show_people_info(type);

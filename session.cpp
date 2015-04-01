@@ -24,14 +24,14 @@ game_session::game_session(std::vector<int> starting_resources, int starting_hon
 		break;
 		case(1):
 		{
-			time_to_invasion = 600*game_info::fps;		//first_invasion
-			invasion_interval = 400*game_info::fps;
+			time_to_invasion = 1200*game_info::fps;		//first_invasion - 20 minutes
+			invasion_interval = 800*game_info::fps;	
 		}
 		break;
 		case(2):
 		{
-			time_to_invasion = 300*game_info::fps;
-			invasion_interval = 200*game_info::fps;
+			time_to_invasion = 600*game_info::fps;
+			invasion_interval = 400*game_info::fps;
 		}
 		break;
 		default:
@@ -180,6 +180,11 @@ int game_session::invasion()
 			case(4):
 				t = CATAPULT;
 				break;
+			default:
+			{
+				throw std::exception();
+				return 0;
+			}
 		}
 		warrior_born_near(t, x, y, RED_PLAYER);
 		//warrior_born_near(CATAPULT, x, y, RED_PLAYER);

@@ -552,7 +552,7 @@ std::vector<std::vector<boost::shared_ptr<tile>>> generate_map(std::vector<int> 
 		generate_surface(map, mountains);
 
 		generate_water(map, resources[static_cast<int>(natural_resources::WATER)]);
-		generate_resource(map, TREE_TILE, resources[static_cast<int>(natural_resources::WOOD)]);
+		generate_resource(map, TREE_TILE, 3*resources[static_cast<int>(natural_resources::WOOD)]);	//we need more forests
 		generate_resource(map, IRON_TILE, resources[static_cast<int>(natural_resources::IRON)]);
 		generate_resource(map, COAL_TILE, resources[static_cast<int>(natural_resources::COAL)]);
 		generate_resource(map, MARBLE_TILE, resources[static_cast<int>(natural_resources::MARBLE)]);
@@ -702,7 +702,7 @@ void generate_water(std::vector<std::vector<boost::shared_ptr<tile>>>& map, int 
 	{
 		int x = rand() % game_info::map_width;
 		int y = rand() % game_info::map_height;
-		int new_x, new_y;
+		int new_x = x, new_y = y;
 	
 		int probability = 120;
 

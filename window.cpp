@@ -382,7 +382,7 @@ void text_field::key_char(ALLEGRO_EVENT* ev)
 		return;
 	
 	char c = ev->keyboard.unichar;
-	if(((c >= '0') && (c <= '9')) || (!numbers_only && (((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')))))
+	if(((c >= '0') && (c <= '9')) || (!numbers_only && (((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')) || (c == '_') || (c == '-'))))
 	{
 		if(value.size() < max_value_length)
 			value.push_back(c);
