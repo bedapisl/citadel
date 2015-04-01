@@ -38,9 +38,9 @@ void game_mouse::left_button_go_down(int &screen_position_x, int &screen_positio
 	{	
 		if((chosen_building.expired()) && (chosen_people.size() == 0))
 		{
-			if((state->x > display_width - 2.5*BUTTON_SIZE) & (state->x < display_width - 2*BUTTON_SIZE))	//click to rotate buttons
+			if((state->x > display_width - 3*BUTTON_SIZE) && (state->x < display_width - 2*BUTTON_SIZE) && (state->y > display_height - BUTTON_SIZE/2))
 			{
-				if(state->y < display_height - BUTTON_SIZE/2)
+				if(state->x < display_width - 2.5*BUTTON_SIZE)
 					*rotate = LEFT_ROTATION; 
 				else
 					*rotate = RIGHT_ROTATION;
