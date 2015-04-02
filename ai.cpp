@@ -76,34 +76,4 @@ void enemy_ai::unit_attacked(tile* from)
 }
 
 
-/*
-std::vector<tile*> enemy_ai::weak_spots()
-{
-	//najit accessible buildings tak, aby byla nebezpecnost cest co nejnizsi, abych spocital nebezpecnost cest, budu muset uvazovat i mozny pohyb nepratel
-	//spocitat nebezpecnost utoku na kazdou budovu = nebezpecnost cesty + nebezpecnost okolnich budov
-	//uvazit skody zpusobene znicenim budovy a pripadne uspesnost utoku na okolni policka
-
-
-
-}
-*/
-
-/*
-void enemy_ai::wait_tactis()				//wait for another invasion
-{
-
-}
-
-void enemy_ai::directed_attack_tactics()			//one spot is chosen which all units try to destroy
-{							//
-
-}
-
-void enemy_ai::frontal_attack_tactics()			//if RED_PLAYER has much more units		
-{							//everyone attacking nearest player units
-
-}
-
-*/
-
 

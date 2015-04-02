@@ -300,7 +300,7 @@ void button_build::map_click()
 		int tile_x = tiles_with_action[i]->show_tile_x();
 		int tile_y = tiles_with_action[i]->show_tile_y();
 
-		can_build_output output = buildings_to_draw[0]->can_build_here(session->tile_list[tile_y][tile_x].get());
+		can_build_output output = building::can_build_here(session->tile_list[tile_y][tile_x].get(), buildings_to_draw[0]->show_type());
 
 		if(output == can_build_output::CAN_BUILD)
 			session->tile_list[tile_y][tile_x]->build(type_of_building, BLUE_PLAYER);
@@ -322,7 +322,7 @@ void button_build::draw_action(int screen_position_x, int screen_position_y, boo
 		int tile_x = tiles_with_action[i]->show_tile_x();
 		int tile_y = tiles_with_action[i]->show_tile_y();
 
-		if(buildings_to_draw[i]->can_build_here(session->tile_list[tile_y][tile_x].get()) == can_build_output::CAN_BUILD)
+		if(building::can_build_here(session->tile_list[tile_y][tile_x].get(), buildings_to_draw[i]->show_type()) == can_build_output::CAN_BUILD)
 			buildings_to_draw[i]->draw_green = true;
 		else
 			buildings_to_draw[i]->draw_green = false;

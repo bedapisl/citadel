@@ -10,34 +10,162 @@ extern game_session* session;
 
 int building::next_id = 0;
 
-building::building(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real) 
-			: game_object(tile_x, tile_y, surface_height, is_real, building_info::show_building_info(type).image, 
-						building_info::show_building_info(type).number_of_floors, BUILDING), 
-				id(next_id++)
+boost::shared_ptr<building> building::create_building(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real)
 {
-	building_info info = building_info::show_building_info(type);
-	life = info.life;
-	armor = info.armor;
-	height_of_life_bar = info.height_of_life_bar;
-	size = info.size;
-	if(type == RIGHT_GATE)
-		size = RIGHT_GATE_BUILDING;
+	boost::shared_ptr<building> new_building;
 
-	required_workers = info.number_of_workers;
+	switch(type)
+	{
+	case(NORTHWEST_TOWER):
+	case(NORTHEAST_TOWER):
+	case(SOUTHEAST_TOWER):
+	case(SOUTHWEST_TOWER):
+		new_building = boost::shared_ptr<building>(new tower(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
+		break;
+	case(BARRACKS):
+		new_building = boost::shared_ptr<building>(new barracks(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
+		break;
+	case(WAREHOUSE):
+		new_building = boost::shared_ptr<building>(new warehouse(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
+		break;
+	case(WALL):
+		new_building = boost::shared_ptr<building>(new wall(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
+		break;
+	case(PALISADE):
+		new_building = boost::shared_ptr<building>(new wall(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
+		break;
+	case(NORTHWEST_STAIRS):
+	case(NORTHEAST_STAIRS):
+	case(SOUTHEAST_STAIRS):
+	case(SOUTHWEST_STAIRS):
+		new_building = boost::shared_ptr<building>(new stairs(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
+		break;
+	case(CHURCH):
+		new_building = boost::shared_ptr<building>(new church(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
+		break;
+	case(STORE):
+		new_building = boost::shared_ptr<building>(new store(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
+		break;
+	case(SCOUT):
+		new_building = boost::shared_ptr<building>(new scout(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
+		break;
+	case(LEFT_GATE):
+	case(RIGHT_GATE):
+		new_building = boost::shared_ptr<building>(new gate(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
+		break;
+	case(QUARRY):
+	case(WOODCUTTER):
+	case(HUNTER):
+	case(FISHERMAN):
+	case(APPLE_FARM):
+	case(DAIRY_FARM):
+	case(WHEAT_FARM):
+	case(WINDMILL):
+	case(CLAY_PIT):
+	case(POTTERY_WORKSHOP):
+	case(BRICKMAKER):
+	case(MARBLE_QUARRY):
+	case(GOLD_MINE):
+	case(COAL_MINE):
+	case(IRON_MINE):
+	case(SMITH):
+	case(ARMOURER):
+	case(FLETCHER):
+		new_building = boost::shared_ptr<building>(new production_building(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
+		break;
+	case(HOUSE):
+		new_building = boost::shared_ptr<building>(new house(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
+		break;
+	case(MARKET):
+		new_building = boost::shared_ptr<building>(new market(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
+		break;
+	case(GREAT_HALL):
+		new_building = boost::shared_ptr<building>(new great_hall(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
+		break;
 
-	max_life = life;
-	building::type = type;
-	building::owner = owner;
-	building::action_duration = 0;
-	actual_workers = 0;
-	bIs_death = false;
-	stopped = false;
-	draw_selection = false;
-	upgrade_level = 0;
+
+	default:
+		{
+			LOG("button_build::init - error not defined building class " << type);
+			throw std::exception();
+		}
+	}
+	if((new_building->has_carrier_output()) && (is_real))
+		new_building->show_carrier_output()->init(new_building);
+
+	return new_building;
+}
+
+/*This function should be called once per frame for every buidling. Updates building.*/
+void building::update()
+{
+	if(bIs_death)
+		return;
+
+	if((required_workers == actual_workers) && (!stopped))
+		specific_update();
+	
+	if((has_carrier_output()) && (!stopped))
+		show_carrier_output()->update();
+}
+
+/*Draws one floor of building. If the floor isn't last, returns this. For some buildings it is overwrited.*/ 
+std::vector<game_object*> building::draw(int screen_position_x, int screen_position_y)
+{
+	int drawing_x = game_x - screen_position_x - 96;
+	int drawing_y = game_y - screen_position_y - show_surface_height()*32 - 80 - drawing_floor*32;
+
+	if(draw_selection)
+	{
+		draw_selection = false;
+		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 192, drawing_x, drawing_y, 0);
+	}
+
+	if(is_real)
+	{
+		al_draw_bitmap_region(image_list[image], 64 + 192*drawing_floor, 0, 192, 128, drawing_x, drawing_y, 0);
+
+		for(int i=0; i<upgrade_level; ++i)				//draw stars for upgrade
+		{
+			al_draw_bitmap(image_list[STAR_IMAGE], drawing_x + 25*i + 64, drawing_y + 92, 0);
+		}
+	}
+
+	else 
+	{
+		if(draw_green)
+			al_draw_tinted_bitmap_region(image_list[image], LIGHT_GREEN_COLOR, 64 + 192*drawing_floor, 0, 192, 128, drawing_x, drawing_y, 0);
+		else 
+			al_draw_tinted_bitmap_region(image_list[image], LIGHT_RED_COLOR, 64 + 192*drawing_floor, 0, 192, 128, drawing_x, drawing_y, 0);
+	}
+
+	drawing_floor++;
+
+	if(drawing_floor < number_of_floors)			//this is necessary for right perspective when drawing high buildings  
+	{
+		return std::vector<game_object*>(1, this);
+	}
+	
+	if(is_real)
+	{
+		if(actual_workers < required_workers)
+		{
+			if(size == FOUR_TILE_BUILDING)
+				drawing_y += 32;
+
+			if(size == ONE_TILE_BUILDING)
+				drawing_y += 64;
+
+			al_draw_bitmap(image_list[NO_WORKERS_IMAGE], drawing_x + 64, drawing_y - 32, 0);
+		}
+	}
+
+	drawing_floor = 0;
+	return std::vector<game_object*>();
 }
 
 /* If building is chosen by player, it draws it's own panel with buttons (not class button, just button). This function draws two buttons that every function have - destroy building and stop working.*/ 
-int building::draw_interface()
+void building::draw_interface()
 {	
 	int start_x = display_width - 3*BUTTON_SIZE + 8;
 
@@ -60,8 +188,6 @@ int building::draw_interface()
 	al_draw_text(font25, WRITING_COLOR, display_width/2, display_height - BUTTON_SIZE, ALLEGRO_ALIGN_CENTRE, name.c_str());
 
 	draw_specific_interface();
-		
-	return 0;
 }
 
 void building::function_click(int mouse_x, int mouse_y)		//should be called only if player clicked  in panel area with building interface
@@ -151,111 +277,7 @@ void building::draw_function_info(int mouse_x, int mouse_y)
 	}
 }
 
-/*This function should be called once per frame for every buidling. Updates building.*/
-int building::update()
-{
-	if(bIs_death)
-		return -1;
-
-	if((required_workers == actual_workers) && (!stopped))
-		specific_update();
-	
-	if((has_carrier_output()) && (!stopped))
-		show_carrier_output()->update();
-
-	return 0;
-}
-
-/*Draws one floor of building. If the floor isn't last, returns this. For some buildings it is overwrited.*/ 
-std::vector<game_object*> building::draw(int screen_position_x, int screen_position_y)
-{
-	int drawing_x = game_x - screen_position_x - 96;
-	int drawing_y = game_y - screen_position_y - show_surface_height()*32 - 80 - drawing_floor*32;
-
-	if(draw_selection)
-	{
-		draw_selection = false;
-		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 192, drawing_x, drawing_y, 0);
-	}
-
-	if(is_real)
-	{
-		al_draw_bitmap_region(image_list[image], 64 + 192*drawing_floor, 0, 192, 128, drawing_x, drawing_y, 0);
-
-		for(int i=0; i<upgrade_level; ++i)				//draw stars for upgrade
-		{
-			al_draw_bitmap(image_list[STAR_IMAGE], drawing_x + 25*i + 64, drawing_y + 92, 0);
-		}
-	}
-
-	else 
-	{
-		if(draw_green)
-			al_draw_tinted_bitmap_region(image_list[image], LIGHT_GREEN_COLOR, 64 + 192*drawing_floor, 0, 192, 128, drawing_x, drawing_y, 0);
-		else 
-			al_draw_tinted_bitmap_region(image_list[image], LIGHT_RED_COLOR, 64 + 192*drawing_floor, 0, 192, 128, drawing_x, drawing_y, 0);
-	}
-
-	drawing_floor++;
-
-	if(drawing_floor < number_of_floors)			//this is necessary for right perspective when drawing high buildings  
-	{
-		return std::vector<game_object*>(1, this);
-	}
-	
-	if(is_real)
-	{
-		if(actual_workers < required_workers)
-		{
-			if(size == FOUR_TILE_BUILDING)
-				drawing_y += 32;
-
-			if(size == ONE_TILE_BUILDING)
-				drawing_y += 64;
-
-			al_draw_bitmap(image_list[NO_WORKERS_IMAGE], drawing_x + 64, drawing_y - 32, 0);
-		}
-	}
-
-	drawing_floor = 0;
-	return std::vector<game_object*>();
-}
-
-/* Decrease life of building by damage.*/
-int building::damage(int damage)
-{	
-	damage -= armor;
-	if(damage < 0)
-		return 0;
-
-	life -= damage;
-	if((life < 0) && (!bIs_death))
-	{
-		this->destroy_building();
-	}
-	return 0;
-}
-
-/*Removes building from game, but not deletes it. Some pointer may still points to it (people->building_target). Memory is deleted by check_death function.*/ 
-int building::destroy_building()
-{
-	LOG("");
-	bIs_death = true;
-
-	stop_working();
-
-	std::vector<tile*> tiles = tiles_under_building(tile_x, tile_y, size); 
-
-	for(unsigned int i=0; i<tiles.size(); i++)
-	{
-		tiles[i]->set_draw_building(false);
-		tile::minimap_updates.push_back(tiles[i]);
-	}
-
-	return 0;
-}
-
-int building::draw_life_bar(int screen_position_x, int screen_position_y)
+void building::draw_life_bar(int screen_position_x, int screen_position_y)
 {
 	int drawing_x = game_x - screen_position_x - 96;
 	int drawing_y = game_y - screen_position_y - show_surface_height()*32 - 80 - number_of_floors*32;
@@ -269,168 +291,21 @@ int building::draw_life_bar(int screen_position_x, int screen_position_y)
 	float health = (float)life/(float)max_life;
 	al_draw_rectangle(drawing_x + 64, drawing_y - 2 + 160 - height_of_life_bar, drawing_x + 64 + TILE_WIDTH, drawing_y + 3 + 160 - height_of_life_bar, GREY_COLOR, 1);  
 	al_draw_filled_rectangle(drawing_x + 64, drawing_y - 2 + 160 - height_of_life_bar, drawing_x + 64 + TILE_WIDTH*(health), drawing_y + 2 + 160 - height_of_life_bar, LIGHT_GREEN_COLOR);
-	return 0;
 }
 
-/*Returns true if building can be build on tile defined by parametr here. If not, returns false.*/
-can_build_output building::can_build_here(tile* here)
-{
-	if(session->game_started)
+/* Decrease life of building by damage.*/
+void building::damage(int damage)
+{	
+	damage -= armor;
+	if(damage < 0)
+		return;
+
+	life -= damage;
+	if((life < 0) && (!bIs_death))
 	{
-		for(int i=0; i<NUMBER_OF_RESOURCES; ++i)		//check if player has enough resources
-		{
-			resources resource_type = static_cast<resources>(i);
-			if(show_building_price(type, resource_type, NO_UPGRADE) > session->global_stock->show_amount(resource_type))
-			{
-				switch(resource_type)
-				{
-					case(WOOD):
-						return can_build_output::MISSING_WOOD;
-						break;
-					case(STONE):
-						return can_build_output::MISSING_STONE;
-						break;
-					case(BRICKS):
-						return can_build_output::MISSING_BRICKS;
-						break;
-					case(MARBLE):
-						return can_build_output::MISSING_MARBLE;
-						break;
-					default:
-						throw std::exception();
-				}
-			}
-		}
+		this->destroy_building();
 	}
-	
-	int end_x = here->show_tile_x();
-	int end_y = here->show_tile_y();
-	int start_x;
-	int start_y;
-
-	std::vector<tile*> near_tiles = tiles_in_circle(minimal_distance_from_enemies_for_building, here);
-	for(size_t i=0; i<near_tiles.size(); ++i)		//buildings shouldt be built when enemies are nearby
-	{
-		near_tiles[i]->check_death_people_on_tile();
-		if((!near_tiles[i]->people_on_tile.empty()) && (near_tiles[i]->people_on_tile[0].lock()->show_owner() == RED_PLAYER))
-		{
-			return can_build_output::ENEMIES_NEARBY;
-		}
-	}
-
-	switch(size)
-	{
-		case(ONE_TILE_BUILDING):
-		{
-			start_x = end_x;
-			start_y = end_y;
-		}
-		break;
-		case(FOUR_TILE_BUILDING):
-		{
-			start_x = end_x - 1;
-			start_y = end_y - 1;
-		}
-		break;
-		case(NINE_TILE_BUILDING):
-		{
-			start_x = end_x - 2;
-			start_y = end_y - 2;
-		}
-		break;
-		case(LEFT_GATE_BUILDING):
-		{
-			start_x = end_x - 2;
-			start_y = end_y;
-		}
-		break;
-		case(RIGHT_GATE_BUILDING):
-		{
-			start_x = end_x;
-			start_y = end_y -2;
-		}
-		break;
-		default:
-			throw std::exception();
-	}
-	
-	//bool can_build = true;
-
-	if(((start_x < 0) || (end_x > game_info::map_width - 1)) || ((start_y < 0) || (end_y > game_info::map_height - 1)))
-		return can_build_output::NO_SPACE;
-	
-	for(int y=start_y; y <= end_y; y++)
-	{
-		for(int x=start_x; x <= end_x; x++)
-		{
-			boost::shared_ptr<tile> t = session->tile_list[y][x];
-			if((t->show_surface_height() != session->tile_list[start_y][start_x]->show_surface_height()) 
-					|| (t->show_type() != GRASS))
-			{
-				return can_build_output::NO_SPACE;
-			}
-			if(t->real_path_on_tile() && (((type != LEFT_GATE) && (type != RIGHT_GATE)) 
-						|| (((type == LEFT_GATE) && (x != start_x + 1)) || ((type == RIGHT_GATE) && (y != start_y + 1)))))
-			{
-				return can_build_output::NO_SPACE;
-			}
-
-			else if(!t->is_free())
-			{
-				if(((size == LEFT_GATE_BUILDING) || (size == RIGHT_GATE_BUILDING)) && (t->building_on_tile.expired()) && (t->object == NOTHING) && ((y == start_y + 1) || (x == start_x + 1)))
-				{
-					//everything ok - building is gate and there are people on gate_tile
-				}
-				else	//everything else is bad
-				{
-					return can_build_output::NO_SPACE;
-				}
-			}
-		}
-	}
-	
-	return building::enough_resources(type, start_x, start_y, end_x, end_y);
-}
-
-bool building::can_be_upgraded()
-{
-	building_info info = building_info::show_building_info(type);
-	if(info.can_be_upgraded && (upgrade_level < 3))
-	{
-		return true;
-	}
-	return false;
-}
-
-void building::general_upgrade()
-{
-	building_info info = building_info::show_building_info(type);
-	std::vector<int> price;
-
-	switch(upgrade_level)
-	{
-		case(0):
-			price = info.first_upgrade_price;
-			break;
-
-		case(1):
-			price = info.second_upgrade_price;
-			break;
-
-		case(2):
-			price = info.third_upgrade_price;
-			break;
-
-		default:
-			throw std::exception();
-
-	}
-	bool success = session->global_stock->try_subtract_list(price);
-	if(success)
-	{
-		upgrade_level++;
-		this->upgrade();
-	}
+	return;
 }
 
 void building::rotate(int new_tile_x, int new_tile_y, bool clockwise)
@@ -478,6 +353,315 @@ void building::set_drawing_tile()
 		LOG("error");
 		throw std::exception();
 	}
+}
+
+/*Returns true if building can be build on tile defined by parametr here. If not, returns false.*/
+can_build_output building::can_build_here(tile* here, building_type type)
+{
+	if(session->game_started)
+	{
+		for(int i=0; i<NUMBER_OF_RESOURCES; ++i)		//check if player has enough resources
+		{
+			resources resource_type = static_cast<resources>(i);
+			if(show_building_price(type, resource_type, NO_UPGRADE) > session->global_stock->show_amount(resource_type))
+			{
+				switch(resource_type)
+				{
+					case(WOOD):
+						return can_build_output::MISSING_WOOD;
+						break;
+					case(STONE):
+						return can_build_output::MISSING_STONE;
+						break;
+					case(BRICKS):
+						return can_build_output::MISSING_BRICKS;
+						break;
+					case(MARBLE):
+						return can_build_output::MISSING_MARBLE;
+						break;
+					default:
+						throw std::exception();
+				}
+			}
+		}
+	}
+	
+	int end_x = here->show_tile_x();
+	int end_y = here->show_tile_y();
+	int start_x;
+	int start_y;
+
+	std::vector<tile*> near_tiles = tiles_in_circle(minimal_distance_from_enemies_for_building, here);
+	for(size_t i=0; i<near_tiles.size(); ++i)		//buildings shouldt be built when enemies are nearby
+	{
+		near_tiles[i]->check_death_people_on_tile();
+		if((!near_tiles[i]->people_on_tile.empty()) && (near_tiles[i]->people_on_tile[0].lock()->show_owner() == RED_PLAYER))
+		{
+			return can_build_output::ENEMIES_NEARBY;
+		}
+	}
+
+	building_size size = building_info::show_building_info(type).size;
+	
+	switch(size)
+	{
+		case(ONE_TILE_BUILDING):
+		{
+			start_x = end_x;
+			start_y = end_y;
+		}
+		break;
+		case(FOUR_TILE_BUILDING):
+		{
+			start_x = end_x - 1;
+			start_y = end_y - 1;
+		}
+		break;
+		case(NINE_TILE_BUILDING):
+		{
+			start_x = end_x - 2;
+			start_y = end_y - 2;
+		}
+		break;
+		case(LEFT_GATE_BUILDING):
+		{
+			start_x = end_x - 2;
+			start_y = end_y;
+		}
+		break;
+		case(RIGHT_GATE_BUILDING):
+		{
+			start_x = end_x;
+			start_y = end_y -2;
+		}
+		break;
+		default:
+			throw std::exception();
+	}
+	
+	if(((start_x < 0) || (end_x > game_info::map_width - 1)) || ((start_y < 0) || (end_y > game_info::map_height - 1)))
+		return can_build_output::NO_SPACE;
+	
+	for(int y=start_y; y <= end_y; y++)
+	{
+		for(int x=start_x; x <= end_x; x++)
+		{
+			boost::shared_ptr<tile> t = session->tile_list[y][x];
+			if((t->show_surface_height() != session->tile_list[start_y][start_x]->show_surface_height()) 
+					|| (t->show_type() != GRASS))
+			{
+				return can_build_output::NO_SPACE;
+			}
+			if(t->real_path_on_tile() && (((type != LEFT_GATE) && (type != RIGHT_GATE)) 
+						|| (((type == LEFT_GATE) && (x != start_x + 1)) || ((type == RIGHT_GATE) && (y != start_y + 1)))))
+			{
+				return can_build_output::NO_SPACE;
+			}
+
+			else if(!t->is_free())
+			{
+				if(((size == LEFT_GATE_BUILDING) || (size == RIGHT_GATE_BUILDING)) && (t->building_on_tile.expired()) && (t->object == NOTHING) && ((y == start_y + 1) || (x == start_x + 1)))
+				{
+					//everything ok - building is gate and there are people on gate_tile
+				}
+				else	//everything else is bad
+				{
+					return can_build_output::NO_SPACE;
+				}
+			}
+		}
+	}
+	
+	return building::enough_resources(type, start_x, start_y, end_x, end_y);
+}
+
+building::building(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real) 
+			: game_object(tile_x, tile_y, surface_height, is_real, building_info::show_building_info(type).image, 
+						building_info::show_building_info(type).number_of_floors, BUILDING), 
+				id(next_id++)
+{
+	building_info info = building_info::show_building_info(type);
+	life = info.life;
+	armor = info.armor;
+	height_of_life_bar = info.height_of_life_bar;
+	size = info.size;
+	if(type == RIGHT_GATE)
+		size = RIGHT_GATE_BUILDING;
+
+	required_workers = info.number_of_workers;
+
+	max_life = life;
+	building::type = type;
+	building::owner = owner;
+	building::action_duration = 0;
+	actual_workers = 0;
+	bIs_death = false;
+	stopped = false;
+	draw_selection = false;
+	upgrade_level = 0;
+}
+
+/*Removes building from game, but not deletes it. Some pointer may still points to it (people->building_target). Memory is deleted by check_death function.*/ 
+void building::destroy_building()
+{
+	LOG("");
+	bIs_death = true;
+
+	stop_working();
+
+	std::vector<tile*> tiles = tiles_under_building(tile_x, tile_y, size); 
+
+	for(unsigned int i=0; i<tiles.size(); i++)
+	{
+		tiles[i]->set_draw_building(false);
+		tile::minimap_updates.push_back(tiles[i]);
+	}
+}
+
+bool building::can_be_upgraded()
+{
+	building_info info = building_info::show_building_info(type);
+	if(info.can_be_upgraded && (upgrade_level < 3))
+	{
+		return true;
+	}
+	return false;
+}
+
+void building::general_upgrade()
+{
+	building_info info = building_info::show_building_info(type);
+	std::vector<int> price;
+
+	switch(upgrade_level)
+	{
+		case(0):
+			price = info.first_upgrade_price;
+			break;
+
+		case(1):
+			price = info.second_upgrade_price;
+			break;
+
+		case(2):
+			price = info.third_upgrade_price;
+			break;
+
+		default:
+			throw std::exception();
+
+	}
+	bool success = session->global_stock->try_subtract_list(price);
+	if(success)
+	{
+		upgrade_level++;
+		this->upgrade();
+	}
+}
+
+int building::compute_button_number(int mouse_x, int mouse_y)
+{
+	if(mouse_y > display_height - BUTTON_SIZE)
+	{
+		for(int i=0; i<display_width*BUTTON_SIZE; ++i)
+		{
+			if((mouse_x > i*BUTTON_SIZE) && (mouse_x < (i+1)*BUTTON_SIZE))
+			{
+				return i;
+			}
+		}
+	}
+	return 100;			//this should indicate, that button number cannot be computed
+}
+
+can_build_output building::enough_resources(building_type type, int start_tile_x, int start_tile_y, int end_tile_x, int end_tile_y)
+{
+	if((type == WOODCUTTER) || (type == IRON_MINE) || (type == COAL_MINE) || (type == GOLD_MINE) || (type == QUARRY) || (type == MARBLE_QUARRY) 
+				|| (type == FISHERMAN) || (type == HUNTER) || (type == CLAY_PIT))
+	{
+		int start_x = std::max(0, start_tile_x - 1);
+		int start_y = std::max(0, start_tile_y - 1);
+		int end_x = std::min(game_info::map_width - 1, end_tile_x + 1);
+		int end_y = std::min(game_info::map_height - 1, end_tile_y + 1);
+
+		int number_of_resources = 0;
+
+		for(int y = start_y; y<= end_y; y++)
+		{
+			for(int x = start_x; x <= end_x; x++)
+			{
+				object_on_tile ob = session->tile_list[y][x]->object;
+				if((ob == TREE_TILE) && ((type == WOODCUTTER) || (type == HUNTER)))
+					number_of_resources++;
+				
+				else if(((ob == MARBLE_TILE) || (ob == IRON_TILE) || (ob == COAL_TILE) || (ob == GOLD_TILE)) && (type == QUARRY))
+					number_of_resources++;
+
+				else if((ob == MARBLE_TILE) && (type == MARBLE_QUARRY))
+					number_of_resources++;
+	
+				else if((ob == IRON_TILE) && (type == IRON_MINE))
+					number_of_resources++;
+				
+				else if((ob == COAL_TILE) && (type == COAL_MINE))
+					number_of_resources++;
+				
+				else if((ob == GOLD_TILE) && (type == GOLD_MINE))
+					number_of_resources++;
+
+				else if(session->tile_list[y][x]->is_water_tile() && ((type == FISHERMAN) || (type == CLAY_PIT)))
+					number_of_resources++;
+			}
+		}
+		if(number_of_resources < 1)
+		{
+			switch(type)
+			{
+				case(WOODCUTTER):
+				case(HUNTER):
+					return can_build_output::NO_TREES;
+					break;
+				case(IRON_MINE):
+					return can_build_output::NO_IRON;
+					break;
+				case(COAL_MINE):
+					return can_build_output::NO_COAL;
+					break;
+				case(GOLD_MINE):
+					return can_build_output::NO_GOLD;
+					break;
+				case(QUARRY):
+					return can_build_output::NO_ROCKS;
+					break;
+				case(MARBLE_QUARRY):
+					return can_build_output::NO_MARBLE;
+					break;
+				case(FISHERMAN):
+				case(CLAY_PIT):
+					return can_build_output::NO_WATER;
+					break;
+				default:
+					throw std::exception();
+			}
+		}
+		else
+			return can_build_output::CAN_BUILD;
+	}
+	if((type == APPLE_FARM) || (type == WHEAT_FARM))
+	{
+		for(int x = start_tile_x; x <= end_tile_x; ++x)
+		{
+			for(int y = start_tile_y; y <= end_tile_y; ++y)
+			{
+				if(session->tile_list[y][x]->is_fertile())
+				{
+					return can_build_output::CAN_BUILD;
+				}
+			}
+		}
+		return can_build_output::NO_FERTILE_LAND;
+	}
+	return can_build_output::CAN_BUILD;
 }
 
 struct vertex_info;
@@ -657,7 +841,6 @@ int add_building_to_graph(std::vector<vertex_info> & vertices, boost::shared_ptr
 	}
 	return vertices_index;
 }
-
 	
 void building::assign_workers()
 {
@@ -712,197 +895,6 @@ void building::assign_workers()
 			house_ptr->set_idle_workers(idle_workers);
 		}
 	}
-}
-
-boost::shared_ptr<building> building::create_building(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real)
-{
-	boost::shared_ptr<building> new_building;
-
-	switch(type)
-	{
-	case(NORTHWEST_TOWER):
-	case(NORTHEAST_TOWER):
-	case(SOUTHEAST_TOWER):
-	case(SOUTHWEST_TOWER):
-		new_building = boost::shared_ptr<building>(new tower(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
-		break;
-	case(BARRACKS):
-		new_building = boost::shared_ptr<building>(new barracks(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
-		break;
-	case(WAREHOUSE):
-		new_building = boost::shared_ptr<building>(new warehouse(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
-		break;
-	case(WALL):
-		new_building = boost::shared_ptr<building>(new wall(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
-		break;
-	case(PALISADE):
-		new_building = boost::shared_ptr<building>(new wall(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
-		break;
-	case(NORTHWEST_STAIRS):
-	case(NORTHEAST_STAIRS):
-	case(SOUTHEAST_STAIRS):
-	case(SOUTHWEST_STAIRS):
-		new_building = boost::shared_ptr<building>(new stairs(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
-		break;
-	case(CHURCH):
-		new_building = boost::shared_ptr<building>(new church(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
-		break;
-	case(STORE):
-		new_building = boost::shared_ptr<building>(new store(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
-		break;
-	case(SCOUT):
-		new_building = boost::shared_ptr<building>(new scout(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
-		break;
-	case(LEFT_GATE):
-	case(RIGHT_GATE):
-		new_building = boost::shared_ptr<building>(new gate(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
-		break;
-	case(QUARRY):
-	case(WOODCUTTER):
-	case(HUNTER):
-	case(FISHERMAN):
-	case(APPLE_FARM):
-	case(DAIRY_FARM):
-	case(WHEAT_FARM):
-	case(WINDMILL):
-	case(CLAY_PIT):
-	case(POTTERY_WORKSHOP):
-	case(BRICKMAKER):
-	case(MARBLE_QUARRY):
-	case(GOLD_MINE):
-	case(COAL_MINE):
-	case(IRON_MINE):
-	case(SMITH):
-	case(ARMOURER):
-	case(FLETCHER):
-		new_building = boost::shared_ptr<building>(new production_building(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
-		break;
-	case(HOUSE):
-		new_building = boost::shared_ptr<building>(new house(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
-		break;
-	case(MARKET):
-		new_building = boost::shared_ptr<building>(new market(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
-		break;
-	case(GREAT_HALL):
-		new_building = boost::shared_ptr<building>(new great_hall(type, tile_x, tile_y, surface_height, BLUE_PLAYER, is_real));
-		break;
-
-
-	default:
-		{
-			LOG("button_build::init - error not defined building class " << type);
-			throw std::exception();
-		}
-	}
-	if((new_building->has_carrier_output()) && (is_real))
-		new_building->show_carrier_output()->init(new_building);
-
-	return new_building;
-}
-
-int building::compute_button_number(int mouse_x, int mouse_y)
-{
-	if(mouse_y > display_height - BUTTON_SIZE)
-	{
-		for(int i=0; i<display_width*BUTTON_SIZE; ++i)
-		{
-			if((mouse_x > i*BUTTON_SIZE) && (mouse_x < (i+1)*BUTTON_SIZE))
-			{
-				return i;
-			}
-		}
-	}
-	return 100;			//this should indicate, that button number cannot be computed
-}
-
-can_build_output building::enough_resources(building_type type, int start_tile_x, int start_tile_y, int end_tile_x, int end_tile_y)
-{
-	if((type == WOODCUTTER) || (type == IRON_MINE) || (type == COAL_MINE) || (type == GOLD_MINE) || (type == QUARRY) || (type == MARBLE_QUARRY) 
-				|| (type == FISHERMAN) || (type == HUNTER) || (type == CLAY_PIT))
-	{
-		int start_x = std::max(0, start_tile_x - 1);
-		int start_y = std::max(0, start_tile_y - 1);
-		int end_x = std::min(game_info::map_width - 1, end_tile_x + 1);
-		int end_y = std::min(game_info::map_height - 1, end_tile_y + 1);
-
-		int number_of_resources = 0;
-
-		for(int y = start_y; y<= end_y; y++)
-		{
-			for(int x = start_x; x <= end_x; x++)
-			{
-				object_on_tile ob = session->tile_list[y][x]->object;
-				if((ob == TREE_TILE) && ((type == WOODCUTTER) || (type == HUNTER)))
-					number_of_resources++;
-				
-				else if(((ob == MARBLE_TILE) || (ob == IRON_TILE) || (ob == COAL_TILE) || (ob == GOLD_TILE)) && (type == QUARRY))
-					number_of_resources++;
-
-				else if((ob == MARBLE_TILE) && (type == MARBLE_QUARRY))
-					number_of_resources++;
-	
-				else if((ob == IRON_TILE) && (type == IRON_MINE))
-					number_of_resources++;
-				
-				else if((ob == COAL_TILE) && (type == COAL_MINE))
-					number_of_resources++;
-				
-				else if((ob == GOLD_TILE) && (type == GOLD_MINE))
-					number_of_resources++;
-
-				else if(session->tile_list[y][x]->is_water_tile() && ((type == FISHERMAN) || (type == CLAY_PIT)))
-					number_of_resources++;
-			}
-		}
-		if(number_of_resources < 1)
-		{
-			switch(type)
-			{
-				case(WOODCUTTER):
-				case(HUNTER):
-					return can_build_output::NO_TREES;
-					break;
-				case(IRON_MINE):
-					return can_build_output::NO_IRON;
-					break;
-				case(COAL_MINE):
-					return can_build_output::NO_COAL;
-					break;
-				case(GOLD_MINE):
-					return can_build_output::NO_GOLD;
-					break;
-				case(QUARRY):
-					return can_build_output::NO_ROCKS;
-					break;
-				case(MARBLE_QUARRY):
-					return can_build_output::NO_MARBLE;
-					break;
-				case(FISHERMAN):
-				case(CLAY_PIT):
-					return can_build_output::NO_WATER;
-					break;
-				default:
-					throw std::exception();
-			}
-		}
-		else
-			return can_build_output::CAN_BUILD;
-	}
-	if((type == APPLE_FARM) || (type == WHEAT_FARM))
-	{
-		for(int x = start_tile_x; x <= end_tile_x; ++x)
-		{
-			for(int y = start_tile_y; y <= end_tile_y; ++y)
-			{
-				if(session->tile_list[y][x]->is_fertile())
-				{
-					return can_build_output::CAN_BUILD;
-				}
-			}
-		}
-		return can_build_output::NO_FERTILE_LAND;
-	}
-	return can_build_output::CAN_BUILD;
 }
 
 tower::tower(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real) 
@@ -1057,11 +1049,6 @@ void tower::rotate(int tile_x, int tile_y, bool clockwise)
 			type = SOUTHWEST_TOWER;
 	}
 }
-			
-int tower::specific_update()
-{
-	return 0;
-}
 
 barracks::barracks(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real) 
 			: building(type, tile_x, tile_y, surface_height, owner, is_real), 
@@ -1069,16 +1056,13 @@ barracks::barracks(building_type type, int tile_x, int tile_y, int surface_heigh
 					std::vector<resources>(0), building_info::show_building_info(type).number_of_carriers))
 {
 	number_of_functions = 1;
-	//output->save(WEAPONS, 20);
-	//output->save(BOWS, 20);
-	//output->save(PLATE_ARMOR, 20);
 }
 
 /*Checks time to create warrior ot archer and eventually creates them.*/
-int barracks::specific_update()
+void barracks::specific_update()
 {
 	if(stopped)
-		return 0;
+		return;
 
 	update_supported_units();
 
@@ -1099,9 +1083,8 @@ int barracks::specific_update()
 		if(actions.size() > 0)
 			action_duration = time_to_make_unit;
 	}
-
-	return 0;
 }
+
 /*Is called if player clicked on button on this building. It handles the click, for example starts creating warrior.*/ 
 void barracks::function_click(int mouse_x, int mouse_y)
 {
@@ -1313,12 +1296,6 @@ warehouse::warehouse(building_type type, int tile_x, int tile_y, int surface_hei
 
 }
 
-/* Returns 0. */ 
-int warehouse::specific_update()
-{
-	return 0;
-}
-
 /* Draw number of resources that are stored in warehouse. */
 void warehouse::draw_specific_interface()
 {
@@ -1446,10 +1423,10 @@ production_building::production_building(building_type type, int tile_x, int til
 }
 
 /*Decrease time left to produce resources and if they are finished sends them to granary or warehouse*/
-int production_building::specific_update()
+void production_building::specific_update()
 {
 	if(stopped)
-		return 0;
+		return;
 
 	if(action_duration > 0)
 		action_duration--;
@@ -1476,7 +1453,6 @@ int production_building::specific_update()
 			current_time_to_produce = action_duration;
 		}
 	}
-	return 0;
 }
 /* Draws how much time is left to create resource. */
 void production_building::draw_specific_interface()
@@ -1515,7 +1491,7 @@ wall::~wall()
 }
 
 /* If there are walls or gates in adjacent tiles, then this function changes drawing of wall.*/
-int wall::specific_update()
+void wall::specific_update()
 {
 	std::vector<std::pair<int, int>> coordinates_change;
 	coordinates_change.push_back(std::pair<int, int>(-1,0));
@@ -1541,8 +1517,6 @@ int wall::specific_update()
 			}
 		}
 	}
-
-	return 0;
 }
 
 std::vector<game_object*> wall::draw(int screen_position_x, int screen_position_y)
@@ -1627,7 +1601,7 @@ gate::~gate()
 }
 
 //It just control right drawing of gate. For opening and closing gate see gate::function_click().
-int gate::specific_update()
+void gate::specific_update()
 {
 	if(gate_tile->building_on_tile.expired())
 		throw std::exception();
@@ -1647,8 +1621,6 @@ int gate::specific_update()
 			action_duration = 10;
 		}
 	}
-	
-	return 0;
 }
 
 void gate::draw_specific_interface()
@@ -1800,12 +1772,12 @@ house::house(building_type type, int tile_x, int tile_y, int surface_height, pla
 	starving = false;
 }
 
-int house::specific_update()
+void house::specific_update()
 {
 	if(action_duration > 1)
 	{
 		action_duration--;
-		return 0;
+		return;
 	}
 
 	action_duration = TIME_TO_EAT;
@@ -1855,8 +1827,6 @@ int house::specific_update()
 	missing_resources = types_of_food;
 	if(needs_pottery)
 		missing_resources++;
-
-	return 0;
 }
 
 void house::draw_specific_interface()
@@ -2018,7 +1988,7 @@ church::church(building_type type, int tile_x, int tile_y, int surface_height, p
 {
 }
 
-int church::specific_update()
+void church::specific_update()
 {
 	if(action_duration == 0)
 	{
@@ -2027,8 +1997,6 @@ int church::specific_update()
 	}
 	else
 		action_duration--;
-
-	return 0;
 }
 
 void church::draw_specific_interface()
@@ -2051,12 +2019,12 @@ store::store(building_type type, int tile_x, int tile_y, int surface_height, pla
 	}
 }
 
-int store::specific_update()
+void store::specific_update()
 {
 	if(action_duration > 0)
 	{
 		action_duration--;
-		return 0;
+		return;
 	}
 	
 	for(size_t i=0; i<buying.size(); ++i)
@@ -2080,7 +2048,6 @@ int store::specific_update()
 		}
 	}
 	action_duration = time_to_trade[upgrade_level];
-	return 0;
 }
 
 void store::draw_specific_interface()
@@ -2338,10 +2305,6 @@ std::vector<game_object*> stairs::draw(int screen_position_x, int screen_positio
 	return std::vector<game_object*>();
 }
 
-void stairs::draw_specific_interface()
-{
-}
-
 void stairs::rotate(int tile_x, int tile_y, bool clockwise)
 {
 	building::rotate(tile_x, tile_y, clockwise);
@@ -2468,12 +2431,6 @@ std::vector<tile*> tiles_under_building(int tile_x, int tile_y, building_size ty
 	}
 
 	return tiles;
-}
-
-int building::stop_working()
-{
-	stopped = true;
-	return 0;
 }
 
 /*Returns buildings connected by path to start tile, path length is less or equal to distance. Int in return value is distance to building.*/

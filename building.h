@@ -18,53 +18,46 @@ struct commodities_list;
 
 extern ALLEGRO_BITMAP** image_list;
 
+/**
+ * \brief Virtual class representing buildings.
+ */
+
 class building : public game_object, public boost::enable_shared_from_this<building>
 {
-public:
-	virtual void draw_specific_interface() {}
-	int draw_interface();
-	virtual void function_click(int mouse_x, int mouse_y);
-	void draw_function_info(int mouse_x, int mouse_y);
-	virtual void specific_draw_function_info(int mouse_x, int mouse_y) {}
-	int update();
-	virtual int specific_update() {return 0;}
-	virtual void upgrade() {throw new std::exception;}
-	void general_upgrade(); 				//subtract price of upgrade and calls upgrade() 
-	std::vector<game_object*> draw(int screen_position_x, int screen_position_y);
-	int show_tile_x() {return tile_x;}
-	int show_tile_y() {return tile_y;}
-	building_type show_type() {return type;}
-	bool is_death() {return bIs_death;}
-	player show_owner() {return owner;}
+public:	
+	static boost::shared_ptr<building> create_building(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real); 
+										///< Creates building on tile.
+	void update();								///< Is called once per frame. Updates/manages building.
+	std::vector<game_object*> draw(int screen_position_x, int screen_position_y);	
+			///< Draws one floor of building. Returns which will be drawn above it (e.g. people staying on walls, next floor of building).
+	void draw_interface();							///< Draws gui and info about building to main panel, when building is selected.
+	virtual void function_click(int mouse_x, int mouse_y);			///< Handles clicks to main panel, when building is selected.
+	void draw_function_info(int mouse_x, int mouse_y);			///< Draws info about buttons on main panel, when building is selected.
+	void draw_life_bar(int screen_position_x, int screen_position_y);	///< Draws amount of life left above the building. Called on mouse on building. 
+	void damage(int damage);						///< Processes attack on building. 
+	virtual void rotate(int new_tile_x, int new_tile_y, bool clockwise);	///< Rotates building.
+	void set_drawing_tile();						///< Chooses tile from which this building will be drawed. 
+	virtual ~building() {}
+	
+	static void assign_workers();						///< Distributes all workers between buildings.
+	static can_build_output can_build_here(tile* here, building_type type);	///< Returns if building can be build on given tile.
+	
+	virtual boost::shared_ptr<carrier_output> show_carrier_output() {return NULL;}
+	virtual bool has_carrier_output() {return false;}			///< Returns whether carriers can carry resources to/from this building.
+	building_type show_type() {return type;}				///< Returns type of building (e.g. WAREHOUSE, MARKET, QUARRY).
+	bool is_death() {return bIs_death;}		
+	player show_owner() {return owner;}					///< Returns owner of building. Currently all buildigns are owned by BLUE_PLAYER.
 	int show_actual_workers() {return actual_workers;}
 	int show_required_workers() {return required_workers;}
-	int show_action_duration() {return action_duration;}
 	building_size show_size() {return size;}
-	bool show_stopped() {return stopped;}
-	int damage(int damage);
-	int destroy_building();
-	int change_working() {stopped = !stopped; return 0;}
-	int stop_working();
-	int draw_life_bar(int screen_position_x, int screen_position_y);
-	can_build_output can_build_here(tile* here);
-	bool can_be_upgraded();
-	virtual bool can_be_stopped() {return false;}
-	virtual void rotate(int new_tile_x, int new_tile_y, bool clockwise);
-	void set_drawing_tile();
-	virtual bool has_carrier_output() {return false;}
-	virtual boost::shared_ptr<carrier_output> show_carrier_output() {return NULL;}
-	virtual ~building() {}
-	static void assign_workers();
-
-	static boost::shared_ptr<building> create_building(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
-
-	int actual_workers;
+	bool show_stopped() {return stopped;}					///< Returns whether building is working or if it is stopped.
+	
 	building_size size;
 	building_type type;
-	bool draw_selection;
+	bool draw_selection;				///< Indicates if white rectangle (to indicate mouse on building) around building should be draw.
 	int id;
 	static int next_id;
-	const int minimal_distance_from_enemies_for_building = 10;
+	static const int minimal_distance_from_enemies_for_building = 20;	///< It is not possible to build anything when enemies are this close.
 
 	friend class boost::serialization::access;
 
@@ -92,12 +85,23 @@ public:
 
 protected:
 	building() {}	//for boost::serialization
-
+	building(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
+	void destroy_building();
+	virtual void draw_specific_interface() {}	///< Draws gui and info specific to the kind of building to main panel. 
+	virtual void specific_draw_function_info(int mouse_x, int mouse_y) {}
+	virtual void specific_update() { }
+	virtual void upgrade() {throw new std::exception;}
+	void change_working() {stopped = !stopped;}
+	virtual bool can_be_stopped() {return false;}
+	void stop_working() {stopped = true;}
+	bool can_be_upgraded();		
+	void general_upgrade(); 				//subtract price of upgrade and calls upgrade() 
+	int compute_button_number(int mouse_x, int mouse_y);
+	
 	static can_build_output enough_resources(building_type type, int start_tile_x, int start_tile_y, int end_tile_x, int end_tile_y);
 
-	building(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
-	int compute_button_number(int mouse_x, int mouse_y);
 	virtual void set_carrier_output() {}
+	int actual_workers;
 	int action_duration;		
 	int life;
 	int armor;
@@ -115,13 +119,13 @@ class tower : public building
 public:
 	tower(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
 	~tower();
-	std::vector<game_object*> draw(int screen_position_x, int screen_position_y);
-	void rotate(int tile_x, int tile_y, bool clockwise);
-	int specific_update();
-	tile* doors_tile;
-	void add_people_to_draw(boost::weak_ptr<people> p) {people_to_draw.push_back(p);}
-	void reset_people_to_draw() {people_to_draw.clear();}
+	std::vector<game_object*> draw(int screen_position_x, int screen_position_y); 	///< Draws one floor. Returns objects which should be drawed above it.
+	void rotate(int tile_x, int tile_y, bool clockwise);				///< Rotates tower.
+	void add_people_to_draw(boost::weak_ptr<people> p) {people_to_draw.push_back(p);}	///< Register some people to be drawn on top of tower.
+	void reset_people_to_draw() {people_to_draw.clear();}				///< No people will be drawed on top of tower.
 
+	tile* doors_tile;								///< Tile where the doors are, which can be used to access tower.
+	
 	friend class boost::serialization::access;
 
 	template <class Archive>
@@ -134,24 +138,21 @@ public:
 
 private:
 	tower() {}	//for boost serialization
-	std::vector<boost::weak_ptr<people>> people_to_draw;
-	//int attack;
-	//int range;
+	std::vector<boost::weak_ptr<people>> people_to_draw;	///< People which will be drawn on top of tower.
 };
 
 class barracks : public building
 {
 public:
 	barracks(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
-	int specific_update();
-	void function_click(int mouse_x, int mouse_y);
-	void specific_draw_function_info(int mouse_x, int mouse_y);
-	void draw_specific_interface();
-	int show_number_of_actions() {return actions.size();}
+	void specific_update();				///< Updates barracks (e.g. decreases time to produce units, create units). Should be called once every frame.  
+	void function_click(int mouse_x, int mouse_y);	///< Handles player click to the panel.
+	void specific_draw_function_info(int mouse_x, int mouse_y);	///< Draws info about soldiers, which can be created.
+	void draw_specific_interface();					///< Draw info and gui to panel, should be called if this building is selected.
+	int show_number_of_actions() {return actions.size();}		///< Returns how many kinds of soldiers can be created (one action for each kind)
 	bool has_carrier_output() {return true;}
-	void upgrade();
+	void upgrade();							///< Upgrades barracks - unlocks new type of soldier for these barracks and increases capacity.
 	boost::shared_ptr<carrier_output> show_carrier_output() {return output;}
-	void check_death_supported_units();
 	
 	friend class boost::serialization::access;
 
@@ -169,6 +170,7 @@ private:
 	barracks() {}	//for boost serialization
 
 	void update_supported_units();
+	void check_death_supported_units();				
 	std::vector<std::pair<boost::weak_ptr<warrior>, int>> supported_units;
 	std::vector<people_type> actions;
 	boost::shared_ptr<carrier_output> output;
@@ -183,8 +185,7 @@ class warehouse : public building
 {
 public:
 	warehouse(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
-	int specific_update();
-	void draw_specific_interface();
+	void draw_specific_interface();			///< Draws info and gui to the panel specific to warehouse. 
 	bool has_carrier_output() {return true;}
 	boost::shared_ptr<carrier_output> show_carrier_output() {return output;}
 	
@@ -207,12 +208,12 @@ class production_building : public building
 {
 public:
 	production_building(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
-	int specific_update();
-	void draw_specific_interface();
+	void specific_update();			///< Updates production building - decreases time to produce resource, produces resources. Called once each frame.
+	void draw_specific_interface();			///< Draws info and gui to the panel specific to production_buildings.
 	bool has_carrier_output() {return true;}
 	bool can_be_stopped() {return true;}
 	boost::shared_ptr<carrier_output> show_carrier_output() {return output;}
-	void upgrade();
+	void upgrade();	
 	
 	friend class boost::serialization::access;
 
@@ -243,7 +244,7 @@ class wall : public building
 public:
 	wall(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
 	~wall();
-	int specific_update();
+	void specific_update();
 	std::vector<game_object*> draw(int screen_position_x, int screen_position_y);
 	void add_people_to_draw(boost::weak_ptr<people> p) {people_to_draw.push_back(p);}
 	void reset_people_to_draw() {people_to_draw.clear();}
@@ -271,8 +272,8 @@ class gate : public building
 public:
 	gate(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
 	~gate();
-	int specific_update();
-	void draw_specific_interface();
+	void specific_update();
+	void draw_specific_interface();			///< Draws info and gui to the panel specific to gate.
 	void function_click(int mouse_x, int mouse_y);
 	std::vector<game_object*> draw(int screen_position_x, int screen_position_y);
 	void rotate(int tile_x, int tile_y, bool clockwise);
@@ -304,8 +305,8 @@ class house : public building
 {
 public:
 	house(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
-	int specific_update();
-	void draw_specific_interface();
+	void specific_update();
+	void draw_specific_interface();			///< Draws info and gui to the panel specific to house.
 	int show_happiness_modifier() {return base_happiness[upgrade_level] - 5*missing_resources;}
 	int number_of_workers() {return workers_by_house_level[upgrade_level];}
 	void upgrade() {}
@@ -338,9 +339,8 @@ class market : public building
 {
 public:
 	market(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
-	int specific_update() {return 0;}
 	int show_max_distance_to_house() {return max_distance_to_house;}
-	void draw_specific_interface();
+	void draw_specific_interface();			///< Draws info and gui to the panel specific to market.
 	bool has_carrier_output() {return true;}
 	bool can_be_stopped() {return true;}
 	boost::shared_ptr<carrier_output> show_carrier_output() {return output;}
@@ -369,8 +369,7 @@ class great_hall : public building
 {
 public:
 	great_hall(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
-	int specific_update() {return 0;}
-	void draw_specific_interface();
+	void draw_specific_interface();			///< Draws info and gui to the panel specific to great hall.
 	void function_click(int mouse_x, int mouse_y);
 	void specific_draw_function_info(int mouse_x, int mouse_y);
 	bool has_carrier_output() {return true;}
@@ -400,8 +399,8 @@ class church : public building
 {
 public:
 	church(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
-	int specific_update();  
-	void draw_specific_interface();
+	void specific_update();  
+	void draw_specific_interface();			///< Draws info and gui to the panel specific to church.
 	void upgrade() {}
 	bool can_be_stopped() {return true;}
 		
@@ -424,8 +423,8 @@ class store : public building
 {
 public:
 	store(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
-	int specific_update();
-	void draw_specific_interface();
+	void specific_update();
+	void draw_specific_interface();			///< Draws info and gui to the panel specific to store.
 	void function_click(int mouse_x, int mouse_y);
 	void specific_draw_function_info(int mouse_x, int mouse_y);
 	bool has_carrier_output() {return true;}
@@ -463,12 +462,14 @@ private:
 	const std::vector<int> time_to_trade{10*game_info::fps, 15*game_info::fps, 20*game_info::fps, 25*game_info::fps};
 };
 
+/**
+ * \brief Currently not used.
+ */
 class scout : public building
 {
 public:
 	scout(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
-	int specific_update() {return 0;}
-	void draw_specific_interface();
+	void draw_specific_interface();			///< Draws info and gui to the panel specific to scout.
 	bool has_carrier_output() {return true;}
 	boost::shared_ptr<carrier_output> show_carrier_output() {return output;}
 		
@@ -492,8 +493,6 @@ class stairs : public building
 public:
 	stairs(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
 	~stairs();
-	int specific_update() {return 0;}
-	void draw_specific_interface();
 	std::vector<game_object*> draw(int screen_position_x, int screen_position_y);
 	void rotate(int tile_x, int tile_y, bool clockwise);
 	

@@ -3,13 +3,17 @@
 
 #include "core.h"
 
+
+/**
+ * \brief Class for managing enemies high level behaviour.
+ *
+ */
 class enemy_ai
 {
 public:
-	void update(); 
-	void register_units();		//finds RED_PLAYER's warriors
-	void check_death_units();
-	void unit_attacked(tile* from);
+	void update();				///< Should be called once per frame, manages whole class.
+	void register_units();			///< Registers all currently existing enemy units to be controled by this class. 
+	void unit_attacked(tile* from);		///< Tells AI that AI's unit was attacked.
 
 	friend class boost::serialization::access;
 
@@ -23,6 +27,7 @@ public:
 	}
 		
 protected:
+	void check_death_units();
 	std::vector<tile*> weak_spots();
 	std::vector<std::vector<tile*>> accessible_buildings(tile* start);
 	
