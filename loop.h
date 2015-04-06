@@ -106,8 +106,10 @@ private:
 	int screen_position_y;
 	int number_of_frames;
 
-	//timeval time;
-	//long long int starting_time, drawing_time, people_time, buildings_time, session_time, rest;
+#ifdef UNIX
+	timeval time;
+	long long int starting_time, drawing_time, people_time, buildings_time, session_time, rest;
+#endif
 };
 /**
  * \brief Base class for all menu loops.

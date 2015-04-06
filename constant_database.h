@@ -27,7 +27,7 @@ private:
 	 * Returns map of pairs with "idx"-th element of tuple and index to vector of tuples. 
 	 * This map is the used to search for tuples by "idx"-th element.
 	 */
-	template <int idx>a
+	template <int idx>
 	static const std::multimap<typename std::tuple_element<idx, Tuple>::type, std::size_t> & get_map()
 	{
 		static std::multimap<typename std::tuple_element<idx, Tuple>::type, std::size_t> m;	

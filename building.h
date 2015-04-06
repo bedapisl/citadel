@@ -175,7 +175,7 @@ private:
 	std::vector<people_type> actions;
 	boost::shared_ptr<carrier_output> output;
 	const int time_to_make_unit = 6*game_info::fps;
-	const std::vector<int> max_units{4, 5, 6, 7};
+	const std::vector<int> max_units = std::vector<int>{4, 5, 6, 7};
 	const int time_to_support_unit = 30*game_info::fps;
 	const int max_actions = 7;
 	int number_of_functions;
@@ -335,8 +335,8 @@ private:
 	bool starving;
 	bool has_market;
 	int missing_resources;
-	const std::vector<int> workers_by_house_level{5,6,7,8};
-	const std::vector<int> base_happiness{-5, -2, 2, 5};
+	const std::vector<int> workers_by_house_level = std::vector<int>{5,6,7,8};
+	const std::vector<int> base_happiness = std::vector<int>{-5, -2, 2, 5};
 	int idle_workers;
 };
 
@@ -395,8 +395,8 @@ public:
 private:
 	great_hall() {}
 	boost::shared_ptr<carrier_output> output;
-	const std::vector<int> honour_for_upgrade{10, 15, 20, 25};
-	const std::vector<int> honour_for_feast{5, 20, 50, 100};
+	const std::vector<int> honour_for_upgrade = std::vector<int>{10, 15, 20, 25};
+	const std::vector<int> honour_for_feast = std::vector<int>{5, 20, 50, 100};
 	const int food_for_smallest_feast = 2;
 };
 
@@ -421,7 +421,7 @@ public:
 private:
 	church() {}
 	const int time_to_produce_honour = 5 * game_info::fps;
-	const std::vector<int> honour_produced{1,2,3,4};
+	const std::vector<int> honour_produced = std::vector<int>{1,2,3,4};
 };
 
 class store : public building
@@ -464,7 +464,7 @@ private:
 	const int button_start_x = 80;
 	const int button_start_y = 5;
 	const int exchange_rate_length = 150;
-	const std::vector<int> time_to_trade{10*game_info::fps, 15*game_info::fps, 20*game_info::fps, 25*game_info::fps};
+	const std::vector<int> time_to_trade = std::vector<int>{10*game_info::fps, 15*game_info::fps, 20*game_info::fps, 25*game_info::fps};
 };
 
 /**

@@ -1,9 +1,9 @@
 
-INCLUDE_DIR= -I'C:\allegro-5.1.8-msvc-12.0\include' -I'C:\Program Files\Microsoft Visual Studio 12.0\VC\include' -I'C:\Boost\include\boost-1_57'
+INCLUDE_DIR= -Iinclude
 ARCHITECTURE=$(shell uname -m | sed 's@x86_64@64@' | sed 's@i686@32@')
-CC=C:\Program Files\Microsoft Visual Studio 12.0\VC\bin\cl.exe
-CFLAGS= -std=c++11 -ftemplate-depth=1024 -pedantic -Wall -O3 $(INCLUDE_DIR)	#-lprofiler
-LDFLAGS=-L'C:\allegro-5.1.8-msvc-12.0\lib'
+CC=g++
+CFLAGS= -std=c++11 -ftemplate-depth=1024 -pedantic -Wall -O3 -Wno-sign-compare $(INCLUDE_DIR)	#-lprofiler
+LDFLAGS=-Llib$(ARCHITECTURE)
 BINARY_NAME=citadel_$(shell $(shell pwd)/citadel.out -v)_$(ARCHITECTURE)bit
 				#allegro headers are in /usr/include/allegro5
 

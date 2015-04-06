@@ -270,9 +270,10 @@ void game_loop::mouse_right_up(ALLEGRO_EVENT* ev)
 
 void game_loop::timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y)
 {
+#ifdef UNIX		//we are using unix time library which is not on other platforms
 	gettimeofday(&time, NULL);
 	starting_time = time.tv_usec + time.tv_sec*1000000;
-
+#endif
 	number_of_frames++;
 	LOG("EVENT_TIMER - frame number:" << number_of_frames);
 
@@ -280,19 +281,20 @@ void game_loop::timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y)
 	mouse->move(screen_position_x, screen_position_y);	//if screen moves, mouse "pseudo" moves too
 	
 	draw();
-
+#ifdef UNIX
 	gettimeofday(&time, NULL);
 	drawing_time = time.tv_usec + time.tv_sec*1000000;
-
+#endif
 	LOG("updating people");
 
 	for(int i = 0; i<session->people_list.size(); i++)
 	{
 		session->people_list[i]->update();
 	}
-
+#ifdef UNIX
 	gettimeofday(&time, NULL);
 	people_time = time.tv_usec + time.tv_sec*1000000;
+#endif
 
 	LOG("updating buildings");
 
@@ -301,10 +303,10 @@ void game_loop::timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y)
 	{
 		session->building_list[i]->update();
 	}
-
+#ifdef UNIX
 	gettimeofday(&time, NULL);
 	buildings_time = time.tv_usec + time.tv_sec*1000000;
-
+#endif
 	LOG("updating missiles");
 
 	for(int i = 0; i<session->missile_list.size(); i++)
@@ -318,18 +320,19 @@ void game_loop::timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y)
 	session->update(mouse, done);
 	if(done)
 		event_handler::get_instance().change_state(game_state::MAIN_MENU);
-		
+#ifdef UNIX
 	gettimeofday(&time, NULL);
 	session_time = time.tv_usec + time.tv_sec*1000000;
+#endif
 	delete_death(mouse);
-
+#ifdef UNIX
 	gettimeofday(&time, NULL);
 	rest = time.tv_usec + time.tv_sec*1000000;
 
 	LOG("drawing: " << drawing_time - starting_time << " updating people: " << people_time - drawing_time << 
 			" updating buildings: " << buildings_time - people_time << " updating session " << session_time - buildings_time << 
 			" rest: " << rest - session_time);
-
+#endif
 	LOG("end of frame");
 }
 

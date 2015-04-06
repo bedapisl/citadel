@@ -12,6 +12,10 @@
 
 #define VERSION 0.2
 
+#if defined(unix) || defined(__unix__) || defined(__unix)
+	#define UNIX
+#endif
+
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_ttf.h>
@@ -21,13 +25,14 @@
 #include <allegro5/allegro_acodec.h>
 #include <iostream>
 #include <ctime>
-//#include <sys/time.h>
+#if UNIX
+	#include <sys/time.h>
+#endif
 #include <math.h>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <queue>
-//#include <memory>
 #include <algorithm>
 #include <limits>
 #include <queue>
