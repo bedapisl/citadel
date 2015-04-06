@@ -74,15 +74,18 @@ void create_display()
 				display_height = display_mode.height;
 			}
 		}
+		LOG("Fullscreen display");
 	}
 	else
 	{
 		al_set_new_display_flags(ALLEGRO_WINDOWED);
 		al_set_new_display_flags(ALLEGRO_RESIZABLE);
+		LOG("Windowed display");
 	}
 
 	al_set_new_window_position(10, 10);
 
+	LOG("Creating display - width: " << display_width << " height: " << display_height);
 	game_info::display = al_create_display(display_width, display_height);
 
 	if(!game_info::fullscreen)		//Dont delete this. It looks useless, but it probably prevents bug in Allegro, which causes
