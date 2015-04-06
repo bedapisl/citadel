@@ -106,8 +106,8 @@ private:
 	int screen_position_y;
 	int number_of_frames;
 
-	timeval time;
-	long long int starting_time, drawing_time, people_time, buildings_time, session_time, rest;
+	//timeval time;
+	//long long int starting_time, drawing_time, people_time, buildings_time, session_time, rest;
 };
 /**
  * \brief Base class for all menu loops.
@@ -158,7 +158,7 @@ private:
 	void check_clicked_buttons();
 
 	std::vector<boost::shared_ptr<menu_button>> buttons;
-	const std::vector<std::string> options_names{"Continue", "Save", "Exit"};
+	const std::vector<std::string> options_names = std::vector<std::string>{"Continue", "Save", "Exit"};
 
 	ALLEGRO_BITMAP* game_bitmap;
 };
@@ -181,7 +181,7 @@ protected:
 	std::vector<std::string> find_save_files();
 
 	static const int header_height = 100;
-	const std::vector<std::string> option_names{"Load", "Save", "Delete", "Return"};
+	const std::vector<std::string> option_names = std::vector<std::string>{"Load", "Save", "Delete", "Return"};
 	
 	std::vector<boost::shared_ptr<menu_button>> real_buttons;
 	std::vector<boost::shared_ptr<menu_button>> file_buttons;
@@ -239,13 +239,13 @@ private:
 	void update_gui_blocks_position();
 	void check_clicked_buttons();
 	void start_new_game();
-	const std::vector<std::string> resources_names{"Wood", "Stone", "Marble", "Bricks"};
-	const std::vector<std::string> resources_initial_values{"200", "100", "10", "10"};
-	const std::vector<std::string> natural_resources_names{"Water", "Wood", "Fertile soil", "Iron", "Coal", "Marble", "Gold"};
+	const std::vector<std::string> resources_names = std::vector<std::string>{"Wood", "Stone", "Marble", "Bricks"};
+	const std::vector<std::string> resources_initial_values = std::vector<std::string>{"200", "100", "10", "10"};
+	const std::vector<std::string> natural_resources_names = std::vector<std::string>{"Water", "Wood", "Fertile soil", "Iron", "Coal", "Marble", "Gold"};
 	std::vector<boost::shared_ptr<text_field>> text_fields;
 	std::vector<boost::shared_ptr<slider>> sliders;
 	std::vector<boost::shared_ptr<menu_button>> buttons;
-	std::vector<std::string> button_names{"Back", "Start game"};
+	std::vector<std::string> button_names = std::vector<std::string>{"Back", "Start game"};
 };
 
 
