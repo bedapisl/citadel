@@ -78,24 +78,36 @@ void event_handler::run()
 	while(!done)
 	{
 		al_wait_for_event(queue, ev);
-		//al_get_next_event(queue, ev);
 		{
 			switch(ev->type)
 			{
 				case(ALLEGRO_EVENT_KEY_DOWN):
+				{
+					LOG("KEY_DOWN");
 					handle_key_down(ev);
 					break;
+				}
 				case(ALLEGRO_EVENT_KEY_UP):
+				{
+					LOG("KEY_UP");
 					current_loop->key_up(ev);
 					break;
+				}
 				case(ALLEGRO_EVENT_KEY_CHAR):
+				{
+					LOG("KEY_CHAR");
 					current_loop->key_char(ev);
 					break;
+				}
 				case(ALLEGRO_EVENT_MOUSE_AXES):
+				{
+					LOG("MOUSE_AXES");
 					current_loop->mouse_axes(ev);
 					break;
+				}
 				case(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN):
 				{
+					LOG("MOUSE_BUTTON_DOWN");
 					if(ev->mouse.button == 1)
 						current_loop->mouse_left_down(ev);
 					else if(ev->mouse.button == 2)
@@ -104,6 +116,7 @@ void event_handler::run()
 				break;
 				case(ALLEGRO_EVENT_MOUSE_BUTTON_UP):
 				{
+					LOG("MOUSE_BUTTON_UP");
 					if(ev->mouse.button == 1)
 						current_loop->mouse_left_up(ev);
 					else if(ev->mouse.button == 2)
@@ -111,20 +124,30 @@ void event_handler::run()
 				}
 				break;
 				case(ALLEGRO_EVENT_TIMER):
+				{
+					LOG("TIMER");
 					timer_event = true;		//this will happen after everything else is done
 					break;
+				}
 				case(ALLEGRO_EVENT_DISPLAY_RESIZE):
+				{
+					LOG("RESIZE_DISPLAY");
 					resize_window(ev);
 					break;
+				}
 				case(ALLEGRO_EVENT_DISPLAY_CLOSE):
+				{
+					LOG("DISPLAY_CLOSE");
 					display_close();
 					break;
+				}
 				default:
 					{}
 			}
 			
 			if(timer_event && al_is_event_queue_empty(queue))
 			{
+				LOG("DRAW");
 				al_get_mouse_state(mouse_state);
 				music::get_instance().update();
 				current_loop->timer(ev, mouse_state->x, mouse_state->y);
