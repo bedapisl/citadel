@@ -63,9 +63,17 @@ void create_display()
 	if(game_info::fullscreen)
 	{
 		al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
-		al_get_display_mode(0, &display_mode);
-		display_width = display_mode.width;
-		display_height = display_mode.height;
+
+		for(int i=0; i<al_get_num_display_modes(); ++i)
+		{
+			al_get_display_mode(i, &display_mode);
+
+			if(display_width < display_mode.width)
+			{
+				display_width = display_mode.width;
+				display_height = display_mode.height;
+			}
+		}
 	}
 	else
 	{

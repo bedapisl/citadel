@@ -19,15 +19,6 @@ void button::draw_button(int button_number)
 	else if(button_number < 9)
 		al_draw_textf(font15, WRITING_COLOR, button_number*BUTTON_SIZE + 72, display_height - 23, ALLEGRO_ALIGN_RIGHT, "%i", button_number + 1);
 }
-/*
-int button::init(ALLEGRO_BITMAP* image, button_type type, bool multiple_selection)
-{
-	action_image = image;
-	this->type = type;
-	this->multiple_selection = multiple_selection;
-	return 0;
-}
-*/
 
 button::button(ALLEGRO_BITMAP* image, button_type type, bool multiple_selection)
  		: action_image(image), type(type), multiple_selection(multiple_selection)

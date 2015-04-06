@@ -25,7 +25,7 @@
 #include <allegro5/allegro_acodec.h>
 #include <iostream>
 #include <ctime>
-#if UNIX
+#ifdef UNIX
 	#include <sys/time.h>
 #endif
 #include <math.h>
