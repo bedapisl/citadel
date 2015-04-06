@@ -142,7 +142,7 @@ missile::missile(missile_type type, tile* attacker_position, int damage, tile* g
 }
 
 /*Draws and update missile. Should be called once every frame.*/
-int missile::draw_missile(int screen_position_x, int screen_position_y)
+int missile::draw_and_update(int screen_position_x, int screen_position_y)
 {
 	if(is_death())
 		return 0;
@@ -386,11 +386,11 @@ int stock::save(resources type, int amount)
 	return 0;
 }
  
-void stock::save_list(std::vector<int> prices)
+void stock::save_list(std::vector<int> amount)
 {
-	for(int i=0; i<prices.size(); ++i)
+	for(int i=0; i<amount.size(); ++i)
 	{
-		save(static_cast<resources>(i), prices[i]);
+		save(static_cast<resources>(i), amount[i]);
 	}
 }
 
@@ -403,18 +403,18 @@ bool stock::try_subtract(resources type, int amount)
 	return true;
 }
  
-bool stock::try_subtract_list(std::vector<int> price)
+bool stock::try_subtract_list(std::vector<int> amount)
 {
 	for(int i=0; i<NUMBER_OF_RESOURCES; ++i)
 	{
-		if(stored[i] < price[i])
+		if(stored[i] < amount[i])
 		{
 			return false;
 		}
 	}
 	for(int i=0; i<NUMBER_OF_RESOURCES; ++i)
 	{
-		stored[i] -= price[i];
+		stored[i] -= amount[i];
 	}
 	return true;
 }

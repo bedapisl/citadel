@@ -11,6 +11,9 @@ extern ALLEGRO_BITMAP** image_list;
 class carrier;
 class building;
 
+/**
+ * \brief Class maintaing high level informations about game.
+ */
 class game_info{
 public:
 	static int map_width;
@@ -24,12 +27,16 @@ public:
 	static void load_game_info();
 };
 
+/**
+ * \brief Class managing texts which appears on the map.
+ */
 class graphical_texts
 {
 public:
 	graphical_texts() { }
 	void add_hint(int game_x, int game_y, const std::string& hint_text, ALLEGRO_COLOR color) {hints.push_back(hint(game_x, game_y, hint_text, color));}
-	void draw_and_update(int screen_position_x, int screen_position_y);
+			///< Adds new texts to be drawn on given location.
+	void draw_and_update(int screen_position_x, int screen_position_y);	///< Draws and updates texts - deletes old texts.
 
 private:
 	static const int standard_hint_time = 90;
@@ -44,12 +51,14 @@ private:
 	
 	std::vector<hint> hints;
 };
-
+/**
+ * \brief Represents any projectile in the game.
+ */
 class missile{
 public:
 	missile_type type;
 	missile(missile_type type, tile* attacker_position, int damage, tile* goal);
-	int draw_missile(int screen_position_x, int screen_position_y);
+	int draw_and_update(int screen_position_x, int screen_position_y);	///< Draws and update missile. If missile reached goal it will become dead.
 	bool is_death() {return bIs_death;}
 	
 	friend class boost::serialization::access;
@@ -99,20 +108,22 @@ bool contains(std::vector<T> v, T element)
 	}
 	return false;
 }
-
+/**
+ * \brief Represents any storage for ingame resources.
+ */
 class stock
 {
 public:
 	stock(int capacity) : capacity(capacity), stored(NUMBER_OF_RESOURCES, 0) {}	
 	virtual ~stock() {}
-	virtual int save(resources type, int amount);	//if cant save everyhing, returns how much remainds
-	void save_list(std::vector<int> prices);		//what cant be saved is thrown away
-	virtual bool try_subtract(resources type, int amount);	//if can subtract, returns true, otherwise returns false
-	virtual bool try_subtract_list(std::vector<int> price);
-	virtual void subtract(resources type, int amount);
+	virtual int save(resources type, int amount);		///< Saves as much of resource as possible, returns the rest.
+	void save_list(std::vector<int> amount);		///< Saves as much as possible, throws away the rest.
+	virtual bool try_subtract(resources type, int amount);	///< If possible subtract resource from stock and returns true. Otherwise do nothing and return false.
+	virtual bool try_subtract_list(std::vector<int> amount);///< If possible subtract resource from stock and returns true. Otherwise do nothing and return false.
+	virtual void subtract(resources type, int amount);	///< Subtract resources. If not possible, throws exception.
 	int show_amount(resources type) {return stored[type];}
 	int show_capacity() {return capacity;}
-	void draw_nonzero_resources(int real_x, bool with_capacity);
+	void draw_nonzero_resources(int real_x, bool with_capacity);	///< Draws resources from stock to panel.
 	void increase_capacity(int new_capacity);
 	
 	friend class boost::serialization::access;
@@ -131,21 +142,24 @@ protected:
 
 	stock() {}	//for boost serialization
 };
-
+/**
+ * \brief Manages transporting resources with carriers.
+ */
 class carrier_output : public stock
 {
 public:
 	carrier_output(int capacity, std::vector<resources> in, std::vector<resources> out, int number_of_carriers);
-	void update();
-	bool reserve_transaction(resources resource_type, int amount, transaction_type type);	//returns true on success
-	void delete_transaction(resources resource_type, int amount, transaction_type type);
-	bool accomplish_transaction(resources resource_type, int amount, transaction_type type);
+	void update();		///< Should be called once per frame. Creates new carriers, assign work to idle ones.
+	bool reserve_transaction(resources resource_type, int amount, transaction_type type);	///< Reserves resources or capacity for some transaction.
+	void delete_transaction(resources resource_type, int amount, transaction_type type);	///< Removes previous reservation.
+	bool accomplish_transaction(resources resource_type, int amount, transaction_type type);///< Fullfils previous reservation by accompilshing transaction.
 	int show_max_possible_transaction(resources resource_type, transaction_type type);
 	int show_free_space(resources resource_type) {return capacity - stored[static_cast<int>(resource_type)] - reserved_in[static_cast<int>(resource_type)];}
-	void add_idle_carrier(boost::weak_ptr<carrier> returned_carrier) {idle_carriers.push_back(returned_carrier);}
-	void init(boost::shared_ptr<building> building_ptr) {this_building = building_ptr;}
+		///< How much more resources can be stored.
+	void add_idle_carrier(boost::weak_ptr<carrier> returned_carrier) {idle_carriers.push_back(returned_carrier);}	///< Carrier will start waiting for carrier_output orders.
+	void init(boost::shared_ptr<building> building_ptr) {this_building = building_ptr;}	
 	void change_accepted_resources(resources r, bool in, bool add);
-	int show_idle_carrier_capacity();
+	int show_idle_carrier_capacity();		///< How much resources can idle carriers in this carrier_output carry.
 	
 	friend class boost::serialization::access;
 

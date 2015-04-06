@@ -19,7 +19,7 @@ void button::draw_button(int button_number)
 	else if(button_number < 9)
 		al_draw_textf(font15, WRITING_COLOR, button_number*BUTTON_SIZE + 72, display_height - 23, ALLEGRO_ALIGN_RIGHT, "%i", button_number + 1);
 }
-
+/*
 int button::init(ALLEGRO_BITMAP* image, button_type type, bool multiple_selection)
 {
 	action_image = image;
@@ -27,6 +27,13 @@ int button::init(ALLEGRO_BITMAP* image, button_type type, bool multiple_selectio
 	this->multiple_selection = multiple_selection;
 	return 0;
 }
+*/
+
+button::button(ALLEGRO_BITMAP* image, button_type type, bool multiple_selection)
+ 		: action_image(image), type(type), multiple_selection(multiple_selection)
+{ } 
+
+	
 
 int button::general_update_tiles_with_action(bool mouse_button_down, int tile_x, int tile_y, int button_down_tile_x, int button_down_tile_y)
 {
@@ -229,20 +236,13 @@ void button::draw_progress_bar(int start_x, int start_y, int percentage, int bar
 }
 
 /*Initialize button. Creates imaginary building which will be drawn if player will be chosing locations of his new building.*/
-button_build::button_build(building_type type_of_building)
+button_build::button_build(building_type type_of_building) : button(image_list[building_info::show_building_info(type_of_building).image], BUTTON_BUILD, false), 
+		type_of_building(type_of_building), number_of_floors(building_info::show_building_info(type_of_building).number_of_floors)
 {
-	ALLEGRO_BITMAP* image = image_list[building_info::show_building_info(type_of_building).image];
-	number_of_floors = building_info::show_building_info(type_of_building).number_of_floors;
-
-	bool multiple_selection = false;
-
 	buildings_to_draw.push_back(building::create_building(type_of_building, 0, 0, 0, BLUE_PLAYER, false));
 	
 	if((type_of_building == WALL) || (type_of_building == PALISADE))
 		multiple_selection = true;
-
-	button::init(image, BUTTON_BUILD, multiple_selection);
-	this->type_of_building = type_of_building;
 }
 
 /* Is called if there is action on tile. (Player is chosing location of his new building.)*/
@@ -315,7 +315,7 @@ void button_build::map_click()
 }
 
 /*Draws imaginary building or sets action_on_tile so that imaginary building will be drawn by draw_map() function.*/ 
-void button_build::draw_action(int screen_position_x, int screen_position_y, boost::shared_ptr<button> this_button)
+void button_build::draw_action(int screen_position_x, int screen_position_y)
 {
 	for(size_t i=0; i<tiles_with_action.size(); ++i)		//if !multiple_selection, then tiles_with_action.size() should be 1 or 0.
 	{
@@ -327,7 +327,7 @@ void button_build::draw_action(int screen_position_x, int screen_position_y, boo
 		else
 			buildings_to_draw[i]->draw_green = false;
 		
-		session->tile_list[tile_y][tile_x]->action_on_tile = this_button;
+		session->tile_list[tile_y][tile_x]->action_on_tile = shared_from_this();
 		session->tile_list[tile_y][tile_x]->number_of_tile_with_action = i;
 	}
 }
@@ -465,10 +465,10 @@ void button_build::reset_tiles_with_action()
 	button::reset_tiles_with_action();
 }
 
-button_path::button_path(bool add)
+button_path::button_path(bool add) : button(image_list[PATHS_IMAGE], BUTTON_PATH, true)
 {
 	this->add = add;
-	button::init(image_list[PATHS_IMAGE], BUTTON_PATH, true);
+	//button::init();
 }
 
 game_object* button_path::draw(int tile_x, int tile_y, int surface_height, int number_of_tile)
@@ -493,11 +493,11 @@ void button_path::map_click()
 	}
 }
 
-void button_path::draw_action(int screen_position_x, int screen_position_y, boost::shared_ptr<button> this_button)
+void button_path::draw_action(int screen_position_x, int screen_position_y)
 {
 	for(size_t i=0; i<tiles_with_action.size(); ++i)
 	{
-		tiles_with_action[i]->action_on_tile = this_button;
+		tiles_with_action[i]->action_on_tile = shared_from_this();
 		tiles_with_action[i]->number_of_tile_with_action = i;
 		tiles_with_action[i]->add_path(false);
 	}
@@ -556,9 +556,9 @@ void button_path::reset_tiles_with_action()
 }
 
 
-navigation_button::navigation_button(navigation_button_type navigation_type, const std::string& button_name) : navigation_type(navigation_type), name(button_name)
+navigation_button::navigation_button(navigation_button_type navigation_type, const std::string& button_name) 
+	: button(image_list[NAVIGATION_BUTTONS_IMAGE], NAVIGATION_BUTTON, false), navigation_type(navigation_type), name(button_name)
 {	
-	button::init(image_list[NO_IMAGE], NAVIGATION_BUTTON, false);
 }
 
 void navigation_button::draw_button(int button_number)

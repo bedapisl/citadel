@@ -4,36 +4,36 @@
 #include "core.h"
 #include "others.h"
 
+/**
+ * \brief Represents mouse.
+ */
 class game_mouse
 {
 public:
-	void left_button_go_down(int &screen_position_x, int &screen_position_y, rotation* rotate);
-	void right_button_go_down();
-	void left_button_go_up(int screen_position_x, int screen_position_y);
-	void right_button_go_up();
-	int move(int & screen_position_x, int & screen_position_y); 
-	std::pair<int, int> find_mouse_location(int screen_position_x, int screen_position_y);
-	int draw_mouse(int screen_position_x, int screen_position_y);
-	ALLEGRO_MOUSE_STATE* state;
-	int show_tile_x() {return tile_x;}
-	int show_tile_y() {return tile_y;}
-	int mouse_x() {al_get_mouse_state(state); return state->x;} 
-	int mouse_y() {al_get_mouse_state(state); return state->y;}
+	void left_button_go_down(int &screen_position_x, int &screen_position_y, rotation* rotate); 	///< Handles pressing of left mouse button.
+	void right_button_go_down();									///< Handles pressing of right mouse button.
+	void left_button_go_up(int screen_position_x, int screen_position_y);				///< Handles release of left mouse button.
+	void right_button_go_up();					///< Handles release of right mouse buttton.
+	int move(int & screen_position_x, int & screen_position_y); 	///< Handles movement of mouse.
+	int draw_mouse(int screen_position_x, int screen_position_y);	///< Higlights selected objects and objects under cursor.
+	int show_tile_x() {return tile_x;}				///< Returns x coordinate of tile under mouse cursor.
+	int show_tile_y() {return tile_y;}				///< Returns y coordinate of tile under mouse cursor.
+	int mouse_x() {al_get_mouse_state(state); return state->x;} 	///< Returns where mouse is relative to upper-left corner of display
+	int mouse_y() {al_get_mouse_state(state); return state->y;}	///< Returns where mouse is relative to upper-left corner of display
 	bool is_building_chosen() {return !chosen_building.expired();}
-	int check_death();
-	//int show_number_of_chosen_people() {return chosen_people.size();}
-	int draw_button_info();
-	int choose_button(boost::shared_ptr<button> button_to_choose);
-	int unchoose_button();
+	int check_death();						///< Removes pointers to dead objects from game_mouse inner structures.
+	int draw_button_info();						///< Draws info about right button on panel.
+	int choose_button(boost::shared_ptr<button> button_to_choose);	///< Makes button the active one, which will be used when player clicks to map.
+	int unchoose_button();						
 	game_mouse();
 	~game_mouse();
-	boost::weak_ptr<building> chosen_building;
-	std::vector<boost::weak_ptr<people>> chosen_people;
-	//chosen is_chosen;
-	boost::weak_ptr<button> chosen_button;
+	ALLEGRO_MOUSE_STATE* state;
+	boost::weak_ptr<building> chosen_building;			///< The selected building.
+	std::vector<boost::weak_ptr<people>> chosen_people;		///< Selected people.
+	boost::weak_ptr<button> chosen_button;				///< Selected button.
 
 private:
-	//int number_of_chosen_people;
+	std::pair<int, int> find_mouse_location(int screen_position_x, int screen_position_y);
 	int button_down_game_x;					
 	int button_down_game_y;
 	int button_down_tile_x;
@@ -45,7 +45,5 @@ private:
 	int mouse_wheel_position;
 	bool scrolling;
 };
-
-int* mouse_over(int mouse_x, int mouse_y, int screen_position_x, int screen_position_y, const std::vector<std::vector<boost::shared_ptr<tile>>> & tile_list);
 
 #endif

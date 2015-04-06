@@ -8,16 +8,11 @@ class game_session;
 
 extern game_session* session;
 
+/** 
+ * \brief Class which offers customizable A* and BFS algorithms.
+ */
 class pathfinding
 {
-private:
-	template <typename TILE_TYPE>
-	static std::vector<tile*> find_path_back(const std::vector<std::vector<TILE_TYPE>>& map, tile* goal_tile);
-
-	struct search_tile;
-	struct a_star_tile;
-	class comparator_functor;
-
 public:
 	class single_tile_goal_functor;
 	class single_tile_heuristic_functor;
@@ -31,14 +26,33 @@ public:
 
 	static std::vector<tile*> adjacent_tiles(tile* t, bool move_diagonally);
 	
+	/** \brief Returns all paths to goal tiles. 
+	 * Whether it is possible to got from one tile to another is determined by accessible function which must be function with signature 
+	 * "bool f(tile* t1, tile* t2)" or equivalent functor, lambda, .... Goal function should have signature bool "bool f(tile* t)" or equivalent.
+	*/
 	template <typename ACCESSIBLE, typename GOAL>
 	static std::vector<std::vector<tile*>> breadth_first_search(std::vector<tile*> starting_tiles, ACCESSIBLE accessible_function, GOAL goal_function,
 						bool move_diagonally = true, bool check_goal_accessible = true, int max_distance = std::numeric_limits<int>::max());
-
+	/**
+	 * \brief Returns shortest path from any starting tile to any goal tile.
+	 * All template parameters represent something which can be called with given signature.
+	 * \param ACCESSIBLE:		should be callable like bool f(tile* t1, tile* t2) 	- is it possible to go from t1 to t2
+	 * \param GOAL:			should be callable like bool f(tile* t) 		- is t goal tile?
+	 * \param HEURISTIC:		should be callable like double f(tile* t)		- what is the lower bound for distance to from t to some goal tile
+	 * \param REAL_DISTANCE:	should be callable like double f(tile* t1, tile* t2)	- what is the real distance between t1 and t2, t1 and t2 are adjacent (it may take more time to move diagonally for example)
+	 */
 	template <typename ACCESSIBLE, typename GOAL, typename HEURISTIC, typename REAL_DISTANCE>
 	static std::vector<tile*> a_star(std::vector<tile*> starting_tiles, ACCESSIBLE accessible_function, GOAL goal_function, HEURISTIC heuristic_function, REAL_DISTANCE real_distance_function, bool move_diagonally = true);
 
 	static std::vector<tile*> near_accessible_tiles(tile* middle_tile, int number_of_tiles);
+
+private:
+	template <typename TILE_TYPE>
+	static std::vector<tile*> find_path_back(const std::vector<std::vector<TILE_TYPE>>& map, tile* goal_tile);
+
+	struct search_tile;
+	struct a_star_tile;
+	class comparator_functor;
 };
 
 struct pathfinding::search_tile
@@ -142,6 +156,9 @@ public:
 	}
 };
 
+/**
+ * \brief Goal functor when goal is just single tile known before the search starts.
+ */
 class pathfinding::single_tile_goal_functor
 {
 public:
@@ -152,6 +169,9 @@ private:
 	tile* goal_tile;
 };
 
+/**
+ * \brief Heuristic functor when goal is just single tile knwon before the search starts. Used heuristic is euclidean distance.
+ */
 class pathfinding::single_tile_heuristic_functor
 {
 public:
@@ -162,6 +182,9 @@ private:
 	tile* goal_tile;
 };
 
+/**
+ * \brief Goal functor when there is more goals known before the search starts.
+ */
 class pathfinding::multiple_tile_goal_functor
 {
 public:
@@ -171,12 +194,18 @@ private:
 	std::vector<tile*> goal_tiles;
 };
 
+/**
+ * \brief Empty heuristic functor - returns 0 all the time.
+ */
 class pathfinding::unknown_heuristic_functor
 {
 public:	
 	double operator() (tile* t) {return 0.0;}
 };
 
+/**
+ * \brief Goal functor used when path should end on tile adjacent to building.
+ */
 class pathfinding::single_building_goal_functor	
 {
 public:
@@ -205,7 +234,9 @@ public:
 private:
 	std::vector<tile*> adjacent_to_goal;
 };
-
+/**
+ * \brief Goal functor when goal is any building.
+ */
 class pathfinding::any_building_goal_functor
 {
 public: 
@@ -226,7 +257,9 @@ public:
 private:
 	std::vector<int> founded_buildings_ids;
 };
-
+/**
+ * \brief Goal functor when goal is any tile from which given unit can attack enemies.
+ */
 class pathfinding::any_enemy_goal_functor
 {
 public:
@@ -262,6 +295,9 @@ private:
 	boost::shared_ptr<warrior> warrior_ptr;
 };
 
+/**
+ * \brief Functor which returns euclidean distance of tiles.
+ */
 class pathfinding::normal_real_distance_functor
 {
 public:
@@ -271,6 +307,9 @@ public:
 	}
 };
 
+/**
+ * \brief Real distance functor used by carriers, which are slowed down by other carriers in their path.
+ */
 class pathfinding::carrier_real_distance_functor
 {
 public:

@@ -16,15 +16,19 @@ class loop;
 class game_info;
 class game_mouse;
 
+/**
+ * \brief Manages run of whole program.
+ */
+
 class event_handler
 {
 public:
 	virtual ~event_handler();
 	static event_handler& get_instance();
 
-	void run();
-	void quit() {done = true;}
-	void change_state(game_state state);
+	void run();			///< Main function. Starts executing main_menu_loop.
+	void quit() {done = true;}	///< Halts the program.
+	void change_state(game_state state);	///< Go to another state (for example from "main menu" to "load/save menu).
 
 private:
 	event_handler();
@@ -44,6 +48,9 @@ private:
 	bool done;
 };
 
+/**
+ * \brief General loop interface. All loops are managed by event_handler which executes them by calling their function when event comes.
+ */
 class loop
 {
 public:
@@ -64,13 +71,16 @@ public:
 	virtual void mouse_right_down(ALLEGRO_EVENT* ev) {}
 	virtual void mouse_right_up(ALLEGRO_EVENT* ev) {}
 	virtual void timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y) {}
-	virtual void start() {}
-	virtual void end() {}
+	virtual void start() {}		///< Called before the loop will start executing.
+	virtual void end() {}		///< Called after the loop finishes.
 
 private:
 
 };
 
+/**
+ * \brief This loop controls the regular game, when player is not in menus. 
+ */
 class game_loop : public loop
 {
 public:
@@ -99,7 +109,9 @@ private:
 	timeval time;
 	long long int starting_time, drawing_time, people_time, buildings_time, session_time, rest;
 };
-
+/**
+ * \brief Base class for all menu loops.
+ */
 class menu_loop : public loop
 {
 public:
@@ -129,18 +141,14 @@ protected:
 
 	std::vector<gui_block> blocks;
 };
-
+/**
+ * \brief Represents menu when game is only paused.
+ */
 class ingame_menu : public menu_loop
 {
 public:
 	ingame_menu();
 	void escape_down(ALLEGRO_EVENT* ev); 
-	//void enter_down(ALLEGRO_EVENT* ev);
-	//void up_arrow_down(ALLEGRO_EVENT* ev);
-	//void down_arrow_down(ALLEGRO_EVENT* ev);
-	//void mouse_axes(ALLEGRO_EVENT* ev);
-	//void mouse_left_down(ALLEGRO_EVENT* ev);
-	//void timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y);
 	void start();
 	void end();
 
@@ -153,26 +161,11 @@ private:
 	const std::vector<std::string> options_names{"Continue", "Save", "Exit"};
 
 	ALLEGRO_BITMAP* game_bitmap;
-
-	/*
-	const int menu_width = 400;
-	const int menu_start_y = 100;
-	const int button_start_x = 20;
-	const int button_start_y = 20;
-	const int button_distance = 100;
-	const int button_heigth = 60;
-	*/
-//	const std::vector<std::string> options_names{"Continue", "Save", "Exit"};
-
-//	ALLEGRO_BITMAP* game_bitmap;
-
-//	void execute_option(ingame_menu_options option);
-//	void draw_ingame_menu();
-//	ingame_menu_options compute_ingame_menu_options(int x, int y);
-
-	//ingame_menu_options chosen_option;
 };
 
+/**
+ * \brief Load save menu.
+ */
 class save_menu : public menu_loop
 {
 public:

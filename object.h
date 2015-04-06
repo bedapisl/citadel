@@ -12,12 +12,15 @@ extern std::ofstream log_file;
 int compute_game_x(int tile_x, int tile_y);		//defined in core.h
 int compute_game_y(int tile_x, int tile_y);
 
+/**
+ * \brief Represents any ingame object which can be drawn.
+ */
 class game_object {
 public:
 	game_object(int tile_x, int tile_y, int surface_height, bool is_real, picture image, int number_of_floors, game_object_type type_of_object);
 	virtual ~game_object() {}
-	int update(int tile_x, int tile_y, int surface_height);
-	virtual std::vector<game_object*> draw(int screen_position_x, int screen_position_y) = 0;
+	void update(int tile_x, int tile_y, int surface_height);		///< Sets new position of object.
+	virtual std::vector<game_object*> draw(int screen_position_x, int screen_position_y) = 0;	///< Draws the object and returns any objects above on the same coordinates.
 	int show_surface_height() {return surface_height;}
 	int show_current_drawing_height() {return surface_height + drawing_floor;}
 	int show_tile_x() {return tile_x;}
@@ -29,8 +32,8 @@ public:
 	virtual void rotate(int tile_x, int tile_y, bool clockwise) {update(tile_x, tile_y, this->surface_height);}
 	
 	static int highest_surface;
-	bool draw_green;
-	game_object_type type_of_object;
+	bool draw_green;			///< Used when player is choosing location of new building. New building is green, if it can be build on given location.
+	game_object_type type_of_object;	
 	
 	friend class boost::serialization::access;
 
@@ -56,20 +59,18 @@ public:
 	}
 
 protected:
-	int tile_x;
-	int tile_y;
-	int game_x;
-	int game_y;
-	int number_of_floors;
-	int drawing_floor;
-	bool is_real;
+	int tile_x;		///< Second index to tile_list and x coordinate in map, where x axes is diagonal, lower values on upper-left, higher on lower-right. 
+	int tile_y;		///< First index to tile_list and y coordinate in map, where y axes is diagonal, lower values on upper-right, higher on lower-left. 
+	int game_x;		///< Pixels from the most left point of the map.
+	int game_y;		///< Pixels from the highest point of the map. 
+	int number_of_floors;	///< Some higher objects are drawn one floor at a time to achieve right perspective.
+	int drawing_floor;	///< Which floor will be drawn next.
+	bool is_real;		///< Unreal objects don't interact with the rest of the game but must be drawed in right place.
 	picture image;
 	game_object() {}		//for boost serialization
 
 private:
 	int surface_height;
-	
-
 };
 
 #endif

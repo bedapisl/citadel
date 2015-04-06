@@ -142,17 +142,16 @@ void people::draw_partial_interface(int button_number)
 	button::draw_progress_bar(button_number * BUTTON_SIZE + 8, display_height - 10, (100*life)/max_life, 64, 6);
 }
 
-int people::draw_life_bar(int screen_position_x, int screen_position_y)
+void people::draw_life_bar(int screen_position_x, int screen_position_y)
 {
 	if(hidden)
-		return 0;
+		return;
 
 	int drawing_x = game_x - screen_position_x - 32;
 	int drawing_y = game_y - screen_position_y - session->tile_list[tile_y][tile_x]->show_effective_height()*32 - 32;
 	float health = (float)life/(float)max_life;
 	al_draw_rectangle(drawing_x, drawing_y - 2, drawing_x + TILE_WIDTH, drawing_y + 3, GREY_COLOR, 1);  
 	al_draw_filled_rectangle(drawing_x, drawing_y - 2, drawing_x + TILE_WIDTH*(health), drawing_y + 2, LIGHT_GREEN_COLOR);
-	return 0;
 }
 
 /*Checks heights and ramps, not people*/
@@ -1202,7 +1201,6 @@ void carrier::give_task(resources resource_type, int amount, transaction_type ty
 			new_height++;
 		
 		game_object::update(path_to_target[0]->show_tile_x(), path_to_target[0]->show_tile_y(), new_height);
-			
 	}
 }
 

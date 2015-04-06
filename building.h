@@ -29,11 +29,11 @@ public:
 										///< Creates building on tile.
 	void update();								///< Is called once per frame. Updates/manages building.
 	std::vector<game_object*> draw(int screen_position_x, int screen_position_y);	
-			///< Draws one floor of building. Returns which will be drawn above it (e.g. people staying on walls, next floor of building).
-	void draw_interface();							///< Draws gui and info about building to main panel, when building is selected.
+			///< Draws one floor of building. Returns what will be drawn above it (e.g. people staying on walls, next floor of building).
+	void draw_interface();							///< When building is selected, draws gui and info about it to main panel.
 	virtual void function_click(int mouse_x, int mouse_y);			///< Handles clicks to main panel, when building is selected.
 	void draw_function_info(int mouse_x, int mouse_y);			///< Draws info about buttons on main panel, when building is selected.
-	void draw_life_bar(int screen_position_x, int screen_position_y);	///< Draws amount of life left above the building. Called on mouse on building. 
+	void draw_life_bar(int screen_position_x, int screen_position_y);	///< Draws amount of life left above the building. Called when mouse points to building.
 	void damage(int damage);						///< Processes attack on building. 
 	virtual void rotate(int new_tile_x, int new_tile_y, bool clockwise);	///< Rotates building.
 	void set_drawing_tile();						///< Chooses tile from which this building will be drawed. 
@@ -54,7 +54,7 @@ public:
 	
 	building_size size;
 	building_type type;
-	bool draw_selection;				///< Indicates if white rectangle (to indicate mouse on building) around building should be draw.
+	bool draw_selection;				///< Indicates if white rectangle around building should be drawn.
 	int id;
 	static int next_id;
 	static const int minimal_distance_from_enemies_for_building = 20;	///< It is not possible to build anything when enemies are this close.
@@ -203,7 +203,9 @@ private:
 	boost::shared_ptr<carrier_output> output;
 
 };
-
+/**
+ * \brief Represents any building which produces resources (woodcutter, quarry, farms, ...)
+ */
 class production_building : public building
 {
 public:
@@ -239,6 +241,9 @@ private:
 	int amount_produced;
 };
 
+/**
+ * \brief Represents walls and palisades.
+ */
 class wall : public building
 {
 public:
@@ -277,7 +282,6 @@ public:
 	void function_click(int mouse_x, int mouse_y);
 	std::vector<game_object*> draw(int screen_position_x, int screen_position_y);
 	void rotate(int tile_x, int tile_y, bool clockwise);
-	void set_gate_tile();
 	bool show_open() {return open;}
 	
 	friend class boost::serialization::access;
@@ -294,6 +298,7 @@ public:
 	}
 
 private:
+	void set_gate_tile();
 	gate() {}
 	bool open;
 	int image_to_draw;
@@ -431,8 +436,8 @@ public:
 	bool can_be_stopped() {return true;}
 	boost::shared_ptr<carrier_output> show_carrier_output() {return output;}
 	void upgrade();
-	void draw_window(int start_x, int start_y);
-	void window_function_click(int relative_mouse_x, int relative_mouse_y);
+	void draw_window(int start_x, int start_y);	///< Draws window that manages store.
+	void window_function_click(int relative_mouse_x, int relative_mouse_y);		///< Handles mouse click to store's window.
 	
 	friend class boost::serialization::access;
 
@@ -510,10 +515,10 @@ private:
 };
 
 
-boost::weak_ptr<warrior> warrior_born_near(people_type type, int tile_x, int tile_y, player owner);
-int show_building_price(building_type type, resources resource_type, upgrade_level upgrade);
+boost::weak_ptr<warrior> warrior_born_near(people_type type, int tile_x, int tile_y, player owner);	///< Creates new soldier on given location (or near if location is not free)
+int show_building_price(building_type type, resources resource_type, upgrade_level upgrade);	///< Shows amount of needed resource of given type for buying or upgrading building.
 std::vector<tile*> tiles_under_building(int tile_x, int tile_y, building_size type_of_building);
-std::vector<std::pair<boost::shared_ptr<building>, int>> buildings_connected_by_path(std::vector<tile*> start, int distance);
+std::vector<std::pair<boost::shared_ptr<building>, int>> buildings_connected_by_path(std::vector<tile*> start, int distance); ///< Returns buildings connected by path to any of start tiles and distances to them. 
 
 
 #endif

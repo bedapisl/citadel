@@ -23,7 +23,7 @@ int draw_map(int screen_position_x, int screen_position_y, game_mouse* mouse)
 		boost::shared_ptr<button> chosen_button_ptr = mouse->chosen_button.lock();
 
 		if(chosen_button_ptr)
-			chosen_button_ptr->draw_action(screen_position_x, screen_position_y, chosen_button_ptr);
+			chosen_button_ptr->draw_action(screen_position_x, screen_position_y);//, chosen_button_ptr);
 	}
 
 
@@ -889,7 +889,7 @@ void rotate_map(bool clockwise, ALLEGRO_BITMAP** minimap, int *screen_position_x
 	for(int i=0; i<session->missile_list.size(); i++)
 	{
 		while(!session->missile_list[i]->is_death())
-			session->missile_list[i]->draw_missile(0,0);	
+			session->missile_list[i]->draw_and_update(0,0);	
 	}
 
 	std::vector<std::vector<boost::shared_ptr<tile>>> new_tile_list(game_info::map_width, std::vector<boost::shared_ptr<tile>>(game_info::map_height, boost::shared_ptr<tile>()));

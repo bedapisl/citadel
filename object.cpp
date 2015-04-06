@@ -11,12 +11,12 @@ game_object::game_object(int tile_x, int tile_y, int surface_height, bool is_rea
 	drawing_floor = 0;
 }
 
-int game_object::update(int tile_x, int tile_y, int surface_height)
+void game_object::update(int tile_x, int tile_y, int surface_height)
 {
 	if(((tile_x >= game_info::map_width) || (tile_y >= game_info::map_height)) || ((tile_x < 0) || (tile_y < 0)))
 	{	
 		LOG("error - game_object update: tile_x cannot be " << tile_x << " or tile_y cannot be " << tile_y);
-		throw new std::exception;
+		throw std::exception();
 	}
 
 	this->tile_x = tile_x;
@@ -26,8 +26,6 @@ int game_object::update(int tile_x, int tile_y, int surface_height)
 
 	
 	set_surface_height(surface_height);
-	
-	return 0;
 }
 
 void game_object::set_surface_height(int height)

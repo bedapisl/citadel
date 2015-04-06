@@ -5,7 +5,7 @@
 
 
 /**
- * \brief Class for managing enemies high level behaviour.
+ * \brief Class for managing high level enemy behaviour.
  *
  */
 class enemy_ai

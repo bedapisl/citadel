@@ -15,12 +15,19 @@ class constant_database_exception : public std::runtime_error
 public:
 	constant_database_exception(const std::string& message) : std::runtime_error(message) {};
 };
-
+/**
+ * \brief Base class for constant databases.
+ */
 template <typename derived_database, typename Tuple>
 class base_database
 {
 private:
-	template <int idx>
+	
+	/**
+	 * Returns map of pairs with "idx"-th element of tuple and index to vector of tuples. 
+	 * This map is the used to search for tuples by "idx"-th element.
+	 */
+	template <int idx>a
 	static const std::multimap<typename std::tuple_element<idx, Tuple>::type, std::size_t> & get_map()
 	{
 		static std::multimap<typename std::tuple_element<idx, Tuple>::type, std::size_t> m;	
@@ -41,9 +48,10 @@ private:
 		return m;
 	}
 
-	static std::vector<Tuple> tuples;
+	static std::vector<Tuple> tuples;		///< Data in database.
 	
-	static void init_vector()	//initialize "std::vector<Tuples> base_database::tuples"
+	/// Initialize data (std::vector<Tuples> base_database::tuples) in database.
+	static void init_vector()	
 	{
 		static bool initialized = false;
 		if(initialized)
@@ -54,10 +62,14 @@ private:
 		return;
 	}
 	
+	/// \brief Returns tuple from database "db" which has "key" as "idx"-th element.
+	/// Example: Given database "colors" with following tuples: t1("blue", "sky"), t2("black", "night")
+	/// find<colors, 0>("blue") returns t1, find<colors, 1>("sky") also returns t1, but find<colors, 1>("blue") throws "no key found".
 	template <typename db, int idx>
 	friend const typename db::value_type &find(const typename std::tuple_element<idx, typename db::value_type>::type & key);
 
 protected:
+	/// Function used by derived databases to load data in database.
 	template <typename ... TList>	
 	static void insert(TList ... parametres)
 	{
@@ -90,6 +102,9 @@ const typename db::value_type &find(const typename std::tuple_element<idx, typen
 //usage: 	tuple<building_type, std::string> t = find<building_names, 0>(HOUSE);
 //		std::string name = get<1>(t);
 
+/**
+ * \brief Constant database with buildings names as strings, enums and names of their images.
+ */
 struct building_names: public base_database<building_names, std::tuple<building_type, std::string, picture>>
 {
 	typedef std::tuple<building_type, std::string, picture> value_type;
@@ -137,6 +152,9 @@ struct building_names: public base_database<building_names, std::tuple<building_
 	}
 };
 
+/**
+ * \brief Constant database for people names as strings, enums and names of their images.
+ */
 struct people_names : public base_database<people_names, std::tuple<people_type, std::string, picture>>
 {
 	typedef std::tuple<people_type, std::string, picture> value_type;
@@ -151,6 +169,10 @@ struct people_names : public base_database<people_names, std::tuple<people_type,
 		insert(CARRIER, "carrier", CARRIER_IMAGE);
 	}
 };
+
+/**
+ * \brief Constant database which matches resources names as enums to strings.
+ */
 
 struct resources_names : public base_database<resources_names, std::tuple<resources, std::string>>
 {
@@ -178,7 +200,11 @@ struct resources_names : public base_database<resources_names, std::tuple<resour
 		insert(GOLD, "gold");
 	}
 };
-	
+
+
+/**
+ * \brief Constant database which matches output of building::can_build_here() function to texts which will be shown to player.
+ */
 struct hint_database : public base_database<hint_database, std::tuple<can_build_output, std::string>>
 {
 	typedef std::tuple<can_build_output, std::string> value_type;

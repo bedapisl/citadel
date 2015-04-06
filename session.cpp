@@ -50,7 +50,7 @@ game_session::game_session(std::vector<int> starting_resources, int starting_hon
 	//init_static_variables();
 }
 
-int game_session::update(game_mouse* mouse, bool& done)
+void game_session::update(game_mouse* mouse, bool& done)
 {
 	if(!game_started)
 	{
@@ -61,7 +61,7 @@ int game_session::update(game_mouse* mouse, bool& done)
 			mouse->unchoose_button();
 			unlocked_buildings = game_session::set_unlocked_buildings();
 		}
-		return 0;
+		return;
 	}
 
 	bool warehouse_exist = false;
@@ -78,7 +78,7 @@ int game_session::update(game_mouse* mouse, bool& done)
 	{
 	//	message("Your warehouse was destroyed! You lost.");
 		done = true;
-		return 0;
+		return;
 	}
 
 
@@ -102,7 +102,7 @@ int game_session::update(game_mouse* mouse, bool& done)
 	frames_from_start++;
 
 	LOG("end");
-	return 0;
+	return;
 }
 
 int game_session::update_happiness()

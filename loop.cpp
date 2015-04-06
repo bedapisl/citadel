@@ -309,7 +309,7 @@ void game_loop::timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y)
 
 	for(int i = 0; i<session->missile_list.size(); i++)
 	{
-		session->missile_list[i]->draw_missile(screen_position_x, screen_position_y);
+		session->missile_list[i]->draw_and_update(screen_position_x, screen_position_y);
 	}
 	
 	update_minimap(minimap);
