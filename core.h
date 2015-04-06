@@ -21,7 +21,7 @@
 #include <allegro5/allegro_acodec.h>
 #include <iostream>
 #include <ctime>
-#include <sys/time.h>
+//#include <sys/time.h>
 #include <math.h>
 #include <fstream>
 #include <string>
