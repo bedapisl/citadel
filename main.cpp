@@ -59,11 +59,16 @@ int main(int argc, char** argv)
 void create_display()
 {
 	ALLEGRO_DISPLAY_MODE display_mode;
+	ALLEGRO_MONITOR_INFO monitor_info;
 
 	if(game_info::fullscreen)
 	{
 		al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
+		al_get_monitor_info(0, &monitor_info);
+		display_width = monitor_info.x2 - monitor_info.x1;
+		display_height = monitor_info.y2 - monitor_info.y1;
 
+		/*
 		for(int i=0; i<al_get_num_display_modes(); ++i)
 		{
 			al_get_display_mode(i, &display_mode);
@@ -74,12 +79,14 @@ void create_display()
 				display_height = display_mode.height;
 			}
 		}
+		*/
+
+
 		LOG("Fullscreen display");
 	}
 	else
 	{
-		al_set_new_display_flags(ALLEGRO_WINDOWED);
-		al_set_new_display_flags(ALLEGRO_RESIZABLE);
+		al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_RESIZABLE);
 		LOG("Windowed display");
 	}
 
