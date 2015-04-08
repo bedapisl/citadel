@@ -24,14 +24,14 @@ game_session::game_session(std::vector<int> starting_resources, int starting_hon
 		break;
 		case(1):
 		{
-			time_to_invasion = 1200*game_info::fps;		//first_invasion - 20 minutes
-			invasion_interval = 800*game_info::fps;	
+			time_to_invasion = 2400*game_info::fps;		//first_invasion - 40 minutes
+			invasion_interval = 1600*game_info::fps;	
 		}
 		break;
 		case(2):
 		{
-			time_to_invasion = 600*game_info::fps;
-			invasion_interval = 400*game_info::fps;
+			time_to_invasion = 1200*game_info::fps;
+			invasion_interval = 800*game_info::fps;
 		}
 		break;
 		default:
@@ -46,8 +46,6 @@ game_session::game_session(std::vector<int> starting_resources, int starting_hon
 	game_started = false;
 	
 	button::set_basic_button_list(true);
-
-	//init_static_variables();
 }
 
 void game_session::update(game_mouse* mouse, bool& done)

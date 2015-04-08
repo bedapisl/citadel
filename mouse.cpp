@@ -367,10 +367,11 @@ std::pair<int, int> game_mouse::find_mouse_location(int screen_position_x, int s
 	std::pair<int, int> founded_tile;
 	bool founded = false;
 	bool secondary_founded = false;		//if mouse is not on top of tile but on side of tile
-	for(auto coordinates : possible_tiles)
+	
+	for(int i=possible_tiles.size() - 1; i>= 0; --i)
 	{
-		int x = coordinates.first;
-		int y = coordinates.second;
+		int x = possible_tiles[i].first;
+		int y = possible_tiles[i].second;
 	
 		if(((x >= 0) && (x < game_info::map_width)) && ((y >= 0) && (y < game_info::map_height)))
 		{
@@ -379,7 +380,7 @@ std::pair<int, int> game_mouse::find_mouse_location(int screen_position_x, int s
 				//correct tile? (maybe it should also take in account buildings on this tile
 			if(std::abs(mouse_game_x - t->show_game_x()) + 2*(std::abs(mouse_game_y - t->show_game_y() + t->show_surface_height() * 32)) <= 32)
 			{
-				founded_tile = coordinates;
+				founded_tile = possible_tiles[i];
 				founded = true;
 				break;
 			}
@@ -387,7 +388,7 @@ std::pair<int, int> game_mouse::find_mouse_location(int screen_position_x, int s
 			else if((std::abs(mouse_game_x - t->show_game_x()) <= 32) && (mouse_game_y >= t->show_game_y() - t->show_surface_height() * 32) && (!founded))
 			{
 				secondary_founded = true;
-				founded_tile = coordinates;
+				founded_tile = possible_tiles[i];
 				//no break because I want the last one (it should be nearest to mouse location)
 			}
 		}
