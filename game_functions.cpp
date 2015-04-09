@@ -18,6 +18,8 @@ int draw_map(int screen_position_x, int screen_position_y, game_mouse* mouse)
 	
 	al_clear_to_color(BLACK_COLOR);
 	
+	al_hold_bitmap_drawing(true);
+
 	if(!mouse->chosen_button.expired())
 	{
 		boost::shared_ptr<button> chosen_button_ptr = mouse->chosen_button.lock();
@@ -96,6 +98,8 @@ int draw_map(int screen_position_x, int screen_position_y, game_mouse* mouse)
 		surface++;
 	}
 	
+	al_hold_bitmap_drawing(false);
+
 	session->hints.draw_and_update(screen_position_x, screen_position_y);
 
 	LOG("drawn " << pictures_drawn << " pictures.");

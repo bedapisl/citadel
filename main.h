@@ -26,6 +26,8 @@ bool init_allegro();
 
 bool load_pictures();
 
+void transform_bitmaps_to_atlas();
+
 int delete_pictures();
 
 bool load_fonts();

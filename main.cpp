@@ -40,6 +40,7 @@ int main(int argc, char** argv)
 	game_info::load_game_info();
 
 	create_display();
+	transform_bitmaps_to_atlas();		//must be called after display is created
 	
 	if(game_info::music)
 		music::get_instance().play_background_music();
@@ -236,6 +237,48 @@ bool load_pictures()
 		}
 	}
 	return ok;
+}
+
+void transform_bitmaps_to_atlas()
+{
+	int max_bitmap_size = al_get_display_option(game_info::display, ALLEGRO_MAX_BITMAP_SIZE);
+	ALLEGRO_BITMAP* atlas = al_create_bitmap(max_bitmap_size, max_bitmap_size);
+	al_set_target_bitmap(atlas);
+
+	int filled_x = 0;
+	int filled_y = 0;
+	int previous_filled_x = 0;
+
+	for(int i=0; i<LAST_IMAGE; ++i)
+	{
+		int width = al_get_bitmap_width(image_list[i]);
+		int height = al_get_bitmap_height(image_list[i]);
+		if(filled_y + height < max_bitmap_size)
+		{
+			if(previous_filled_x + width < max_bitmap_size)
+			{
+				al_draw_bitmap(image_list[i], previous_filled_x, filled_y, 0);
+				al_destroy_bitmap(image_list[i]);
+				image_list[i] = al_create_sub_bitmap(atlas, previous_filled_x, filled_y, width, height);
+				filled_x = std::max(previous_filled_x + width, filled_x);
+				filled_y += height;
+			}
+			else
+			{
+				std::string s("Atlas creation failed. Game will be slow.");
+				std::cout << s << std::endl;
+				LOG(s);
+				return;
+			}
+		}
+		else
+		{
+			filled_y = 0;
+			previous_filled_x = filled_x;
+			--i;
+		}
+	}
+	al_set_target_bitmap(al_get_backbuffer(game_info::display));
 }
 
 int delete_pictures()
