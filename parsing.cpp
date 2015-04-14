@@ -38,6 +38,13 @@ void object_info::parse_file(std::ifstream & file)
 	}
 }
 
+/**
+ * \brief Loads informations about buildings or people from configurations file
+ * Can throw exception.
+ * \param INFO_TYPE:		building_info or people_info
+ * \param DATABASE_TYPE:	building_names or people_names - generally some constant database (see constant_database.h) with names and images of objects
+ * \param ENUM_TYPE:		building_type of people_type
+ */
 template <typename INFO_TYPE, typename DATABASE_TYPE, typename ENUM_TYPE>
 std::vector<INFO_TYPE> object_info::load_info(int number_of_enums, std::string folder_name)
 {
@@ -53,7 +60,7 @@ std::vector<INFO_TYPE> object_info::load_info(int number_of_enums, std::string f
 		}
 		catch (std::exception ex)
 		{
-			LOG("");
+			LOG("error");
 			throw ex;
 		}
 	
@@ -190,7 +197,7 @@ void building_info::load(const std::string & value, const std::string & variable
 	}
 }
 
-building_info& building_info::show_building_info(building_type type)
+const building_info& building_info::show_building_info(building_type type)
 {
 	static std::vector<building_info> info = load_info<building_info, building_names, building_type>(NUMBER_OF_BUILDINGS, "data/buildings/");
 	return info[static_cast<int>(type)];
@@ -222,7 +229,7 @@ void people_info::load(const std::string & value, const std::string & variable)
 		honour_price = std::stoi(value);
 }
 
-people_info& people_info::show_people_info(people_type type)
+const people_info& people_info::show_people_info(people_type type)
 {
 	static std::vector<people_info> info = load_info<people_info, people_names, people_type>(NUMBER_OF_PEOPLE, "data/people/");
 	return info[static_cast<int>(type)];

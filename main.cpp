@@ -44,7 +44,6 @@ int main(int argc, char** argv)
 	
 	if(game_info::music)
 		music::get_instance().play_background_music();
-	
 
 	event_handler::get_instance().change_state(game_state::MAIN_MENU);	//game is beginning in main menu
 	event_handler::get_instance().run();					//runs event loop
@@ -59,29 +58,14 @@ int main(int argc, char** argv)
 
 void create_display()
 {
-	ALLEGRO_DISPLAY_MODE display_mode;
 	ALLEGRO_MONITOR_INFO monitor_info;
 
 	if(game_info::fullscreen)
 	{
 		al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
 		al_get_monitor_info(0, &monitor_info);
-		display_width = monitor_info.x2 - monitor_info.x1;
+		display_width = monitor_info.x2 - monitor_info.x1;		//current display resolution
 		display_height = monitor_info.y2 - monitor_info.y1;
-
-		/*
-		for(int i=0; i<al_get_num_display_modes(); ++i)
-		{
-			al_get_display_mode(i, &display_mode);
-
-			if(display_width < display_mode.width)
-			{
-				display_width = display_mode.width;
-				display_height = display_mode.height;
-			}
-		}
-		*/
-
 
 		LOG("Fullscreen display");
 	}

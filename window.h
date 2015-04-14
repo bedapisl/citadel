@@ -234,6 +234,7 @@ public:
 	static music& get_instance();
 
 private:
+	bool playing;
 	ALLEGRO_SAMPLE_INSTANCE* sample_playing;
 	ALLEGRO_MIXER* mixer;
 	ALLEGRO_VOICE* voice;

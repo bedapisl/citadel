@@ -9,12 +9,8 @@
 class button : public boost::enable_shared_from_this<button>
 {
 public:
-	//int init(ALLEGRO_BITMAP* image, button_type type, bool multiple_selection);
 	button(ALLEGRO_BITMAP* image, button_type type, bool multiple_selection);
 	virtual ~button() {}
-	//virtual int init(building_type type_of_building, int number_of_floors)
-	//	{return 0;}
-	//virtual int init(bool add) {return 0;}
 	virtual game_object* draw(int tile_x, int tile_y, int surface_height, int number_of_tile) {return nullptr;}	///< Returns object which should be drawn on given tile (for example building for which is player choosing location). Path is drawn directly by the tile where it is.
 	virtual void draw_button(int button_number);	///< Draws button on panel on position specified by button_number.
 	virtual void draw_info(int button_number) {}	///< Draws small window with informations about button on position specified by button number.
@@ -28,8 +24,8 @@ public:
 	{general_update_tiles_with_action(mouse_button_down, tile_x, tile_y, button_down_tile_x, button_down_tile_y); return 0;}
 							///< Updates tiles where the action of this button will be applied, for example after player moved mouse.
 
-	static void set_basic_button_list(bool restart_unlocks);	///< Sets buttons which will be drawn on the panel.
-	static boost::shared_ptr<std::vector<boost::shared_ptr<button>>> button_list; ///< Currently usable buttons.
+	static void set_basic_button_list(bool restart_unlocks);			///< Sets buttons which will be drawn on the panel.
+	static boost::shared_ptr<std::vector<boost::shared_ptr<button>>> button_list; 	///< Currently usable buttons.
 	static void draw_button_info(const std::string& name, const std::string& text, const std::vector<int>& prices, int honour_price, int needed_workres, int real_x);				///< Draws window with informations about button.
 	static void draw_progress_bar(int start_x, int start_y, int percentage, int bar_lenght = 100, int bar_height = 30);
 				///< Draws progress bar. Used mainly by buildings, probably.

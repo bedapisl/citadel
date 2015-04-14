@@ -1,6 +1,3 @@
-//du2.cdb.hpp
-//Bedrich Pisl NPRG051 2013/2014
-
 #ifndef CONSTANT_DATABASE_BEDAS
 #define CONSTANT_DATABASE_BEDAS
 

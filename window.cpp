@@ -559,6 +559,7 @@ music& music::get_instance()
 
 void music::play_background_music()
 {
+	playing = true;
 	if(number_of_background_music < background_music.size())
 	{
 		al_destroy_sample_instance(sample_playing);
@@ -571,12 +572,13 @@ void music::play_background_music()
 
 void music::stop_background_music()
 {
+	playing = false;
 	al_stop_sample_instance(sample_playing);
 }
 
 void music::update()
 {
-	if(game_info::music)
+	if((game_info::music) && playing)
 	{
 		if((!al_get_sample_instance_playing(sample_playing)) && (!background_music.empty()))		//sample has finished
 		{

@@ -10,21 +10,21 @@
 class game_mouse
 {
 public:
-	void left_button_go_down(int &screen_position_x, int &screen_position_y, rotation* rotate); 	///< Handles pressing of left mouse button.
+	void left_button_go_down(int screen_position_x, int screen_position_y, rotation* rotate); 	///< Handles pressing of left mouse button.
 	void right_button_go_down();									///< Handles pressing of right mouse button.
 	void left_button_go_up(int screen_position_x, int screen_position_y);				///< Handles release of left mouse button.
 	void right_button_go_up();					///< Handles release of right mouse buttton.
-	int move(int & screen_position_x, int & screen_position_y); 	///< Handles movement of mouse.
-	int draw_mouse(int screen_position_x, int screen_position_y);	///< Higlights selected objects and objects under cursor.
+	void move(int & screen_position_x, int & screen_position_y); 	///< Handles movement of mouse.
+	void draw_mouse(int screen_position_x, int screen_position_y);	///< Higlights selected objects and objects under cursor.
 	int show_tile_x() {return tile_x;}				///< Returns x coordinate of tile under mouse cursor.
 	int show_tile_y() {return tile_y;}				///< Returns y coordinate of tile under mouse cursor.
 	int mouse_x() {al_get_mouse_state(state); return state->x;} 	///< Returns where mouse is relative to upper-left corner of display
 	int mouse_y() {al_get_mouse_state(state); return state->y;}	///< Returns where mouse is relative to upper-left corner of display
 	bool is_building_chosen() {return !chosen_building.expired();}
-	int check_death();						///< Removes pointers to dead objects from game_mouse inner structures.
-	int draw_button_info();						///< Draws info about right button on panel.
-	int choose_button(boost::shared_ptr<button> button_to_choose);	///< Makes button the active one, which will be used when player clicks to map.
-	int unchoose_button();						
+	void check_death();						///< Removes pointers to dead objects from game_mouse inner structures.
+	void draw_button_info();					///< Draws info about right button on panel.
+	void choose_button(boost::shared_ptr<button> button_to_choose);	///< Makes button the active one, which will be used when player clicks to map.
+	void unchoose_button();						
 	game_mouse();
 	~game_mouse();
 	ALLEGRO_MOUSE_STATE* state;

@@ -49,7 +49,7 @@ private:
 };
 
 /**
- * \brief General loop interface. All loops are managed by event_handler which executes them by calling their function when event comes.
+ * \brief General loop interface. All loops are managed by event_handler which executes them by calling their functions when event comes.
  */
 class loop
 {

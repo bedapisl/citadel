@@ -7,7 +7,7 @@ extern ALLEGRO_FONT* font15;
 extern game_session* session;
 
 /*Handles press of mouse left button. To work well it needs actual information in mouse->state.*/
-void game_mouse::left_button_go_down(int &screen_position_x, int &screen_position_y, rotation* rotate)
+void game_mouse::left_button_go_down(int screen_position_x, int screen_position_y, rotation* rotate)
 {
 	LOG("left button down");
 	is_left_button_down = true;
@@ -21,7 +21,7 @@ void game_mouse::left_button_go_down(int &screen_position_x, int &screen_positio
 
 	if(window::active_windows_function_click(state->x, state->y))
 	{
-		return;		//click handled some window
+		return;		//click handled by some window
 	}
 
 	if(state->y < display_height - BUTTON_SIZE)			//click to main game screen
@@ -34,7 +34,7 @@ void game_mouse::left_button_go_down(int &screen_position_x, int &screen_positio
 			chosen_button.reset();
 		}
 	}
-	else if(state->y > display_height - BUTTON_SIZE)		//click to down menu
+	else if(state->y > display_height - BUTTON_SIZE)		//click to panel
 	{	
 		if((chosen_building.expired()) && (chosen_people.size() == 0))
 		{
@@ -55,8 +55,9 @@ void game_mouse::left_button_go_down(int &screen_position_x, int &screen_positio
 					}
 				}
 			}
+					//click to minimap is handled by game_mouse::move()
 		}
-		else if(!chosen_building.expired())
+		else if(!chosen_building.expired())		//click to chosen building interface
 		{
 			boost::shared_ptr<building> chosen_building_ptr = chosen_building.lock();
 			if(state->x < display_width - 2*BUTTON_SIZE)
@@ -64,7 +65,7 @@ void game_mouse::left_button_go_down(int &screen_position_x, int &screen_positio
 				chosen_building_ptr->function_click(state->x, state->y);
 			}
 		}
-		else if(chosen_people.size() > 0)
+		else if(chosen_people.size() > 0)		//select one of the chosen people
 		{
 			int people_index = state->x / BUTTON_SIZE;
 			if(chosen_people.size() > people_index)
@@ -77,7 +78,8 @@ void game_mouse::left_button_go_down(int &screen_position_x, int &screen_positio
 	}
 	return;
 }
-/*Handles release of left mouse button. Choses objects. */
+
+/*Handles release of left mouse button. Chooses objects. */
 void game_mouse::left_button_go_up(int screen_position_x, int screen_position_y)
 {
 	LOG("left button up");
@@ -94,13 +96,9 @@ void game_mouse::left_button_go_up(int screen_position_x, int screen_position_y)
 			chosen_button_ptr->map_click();
 		}
 	}
-	else if(!chosen_button.expired())
+	else if(((button_down_game_x > -10000) && (button_down_game_y > -10000)) && (state->y < display_height - BUTTON_SIZE) && (chosen_button.expired()))
 	{
-
-	}
-	else if(((button_down_game_x > -10000) && (button_down_game_y > -10000)) && (state->y < display_height - BUTTON_SIZE))
-	{
-		int max_marking_x;							//this is for chosing right people
+		int max_marking_x;							//this is for chosing right objects
 		int min_marking_x;
 		int max_marking_y;
 		int min_marking_y;
@@ -126,7 +124,7 @@ void game_mouse::left_button_go_up(int screen_position_x, int screen_position_y)
 			max_marking_y = state->y + screen_position_y;
 			min_marking_y = button_down_game_y;
 		}
-		for(int i=0; i<session->people_list.size(); i++)
+		for(int i=0; i<session->people_list.size(); i++)			//any people in selected area
 		{
 			if((session->people_list[i]->show_game_x() < max_marking_x + MARKED_LOCATION) & (session->people_list[i]->show_game_x() > min_marking_x - MARKED_LOCATION))
 			{
@@ -143,7 +141,7 @@ void game_mouse::left_button_go_up(int screen_position_x, int screen_position_y)
 			}
 		}
 	
-		if(chosen_building.expired() && chosen_button.expired() && chosen_people.empty())
+		if(chosen_building.expired() && chosen_button.expired() && chosen_people.empty())	//now try tile where mouse is
 		{
 			if(((tile_x >= 0) & (tile_x < game_info::map_width)) & ((tile_y >= 0) & (tile_y < game_info::map_height)))
 			{
@@ -254,7 +252,7 @@ game_mouse::~game_mouse()
 	delete state;
 }
 
-int game_mouse::draw_mouse(int screen_position_x, int screen_position_y)
+void game_mouse::draw_mouse(int screen_position_x, int screen_position_y)
 {
 	LOG("drawing mouse");
 		//draws life bar of objects under cursor
@@ -292,11 +290,9 @@ int game_mouse::draw_mouse(int screen_position_x, int screen_position_y)
 				al_draw_rectangle(button_down_game_x - screen_position_x, button_down_game_y - screen_position_y, state->x , state->y, GREY_COLOR, 1);
 		}
 	}
-
-	return 0;
 }
 
-int game_mouse::move(int &screen_position_x, int &screen_position_y)
+void game_mouse::move(int &screen_position_x, int &screen_position_y)
 {
 	LOG("mouse move");
 	al_get_mouse_state(state);
@@ -333,8 +329,6 @@ int game_mouse::move(int &screen_position_x, int &screen_position_y)
 
 	if(!chosen_button.expired())
 		chosen_button.lock()->update_tiles_with_action(is_left_button_down, tile_x, tile_y, button_down_tile_x, button_down_tile_y);
-
-	return 0;
 }
 
 //Returns tile_x and tile_y of current mouse location
@@ -415,7 +409,7 @@ std::pair<int, int> game_mouse::find_mouse_location(int screen_position_x, int s
 }
 
 /* Removes pointers to dead object from game_mouse, so dead object can be deleted.*/
-int game_mouse::check_death()
+void game_mouse::check_death()
 {
 	if((!chosen_building.expired()) && (chosen_building.lock()->is_death()))
 	{	
@@ -426,10 +420,10 @@ int game_mouse::check_death()
 	std::vector<boost::weak_ptr<people>>::iterator it = remove_if(chosen_people.begin(), chosen_people.end(), 
 								[](boost::weak_ptr<people> p){return (p.expired() || p.lock()->is_death());});
 	chosen_people.erase(it, chosen_people.end());
-	return 0;
 }
+
 /*Calls button::draw_info() for right button.*/
-int game_mouse::draw_button_info()
+void game_mouse::draw_button_info()
 {
 	int x = state->x;
 	int y = state->y;
@@ -443,10 +437,9 @@ int game_mouse::draw_button_info()
 		else if(!chosen_building.expired())
 			chosen_building.lock()->draw_function_info(x, y);
 	}
-	return 0;
 }
 
-int game_mouse::choose_button(boost::shared_ptr<button> button_to_choose)
+void game_mouse::choose_button(boost::shared_ptr<button> button_to_choose)
 {
 	bool choose = button_to_choose->panel_click();
 	if(choose)
@@ -455,10 +448,9 @@ int game_mouse::choose_button(boost::shared_ptr<button> button_to_choose)
 		chosen_building.reset();
 		chosen_button = button_to_choose;
 	}
-	return 0;
 }
 
-int game_mouse::unchoose_button()
+void game_mouse::unchoose_button()
 {
 	if(!chosen_button.expired())
 	{
@@ -466,6 +458,5 @@ int game_mouse::unchoose_button()
 		chosen_building.reset();
 		chosen_people.clear();
 	}
-	return 0;
 }
 

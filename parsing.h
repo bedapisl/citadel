@@ -53,7 +53,7 @@ public:
 	int number_of_workers;			
 	int capacity;				///< Capacity of ingame resources (wood, stone, ...)
 
-	static building_info& show_building_info(building_type type);	///< Returns informations about given type of building.
+	static const building_info& show_building_info(building_type type);	///< Returns informations about given type of building.
 
 private:
 	void load(const std::string & value, const std::string & variable);
@@ -74,7 +74,7 @@ public:
 	int frames_to_move;
 	int frames_to_attack;
 
-	static people_info& show_people_info(people_type type);		///< Returns informations about given type of unit.
+	static const people_info& show_people_info(people_type type);		///< Returns informations about given type of unit.
 
 private:
 	void load(const std::string & value, const std::string & variable);

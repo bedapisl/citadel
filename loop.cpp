@@ -228,7 +228,8 @@ void game_loop::escape_down(ALLEGRO_EVENT* ev)
 void game_loop::enter_down(ALLEGRO_EVENT* ev)
 {
 	LOG("Enter");
-	mouse->left_button_go_down(screen_position_x, screen_position_y, new rotation);
+	rotation r;
+	mouse->left_button_go_down(screen_position_x, screen_position_y, &r);
 	mouse->left_button_go_up(screen_position_x, screen_position_y);
 }
 
@@ -869,6 +870,11 @@ void settings_menu::check_clicked_buttons()
 {
 	if(done_button->clicked())
 		event_handler::get_instance().change_state(game_state::MAIN_MENU);
+
+	if(buttons[1]->get_value())
+		music::get_instance().play_background_music();
+	else
+		music::get_instance().stop_background_music();
 }
 
 void settings_menu::start()
