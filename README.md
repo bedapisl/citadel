@@ -16,7 +16,9 @@ To download and compile this game you will need:
 
 1. g++ 4.8 or higher
 
-2. git, make
+2. git
+
+3. make
 
 ###Download source
 	git clone git://github.com/spekoun/citadel

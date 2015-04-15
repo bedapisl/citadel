@@ -24,7 +24,7 @@ public:
 	int frames_to_invasion() {return time_to_invasion;}		///< How much time lefts before enemies will attack.
 	void finish_serialization();	
 	
-	std::vector<std::vector<boost::shared_ptr<tile>>> tile_list;	///< This is the game map.
+	std::vector<std::vector<boost::shared_ptr<tile>>> tile_list;	///< This is the game map. First index to tile_list is tile_y coordinate, second is tile_x coordinate.
 	std::vector<boost::shared_ptr<building>> building_list;		///< List of all real buildings in the game.
 	std::vector<boost::shared_ptr<people>> people_list;		///< List of all people in the game.
 	std::vector<boost::shared_ptr<missile>> missile_list;		///< List of all missiles.
