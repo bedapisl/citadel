@@ -344,7 +344,7 @@ std::pair<int, int> game_mouse::find_mouse_location(int screen_position_x, int s
 
 	if((lowest_tile_x >= game_info::map_width) || (lowest_tile_y >= game_info::map_height))		//under the map
 	{
-		return std::pair<int, int>(std::min(lowest_tile_x, game_info::map_width - 1), std::min(lowest_tile_y, game_info::map_height - 1));
+		return std::pair<int, int>(std::max(std::min(lowest_tile_x, game_info::map_width - 1), 0), std::max(std::min(lowest_tile_y, game_info::map_height - 1), 0));
 	}
 
 	std::vector<std::pair<int, int>> possible_tiles;
@@ -390,6 +390,9 @@ std::pair<int, int> game_mouse::find_mouse_location(int screen_position_x, int s
 
 	if((!founded) && (!secondary_founded))
 	{
+		if(possible_tiles.empty())
+			return std::pair<int, int>(0, 0);
+
 		int x = possible_tiles[0].first;
 		int y = possible_tiles[0].second;
 
