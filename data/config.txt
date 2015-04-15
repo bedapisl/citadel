@@ -1,4 +1,4 @@
-fullscreen = true
+fullscreen = false
 display_width = 1366
 display_height = 768
 fps = 30

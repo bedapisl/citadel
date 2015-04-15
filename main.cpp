@@ -211,7 +211,7 @@ bool load_pictures()
 		if(!image_list[i])
 		{
 			ok = false;
-			LOG("failed to load image number " << i);
+			LOG("error: failed to load image number " << i);
 			std::cout << "failed to load image number " << i << std::endl;
 			//image_list[i] = al_load_bitmap("data/images/no_image.png");
 			image_list[i] = al_create_bitmap(128, 64);

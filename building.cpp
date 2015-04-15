@@ -118,7 +118,7 @@ std::vector<game_object*> building::draw(int screen_position_x, int screen_posit
 	if(draw_selection)
 	{
 		draw_selection = false;
-		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 192, drawing_x, drawing_y, 0);
+		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 128, drawing_x, drawing_y, 0);
 	}
 
 	if(is_real)
@@ -955,7 +955,7 @@ std::vector<game_object*> tower::draw(int screen_position_x, int screen_position
 	if(draw_selection)
 	{
 		draw_selection = false;
-		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 192, drawing_x, drawing_y, 0);
+		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 128, drawing_x, drawing_y, 0);
 	}
 
 	switch(type)
@@ -1527,7 +1527,7 @@ std::vector<game_object*> wall::draw(int screen_position_x, int screen_position_
 	if(draw_selection)
 	{
 		draw_selection = false;
-		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 192, drawing_x - 64, drawing_y - 64, 0);
+		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 128, drawing_x - 64, drawing_y - 64, 0);
 	}
 
 	ALLEGRO_COLOR color;
@@ -1666,7 +1666,7 @@ std::vector<game_object*> gate::draw(int screen_position_x, int screen_position_
 	if(draw_selection)
 	{
 		draw_selection = false;
-		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 192, drawing_x, drawing_y, 0);
+		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 128, drawing_x, drawing_y, 0);
 	}
 
 	if(type == RIGHT_GATE)
@@ -2286,7 +2286,7 @@ std::vector<game_object*> stairs::draw(int screen_position_x, int screen_positio
 	if(draw_selection)
 	{
 		draw_selection = false;
-		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 192, drawing_x - 64, drawing_y - 64, 0);
+		al_draw_bitmap_region(image_list[BUILDING_SELECTION_IMAGE], size * 192, 0, 192, 128, drawing_x - 64, drawing_y - 64, 0);
 	}
 
 	if(is_real)
