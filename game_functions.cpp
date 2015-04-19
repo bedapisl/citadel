@@ -462,7 +462,7 @@ std::vector<tile*> tiles_in_circle(float radius, tile* start)
 
 std::vector<tile*> tiles_in_rectangle(int x1, int y1, int x2, int y2)
 {
-	//returns array of tiles, first one is left up corner[y1][x1], then left [y1][x1+1], [y1-1][x1], [y1-1][x+2],..., 
+	//returns array of tiles, first one is left up corner[y1][x1], then left [y1-1][x1+1], [y1-2][x1+2], [y1-3][x+3],..., 
 	// then right up corner and then the same but one line lower, so first from left to right and then next line   
 	//Tiles should be deleted to avoid memory leaks.
 

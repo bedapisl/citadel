@@ -666,29 +666,28 @@ can_build_output building::enough_resources(building_type type, int start_tile_x
 
 struct vertex_info;
 
-struct send_workers_order
-{
-	send_workers_order(int from, int to, int amount) : from(from), to(to), amount(amount) {}
-	void execute_order(std::vector<vertex_info>& vertices);
-	int from;
-	int to;
-	int amount;
-};
+void execute_order(std::vector<vertex_info> & vertices, int from, int to, int amount);
 
+/**
+ * Describes vertex of graph of workers assignement. Works with vector<vertex_info> vertices, where are all vertices of the graph.
+ */
 struct vertex_info
 {
 public:
-	vertex_info(boost::shared_ptr<building> b, bool is_house, int number_of_workers, int index_in_vertices) : b(b), is_house(is_house), being_asked(false), index_in_vertices(index_in_vertices) {}
-	boost::shared_ptr<building> b;
+	vertex_info(boost::shared_ptr<building> b, bool is_house, int number_of_workers, int index_in_vertices) : b(b), is_house(is_house), being_asked(false), index_in_vertices(index_in_vertices), asked_neighbours(0) {}
+	boost::shared_ptr<building> b;		///< Each vertex represents building.
 	bool is_house;
-	std::vector<int> connected_indeces;
-	std::vector<int> size_of_edge;
-	bool being_asked;
-	int index_in_vertices;
+	std::vector<int> connected_indeces;	///< Indeces to "vertices" vector to connected buildings.
+	std::vector<int> size_of_edge;		///< Similar structure as connected indeces: connected_indeces[i] = index of connected building B, size_of_edge[i] = size_of_edge between this and building B
+	bool being_asked;			///< To stop infinite recursion.
+	int index_in_vertices;			///< Index of this in vertices vector.
+	int asked_neighbours;			///< Number of neighbours which were already asked for workers.
+	int workers_in_house;			///< Idle workers in house
+	bool workers_in_house_computed;	
 
 	static void reset_being_asked(std::vector<vertex_info> & vertices);
 
-	int ask_for_workers(std::vector<vertex_info> & vertices, std::vector<send_workers_order> & orders, int workers_needed);
+	int ask_for_workers(std::vector<vertex_info> & vertices, int workers_needed);
 };
 
 void vertex_info::reset_being_asked(std::vector<vertex_info> & vertices)
@@ -696,66 +695,92 @@ void vertex_info::reset_being_asked(std::vector<vertex_info> & vertices)
 	for(size_t i=0; i<vertices.size(); ++i)
 	{
 		vertices[i].being_asked = false;
+		vertices[i].asked_neighbours = 0;
+		vertices[i].workers_in_house_computed = false;
 	}
 }
 
-int vertex_info::ask_for_workers(std::vector<vertex_info> & vertices, std::vector<send_workers_order> & orders, int workers_needed)
+/** 
+ * Returns how many workers this vertex can give to the one which asked. 
+ * Also generates orders to change sizes of edges such that it can give as much workers as possible.
+ * Returns no more than workers needed.
+ */
+int vertex_info::ask_for_workers(std::vector<vertex_info> & vertices, int workers_needed)
 {
-	if(being_asked)
+	if(being_asked)		//stop infinite recursion - every vertex can be asked just once
 		return 0;
 
 	being_asked = true;
 	int idle_workers = 0;
 	if(is_house)
 	{
-		idle_workers = boost::dynamic_pointer_cast<house>(b)->number_of_workers();
-		for(size_t i=0; i<size_of_edge.size(); ++i)
+		if(!workers_in_house_computed)
 		{
-			idle_workers -= size_of_edge[i];
+			workers_in_house = boost::dynamic_pointer_cast<house>(b)->number_of_workers();	//Capacity of house
+			for(size_t i=0; i<size_of_edge.size(); ++i)					
+			{
+				workers_in_house -= size_of_edge[i];			//subtract already used workers
+			}
+			
+			workers_in_house_computed = true;
+
+			if(workers_in_house < 0)
+				throw std::exception();
 		}
-		idle_workers = std::min(idle_workers, workers_needed);
+		
+		if(workers_in_house < 0)
+			throw std::exception();
+
+		idle_workers = std::min(workers_in_house, workers_needed);
+		workers_in_house = workers_in_house - idle_workers;
 
 		if(idle_workers < 0)
 			throw std::exception();
 		
-		size_t j=0;
-		while((idle_workers < workers_needed) && (j < size_of_edge.size()))		 
+		while((idle_workers < workers_needed) && (asked_neighbours < size_of_edge.size()))	
+					//try finding edge where I can send less workers then I am sending there already		 
 		{
-			if(size_of_edge[j] > 0)
+			if(size_of_edge[asked_neighbours] > 0)
 			{
-				int max_workers_transfer = std::min(workers_needed - idle_workers, size_of_edge[j]);
-				int received_workers = vertices[connected_indeces[j]].ask_for_workers(vertices, orders, max_workers_transfer);
+				int max_workers_transfer = std::min(workers_needed - idle_workers, size_of_edge[asked_neighbours]);
+				int received_workers = vertices[connected_indeces[asked_neighbours]].ask_for_workers(vertices, max_workers_transfer);
 				if(received_workers > 0)
 				{	
-					orders.push_back(send_workers_order(index_in_vertices, connected_indeces[j], size_of_edge[j] - received_workers));
+					execute_order(vertices, index_in_vertices, connected_indeces[asked_neighbours], size_of_edge[asked_neighbours] - received_workers);
 					idle_workers += received_workers;
 				}
 			}
-			++j;
+			if(idle_workers < workers_needed)
+				++asked_neighbours;
 		}
 	}
 	else
 	{	
-		size_t j = 0;
-		while((idle_workers < workers_needed) && (j < connected_indeces.size()))
+		while((idle_workers < workers_needed) && (asked_neighbours < connected_indeces.size()))	
+			//for each connected house, while I dont have enough workers, ask for workers
 		{
-			int received_workers = vertices[connected_indeces[j]].ask_for_workers(vertices, orders, workers_needed - idle_workers);
+			int received_workers = vertices[connected_indeces[asked_neighbours]].ask_for_workers(vertices, workers_needed - idle_workers);
 			if(received_workers > 0)
 			{
-				orders.push_back(send_workers_order(index_in_vertices, connected_indeces[j], received_workers + size_of_edge[j]));
+				execute_order(vertices, index_in_vertices, connected_indeces[asked_neighbours], size_of_edge[asked_neighbours] + received_workers);
 				idle_workers += received_workers;
 			}
-			++j;
+			if(idle_workers < workers_needed)
+				++asked_neighbours;
 		}
 	}
 
 	if(idle_workers > workers_needed)
 		throw std::exception();
 
+	if(idle_workers < 0)
+		throw std::exception();
+
+	being_asked = false;
 	return idle_workers;
 }
 
-void send_workers_order::execute_order(std::vector<vertex_info> & vertices)
+void execute_order(std::vector<vertex_info> & vertices, int from, int to, int amount)
 {
 	for(size_t i=0; i<vertices[from].connected_indeces.size(); ++i)
 	{
@@ -776,7 +801,7 @@ void send_workers_order::execute_order(std::vector<vertex_info> & vertices)
 	}
 }
 
-//add "b" to "vertices" if it's not there and returns index of "b" in "vertices". Returns -1 if building "b" dont need workers and it is not house.
+//Add "b" and all buildings connected by path to "vertices" if they are not there and returns index of "b" in "vertices". Returns -1 if building "b" dont need workers and it is not house.
 //Stopped building cannot be added.
 int add_building_to_graph(std::vector<vertex_info> & vertices, boost::shared_ptr<building> b, bool is_house)	
 {
@@ -794,7 +819,7 @@ int add_building_to_graph(std::vector<vertex_info> & vertices, boost::shared_ptr
 			return -1;
 	}
 
-	for(size_t i=0; i<vertices.size(); ++i)
+	for(size_t i=0; i<vertices.size(); ++i)		//if building has already been added, return it's index
 	{
 		if(vertices[i].b->id == b->id)
 		{
@@ -822,8 +847,8 @@ int add_building_to_graph(std::vector<vertex_info> & vertices, boost::shared_ptr
 		}
 	}
 
-	std::vector<std::vector<tile*>> connected = pathfinding::breadth_first_search(starting_tiles, carrier::static_can_move, pathfinding::any_building_goal_functor(), 
-										false, true, MAX_WORKERS_DISTANCE_FROM_HOUSE);
+	std::vector<std::vector<tile*>> connected = pathfinding::breadth_first_search(starting_tiles, carrier::static_can_move, 
+								pathfinding::any_building_goal_functor(), false, true, MAX_WORKERS_DISTANCE_FROM_HOUSE);
 	
 	for(size_t i=0; i<connected.size(); ++i)
 	{
@@ -836,7 +861,7 @@ int add_building_to_graph(std::vector<vertex_info> & vertices, boost::shared_ptr
 		if(connected_building_index != -1)
 		{
 			vertices[vertices_index].connected_indeces.push_back(connected_building_index);
-			vertices[vertices_index].size_of_edge.push_back(0);
+			vertices[vertices_index].size_of_edge.push_back(0);				//all edges are 0 at the beginning
 		}
 	}
 	return vertices_index;
@@ -845,40 +870,35 @@ int add_building_to_graph(std::vector<vertex_info> & vertices, boost::shared_ptr
 void building::assign_workers()
 {
 	std::vector<vertex_info> vertices;
-	for(size_t i=0; i<session->building_list.size(); ++i)
+	for(size_t i=0; i<session->building_list.size(); ++i)		//initialization
 	{
 		add_building_to_graph(vertices, session->building_list[i], false);	//vertices will be biparted graph
 
 		if(session->building_list[i]->show_type() == HOUSE)
 		{
 			boost::shared_ptr<house> house_ptr = boost::dynamic_pointer_cast<house>(session->building_list[i]);
-			house_ptr->set_idle_workers(house_ptr->number_of_workers());
+			house_ptr->set_idle_workers(house_ptr->number_of_workers());	//reset number of idle workers
 		}
 	}
 
-	std::vector<send_workers_order> orders;
-	for(size_t i=0; i<vertices.size(); ++i)
+	for(size_t i=0; i<vertices.size(); ++i)				//try find some free workers
 	{
 		if(!vertices[i].is_house)
 		{
-			int founded_workers = vertices[i].ask_for_workers(vertices, orders, vertices[i].b->show_required_workers());
-			vertex_info::reset_being_asked(vertices);
+			std::vector<vertex_info> new_graph = vertices;
+			int founded_workers = new_graph[i].ask_for_workers(new_graph, new_graph[i].b->show_required_workers());
+			vertex_info::reset_being_asked(new_graph);
 
-			if(founded_workers == vertices[i].b->show_required_workers())
+			if(founded_workers == new_graph[i].b->show_required_workers())	//enough workers founded -> commit changes
 			{
-				for(size_t j=0; j<orders.size(); ++j)
-				{
-					orders[j].execute_order(vertices);
-				}
+				vertices = new_graph;
 				vertices[i].b->actual_workers = founded_workers;
 			}
-			else
+			else								//not enough workers -> forget new graph
 				vertices[i].b->actual_workers = 0;
-
-			orders.clear();
 		}
 	}
-	for(size_t i=0; i<vertices.size(); ++i)
+	for(size_t i=0; i<vertices.size(); ++i)			//set right number of idle workers in each house
 	{
 		if(vertices[i].is_house)
 		{

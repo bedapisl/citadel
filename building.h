@@ -312,8 +312,8 @@ public:
 	house(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
 	void specific_update();
 	void draw_specific_interface();			///< Draws info and gui to the panel specific to house.
-	int show_happiness_modifier() {return base_happiness[upgrade_level] - 5*missing_resources;}
-	int number_of_workers() {return workers_by_house_level[upgrade_level];}
+	int show_happiness_modifier() {return base_happiness[upgrade_level] - 5*missing_resources;}	///< Returns how this house modifies happiness.
+	int number_of_workers() {return workers_by_house_level[upgrade_level];}		///< How many workers live in the house.
 	void upgrade() {}
 	void set_idle_workers(int idle_workers) {this->idle_workers = idle_workers;}
 		

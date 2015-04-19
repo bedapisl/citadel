@@ -26,8 +26,8 @@ public:
 
 	static std::vector<tile*> adjacent_tiles(tile* t, bool move_diagonally);
 	
-	/** \brief Returns all paths to goal tiles. 
-	 * Whether it is possible to got from one tile to another is determined by accessible function which must be function with signature 
+	/** \brief Returns shortest paths to all reachable goal tiles. 
+	 * Whether it is possible to go from one tile to another is determined by accessible function which must be function with signature 
 	 * "bool f(tile* t1, tile* t2)" or equivalent functor, lambda, .... Goal function should have signature bool "bool f(tile* t)" or equivalent.
 	*/
 	template <typename ACCESSIBLE, typename GOAL>
@@ -44,6 +44,10 @@ public:
 	template <typename ACCESSIBLE, typename GOAL, typename HEURISTIC, typename REAL_DISTANCE>
 	static std::vector<tile*> a_star(std::vector<tile*> starting_tiles, ACCESSIBLE accessible_function, GOAL goal_function, HEURISTIC heuristic_function, REAL_DISTANCE real_distance_function, bool move_diagonally = true);
 
+	/**
+	 * \brief Returns "number_of_tiles" tiles which are accessible from middle tile by shortest path. 
+	 * If not enough tiles is accessible, duplicates random accessible tiles. 
+	 */
 	static std::vector<tile*> near_accessible_tiles(tile* middle_tile, int number_of_tiles);
 
 private:
