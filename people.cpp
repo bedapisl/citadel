@@ -1023,6 +1023,18 @@ bool warrior::can_move(tile* from, tile* to)
 	return people::general_can_move(from, to);
 }
 
+bool warrior::static_can_go_here(tile* t)
+{
+	return ((t->building_on_tile.expired() || t->can_go_inside_building || t->can_go_on_building) && (t->object == NOTHING) && (!t->is_water_tile()));
+}
+
+bool warrior::static_can_move(tile* from, tile* to)
+{
+	if(!static_can_go_here(to))
+		return false;
+
+	return people::general_can_move(from, to);
+}
 bool warrior::can_attack_people(tile* from, tile* enemy_tile)
 {
 	switch(type)

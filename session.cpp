@@ -74,7 +74,7 @@ void game_session::update(game_mouse* mouse, bool& done)
 	
 	if(!warehouse_exist)
 	{
-	//	message("Your warehouse was destroyed! You lost.");
+		LOG("warehouse destroyed - end of game");
 		done = true;
 		return;
 	}
@@ -133,7 +133,6 @@ int game_session::update_happiness()
 int game_session::invasion()
 {
 	LOG("invasion");
-	//message("Defend your buildings. Enemies coming.");
 
 	int x = rand() % MAP_WIDTH;
 	int y = rand() % MAP_HEIGHT;
@@ -161,22 +160,22 @@ int game_session::invasion()
 	for(int i=0; i<number_of_enemies; i++)
 	{
 		people_type t;
-		switch(rand() % 5)
+		switch(rand() % invasion_number)
 		{
 			case(0):
-				t = AXEMAN;
-				break;
-			case(1):
 				t = SPEARMAN;
 				break;
+			case(1):
+				t = AXEMAN;
+				break;
 			case(2):
-				t = SWORDSMAN;
+				t = CATAPULT;
 				break;
 			case(3):
 				t = BOWMAN;
 				break;
 			case(4):
-				t = CATAPULT;
+				t = SWORDSMAN;
 				break;
 			default:
 			{

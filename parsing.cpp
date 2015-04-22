@@ -14,6 +14,9 @@ void object_info::load(const std::string & value, const std::string & variable)
 
 	else if(variable == "armor")
 		armor = std::stoi(value);
+	
+	else if(variable == "influence")
+		influence = std::stod(value);
 }
 
 void object_info::parse_file(std::ifstream & file)

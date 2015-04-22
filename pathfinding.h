@@ -369,6 +369,5 @@ std::vector<tile*> pathfinding::a_star(std::vector<tile*> starting_tiles, ACCESS
 	}
 	return std::vector<tile*>();
 }
-	
 
 #endif

@@ -16,7 +16,7 @@ do
 	#cat "$NAME" | sed 's@honour_price = 10@honour_price = 10\ncan_be_upgraded = true@g' > tmp_"$NAME"
 	#mv tmp_"$NAME" "$NAME"
 
-	cat "$NAME" | sed 's@upgrade_text@upgrade_info@g' > tmp_"$NAME"
+	cat "$NAME" | sed 's@size = \(.*\)@size = \1\ninfluence = 10@g' > tmp_"$NAME"
 	mv tmp_"$NAME" "$NAME"
 
 	#cat "$NAME" | sed 's@name = "\(.\)@name = "\U\1@' > tmp"$NAME"

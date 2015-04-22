@@ -152,6 +152,8 @@ public:
 	
 	bool can_go_here(tile* t);			///< Returns whether this warrior can go to given tile.
 	bool can_move(tile* from, tile* to);		///< Returns whether this warrior can move from one tile to another in one step.
+	static bool static_can_go_here(tile* t);	///< Returns whether some warrior can go to given tile. Doesn't take in account people.
+	static bool static_can_move(tile* from, tile* to);	///< Returns whether some warrior can from one tile to another. Doesn't take in account people.
 	bool can_attack_people(tile* from, tile* to);	///< Returns whether this warrior can attack people on "to" tile from "from" tile.
 	bool can_attack_building(tile* from, tile* to);	///< Returns whether this warrior can attack building on "to" tile from "from" tile.
 

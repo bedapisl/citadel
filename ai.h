@@ -11,6 +11,8 @@
 class enemy_ai
 {
 public:
+	typedef int INFLUENCE_T;
+
 	void update();				///< Should be called once per frame, manages whole class.
 	void register_units();			///< Registers all currently existing enemy units to be controled by this class. 
 	void unit_attacked(tile* from);		///< Tells AI that AI's unit was attacked.
@@ -27,6 +29,9 @@ public:
 	}
 		
 protected:
+	void choose_main_target();
+	std::vector<std::vector<INFLUENCE_T>> generate_influence_map();	///< Higher influence means enemy wants to go there
+	void add_influence_source(std::vector<tile*> starting_tiles, INFLUENCE_T influence, std::vector<std::vector<INFLUENCE_T>>& map);
 	void check_death_units();
 	std::vector<tile*> weak_spots();
 	std::vector<std::vector<tile*>> accessible_buildings(tile* start);

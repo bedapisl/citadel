@@ -19,6 +19,7 @@ public:
 	picture image;
 	int life;
 	int armor;
+	double influence;	///< How much enemies want to be near given unit/building. Higher number means they want to be there.
 	
 	object_info() : name("Unknown"), text("No description") {}
 
