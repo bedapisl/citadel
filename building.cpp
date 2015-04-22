@@ -674,7 +674,7 @@ void execute_order(std::vector<vertex_info> & vertices, int from, int to, int am
 struct vertex_info
 {
 public:
-	vertex_info(boost::shared_ptr<building> b, bool is_house, int number_of_workers, int index_in_vertices) : b(b), is_house(is_house), being_asked(false), index_in_vertices(index_in_vertices), asked_neighbours(0) {}
+	vertex_info(boost::shared_ptr<building> b, bool is_house, int number_of_workers, int index_in_vertices) : b(b), is_house(is_house), being_asked(false), index_in_vertices(index_in_vertices), asked_neighbours(0), workers_in_house(0), workers_in_house_computed(false) {}
 	boost::shared_ptr<building> b;		///< Each vertex represents building.
 	bool is_house;
 	std::vector<int> connected_indeces;	///< Indeces to "vertices" vector to connected buildings.
