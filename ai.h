@@ -31,13 +31,10 @@ public:
 protected:
 	void choose_main_target();
 	std::vector<std::vector<INFLUENCE_T>> generate_influence_map();	///< Higher influence means enemy wants to go there
-	void add_influence_source(std::vector<tile*> starting_tiles, INFLUENCE_T influence, std::vector<std::vector<INFLUENCE_T>>& map);
+	void add_influence_source(std::vector<tile*> starting_tiles, INFLUENCE_T influence, std::vector<std::vector<INFLUENCE_T>>& map); ///< Adds one source of influence (unit, building) to map
 	void check_death_units();
-	std::vector<tile*> weak_spots();
-	std::vector<std::vector<tile*>> accessible_buildings(tile* start);
 	
 	std::vector<boost::weak_ptr<warrior>> units;
-
 	boost::weak_ptr<building> main_target;
 };
 

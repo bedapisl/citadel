@@ -124,8 +124,8 @@ int game_session::update_happiness()
 	else if(happiness > happiness_equilibrium)
 		happiness--;
 
-	if(happiness < 0)
-		happiness = 0;
+	if(happiness < 1)
+		happiness = 1;
 
 	return 0;
 }
@@ -160,7 +160,7 @@ int game_session::invasion()
 	for(int i=0; i<number_of_enemies; i++)
 	{
 		people_type t;
-		switch(rand() % invasion_number)
+		switch(rand() % std::min(invasion_number, 5))
 		{
 			case(0):
 				t = SPEARMAN;

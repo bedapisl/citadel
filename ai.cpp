@@ -171,7 +171,10 @@ void enemy_ai::add_influence_source(std::vector<tile*> starting_tiles, INFLUENCE
 			if(positive)
 				map[t->show_tile_y()][t->show_tile_x()] = std::max(influence, map[t->show_tile_y()][t->show_tile_x()]);
 			else	
-				map[t->show_tile_y()][t->show_tile_x()] = std::min( - influence, map[t->show_tile_y()][t->show_tile_x()]);
+			{
+				//map[t->show_tile_y()][t->show_tile_x()] = std::min( - influence, map[t->show_tile_y()][t->show_tile_x()]);
+				map[t->show_tile_y()][t->show_tile_x()] -= influence;
+			}
 
 			std::vector<tile*> neighbours = t->accessible_neighbours;
 			

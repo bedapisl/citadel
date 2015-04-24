@@ -1449,7 +1449,15 @@ void production_building::specific_update()
 		return;
 
 	if(action_duration > 0)
+	{
 		action_duration--;
+		
+		double happiness_modifier = 100.0 / std::max(1.0, (double)session->show_happiness());
+		double new_time_to_produce = (time_to_produce * happiness_modifier) / (upgrade_level + 1);
+		double modifier = (double) new_time_to_produce / (double) current_time_to_produce;
+		action_duration *= modifier;
+		current_time_to_produce = new_time_to_produce;
+	}
 
 	else if(output->show_amount(resource_produced) < output->show_capacity())
 	{
@@ -1468,7 +1476,7 @@ void production_building::specific_update()
 				output->try_subtract(needed_resources[i], amount_produced);
 
 			output->save(resource_produced, amount_produced);
-			double happiness_modifier = 100.0 / (double)session->show_happiness();
+			double happiness_modifier = 100.0 / std::max(1.0, (double)session->show_happiness());
 			action_duration = (time_to_produce * happiness_modifier) / (upgrade_level + 1);
 			current_time_to_produce = action_duration;
 		}
