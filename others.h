@@ -121,7 +121,7 @@ public:
 	virtual bool try_subtract(resources type, int amount);	///< If possible subtract resource from stock and returns true. Otherwise do nothing and return false.
 	virtual bool try_subtract_list(std::vector<int> amount);///< If possible subtract resource from stock and returns true. Otherwise do nothing and return false.
 	virtual void subtract(resources type, int amount);	///< Subtract resources. If not possible, throws exception.
-	int show_amount(resources type) {return stored[type];}
+	int show_amount(resources type) {return stored[type];}	///< Returns amount of resources in stock. Doesn't take into account reservations from carrier_output.
 	int show_capacity() {return capacity;}
 	void draw_nonzero_resources(int real_x, bool with_capacity);	///< Draws resources from stock to panel.
 	void increase_capacity(int new_capacity);
@@ -156,6 +156,7 @@ public:
 	int show_max_possible_transaction(resources resource_type, transaction_type type);
 	int show_free_space(resources resource_type) {return capacity - stored[static_cast<int>(resource_type)] - reserved_in[static_cast<int>(resource_type)];}
 		///< How much more resources can be stored.
+	int show_usable_amount(resources resource_type) {return stored[static_cast<int>(resource_type)] - reserved_out[static_cast<int>(resource_type)];}
 	void add_idle_carrier(boost::weak_ptr<carrier> returned_carrier) {idle_carriers.push_back(returned_carrier);}	///< Carrier will start waiting for carrier_output orders.
 	void init(boost::shared_ptr<building> building_ptr) {this_building = building_ptr;}	
 	void change_accepted_resources(resources r, bool in, bool add);

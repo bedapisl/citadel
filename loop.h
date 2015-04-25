@@ -96,6 +96,7 @@ public:
 	void mouse_right_up(ALLEGRO_EVENT* ev);
 	void timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y);
 	void start();
+	void end();
 	void draw();
 
 private:

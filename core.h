@@ -88,8 +88,8 @@
 #define WRITING_COLOR al_map_rgb(200, 200, 200)
 #define GREY_COLOR al_map_rgb(150, 150, 150)
 #define BACKGROUND_COLOR al_map_rgb(100, 100, 100)
-#define MAP_WIDTH 70 //in tiles not pixels
-#define MAP_HEIGHT 70 //big increasing of this can cause problems, because current A* needs about (20*n)^2 memory (A* can be overwritten to use less memory...)
+#define MAP_WIDTH 100 //in tiles not pixels
+#define MAP_HEIGHT 100 //big increasing of this can cause problems, because current A* needs about (20*n)^2 memory (A* can be overwritten to use less memory...)
 #define FPS 60							// if FPS goes under 10 or something like that, mouse_button_down should have been invoked in main loop by allegro queue 
 #define DISPLAY_MOVEMENT_SPEED (13.0/(game_info::fps/60.0))
 //#define SOCHL 4							//Speed Of CHanging Legs when drawing moving people 

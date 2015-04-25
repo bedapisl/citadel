@@ -343,7 +343,14 @@ void game_loop::timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y)
 	bool done = false;
 	session->update(mouse, done);
 	if(done)
+	{
+		LOG("end of session");
+		delete session;
+		session = nullptr;
 		event_handler::get_instance().change_state(game_state::MAIN_MENU);
+		return;
+	}
+
 #ifdef UNIX
 	gettimeofday(&time, NULL);
 	session_time = time.tv_usec + time.tv_sec*1000000;
@@ -365,6 +372,12 @@ void game_loop::start()
 	if(minimap != nullptr)
 		al_destroy_bitmap(minimap);
 	minimap = create_minimap();
+}
+
+void game_loop::end()
+{
+	al_destroy_bitmap(minimap);
+	minimap = nullptr;
 }
 
 void game_loop::draw()
@@ -522,56 +535,6 @@ void ingame_menu::check_clicked_buttons()
 		 	{ };
 	}
 }
-
-
-
-/*
-void ingame_menu::execute_option(ingame_menu_options option)
-{
-	switch(option)
-	{
-		case(ingame_menu_options::CONTINUE):
-			event_handler::get_instance().change_state(game_state::GAME);
-			break;
-		case(ingame_menu_options::SAVE):
-			event_handler::get_instance().change_state(game_state::SAVE_MENU);
-			break;
-		case(ingame_menu_options::EXIT):
-		{
-			delete session;
-			session = nullptr;
-			event_handler::get_instance().change_state(game_state::MAIN_MENU);
-		}
-			break;
-		case(ingame_menu_options::NO_OPTION):
-			break;
-		default:
-			throw std::exception();
-	}
-}
-*/
-
-/*
-ingame_menu_options ingame_menu::compute_ingame_menu_options(int x, int y)
-{
-	if(x < ((display_width - menu_width)/2 + button_start_x) ||
-		x > ((display_width + menu_width)/2 - button_start_x))
-		return ingame_menu_options::NO_OPTION;
-
-	int start_y = menu_start_y + button_start_y;
-	int end_y = menu_start_y + button_start_y + button_heigth;
-
-	for(int i=0; i<options_names.size(); ++i)
-	{
-		if((y >= start_y) && (y <= end_y))
-			return static_cast<ingame_menu_options>(i);
-		
-		start_y += button_distance;
-		end_y += button_distance;
-	}
-	return ingame_menu_options::NO_OPTION;
-}
-*/
 
 save_menu::save_menu() : file_name(new text_field("File name", "", false, 30))
 {
@@ -1002,7 +965,6 @@ void random_game_settings::start_new_game()
 	for(int i=2; i<sliders.size(); ++i)
 		natural_resources.push_back(sliders[i]->get_value());
 	
-
 	if(session != nullptr)
 		throw std::exception();		//session wasnt deleted!!!
 

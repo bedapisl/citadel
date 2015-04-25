@@ -27,7 +27,7 @@ class building : public game_object, public boost::enable_shared_from_this<build
 public:	
 	static boost::shared_ptr<building> create_building(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real); 
 										///< Creates building on tile.
-	void update();								///< Is called once per frame. Updates/manages building.
+	virtual void update();								///< Is called once per frame. Updates/manages building.
 	std::vector<game_object*> draw(int screen_position_x, int screen_position_y);	
 			///< Draws one floor of building. Returns what will be drawn above it (e.g. people staying on walls, next floor of building).
 	void draw_interface();							///< When building is selected, draws gui and info about it to main panel.
@@ -210,6 +210,7 @@ class production_building : public building
 {
 public:
 	production_building(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real);
+	void update();
 	void specific_update();			///< Updates production building - decreases time to produce resource, produces resources. Called once each frame.
 	void draw_specific_interface();			///< Draws info and gui to the panel specific to production_buildings.
 	bool has_carrier_output() {return true;}
@@ -227,8 +228,10 @@ public:
 		ar & make_nvp("output", output);
 		ar & make_nvp("resource_produced", resource_produced);
 		ar & make_nvp("needed_resources", needed_resources);
-		ar & make_nvp("current_time_to_produce", current_time_to_produce);
+		ar & make_nvp("work_done", work_done);
 		ar & make_nvp("amount_produced", amount_produced);
+		ar & make_nvp("status", status);
+		ar & make_nvp("missing_resource", missing_resource);
 	}
 
 private:	
@@ -237,8 +240,11 @@ private:
 	resources resource_produced;
 	std::vector<resources> needed_resources;
 	const int time_to_produce = 6*game_info::fps;
-	int current_time_to_produce;
+	double work_done;
+	//int current_time_to_produce;
 	int amount_produced;
+	production_building_status status;
+	resources missing_resource;
 };
 
 /**
@@ -517,6 +523,7 @@ private:
 
 boost::weak_ptr<warrior> warrior_born_near(people_type type, int tile_x, int tile_y, player owner);	///< Creates new soldier on given location (or near if location is not free)
 int show_building_price(building_type type, resources resource_type, upgrade_level upgrade);	///< Shows amount of needed resource of given type for buying or upgrading building.
+std::vector<tile*> tiles_under_building(boost::shared_ptr<building> b);
 std::vector<tile*> tiles_under_building(int tile_x, int tile_y, building_size type_of_building);
 std::vector<std::pair<boost::shared_ptr<building>, int>> buildings_connected_by_path(std::vector<tile*> start, int distance); ///< Returns buildings connected by path to any of start tiles and distances to them. 
 

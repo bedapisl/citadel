@@ -1324,7 +1324,7 @@ void warehouse::draw_specific_interface()
 
 /*Initialize production_buidling. Production building has 4 subtypes: DAIRY_FARM, WOODCUTTER, QUARRY and IRON_MINE.*/ 
 production_building::production_building(building_type type, int tile_x, int tile_y, int surface_height, player owner, bool is_real) 
-			: building(type, tile_x, tile_y, surface_height, owner, is_real)
+			: building(type, tile_x, tile_y, surface_height, owner, is_real), work_done(0), status(production_building_status::NO_PATH)
 				
 {
 	//ALLEGRO_BITMAP* image;
@@ -1438,18 +1438,60 @@ production_building::production_building(building_type type, int tile_x, int til
 	int number_of_carriers = building_info::show_building_info(type).number_of_carriers;
 	output = boost::shared_ptr<carrier_output>(new carrier_output(capacity, needed_resources, std::vector<resources>(1, resource_produced), number_of_carriers));
 
-	current_time_to_produce = time_to_produce;
+	//current_time_to_produce = time_to_produce;
 	amount_produced = 1;
+}
+
+/*This function should be called once per frame for every buidling. Updates building.*/
+void production_building::update()
+{
+	if(bIs_death)
+		return;
+	
+	if(stopped)
+		status = production_building_status::STOPPED;
+	
+	if(required_workers != actual_workers)
+	{
+		bool adjacent_path = false;
+		std::vector<tile*> building_tiles = tiles_under_building(shared_from_this());
+		for(tile* t : building_tiles)
+		{
+			for(tile* n : t->accessible_neighbours)
+			{
+				if(n->real_path_on_tile())
+				{
+					adjacent_path = true;
+					break;
+				}
+			}
+			if(adjacent_path)
+				break;
+		}
+
+		if(adjacent_path)
+			status = production_building_status::NO_WORKERS_NEARBY;
+
+		else
+			status = production_building_status::NO_PATH;
+	}
+
+	if((required_workers == actual_workers) && (!stopped))
+		specific_update();
+	
+	if(!stopped)
+		show_carrier_output()->update();
 }
 
 /*Decrease time left to produce resources and if they are finished sends them to granary or warehouse*/
 void production_building::specific_update()
 {
-	if(stopped)
-		return;
-
-	if(action_duration > 0)
+	if(work_done < time_to_produce)
 	{
+		work_done += ((double)(upgrade_level + 1)) * (std::max(1.0, (double)session->show_happiness()) / 100.0);
+		status = production_building_status::WORKING;
+		
+		/*
 		action_duration--;
 		
 		double happiness_modifier = 100.0 / std::max(1.0, (double)session->show_happiness());
@@ -1457,6 +1499,7 @@ void production_building::specific_update()
 		double modifier = (double) new_time_to_produce / (double) current_time_to_produce;
 		action_duration *= modifier;
 		current_time_to_produce = new_time_to_produce;
+		*/
 	}
 
 	else if(output->show_amount(resource_produced) < output->show_capacity())
@@ -1467,6 +1510,7 @@ void production_building::specific_update()
 			if(output->show_amount(needed_resources[i]) < amount_produced)
 			{
 				enough_resources = false;
+				missing_resource = static_cast<resources>(i);
 			}
 		}
 		
@@ -1476,12 +1520,20 @@ void production_building::specific_update()
 				output->try_subtract(needed_resources[i], amount_produced);
 
 			output->save(resource_produced, amount_produced);
-			double happiness_modifier = 100.0 / std::max(1.0, (double)session->show_happiness());
-			action_duration = (time_to_produce * happiness_modifier) / (upgrade_level + 1);
-			current_time_to_produce = action_duration;
+			work_done = 0;
+			status = production_building_status::WORKING;
+		}
+		else
+		{
+			status = production_building_status::NO_BASIC_RESOURCES;
 		}
 	}
+	else
+	{
+		status = production_building_status::NO_CAPACITY;
+	}
 }
+
 /* Draws how much time is left to create resource. */
 void production_building::draw_specific_interface()
 {
@@ -1489,10 +1541,40 @@ void production_building::draw_specific_interface()
 
 	int start_x = 100;
 	
-	button::draw_progress_bar(start_x, display_height - BUTTON_SIZE + 10, 100 - (100*action_duration)/current_time_to_produce);
+	button::draw_progress_bar(start_x, display_height - BUTTON_SIZE + 10, 100* (work_done / ((double)time_to_produce)));
 	
 		//this draws stocks
 	output->draw_nonzero_resources(300, true);
+
+	std::string text;
+
+	switch(status)
+	{
+	case(production_building_status::WORKING):
+	{
+		text = "Working on " + std::to_string(session->show_happiness()) + "% (based on happiness).";
+	}
+		break;
+	case(production_building_status::NO_CAPACITY):
+		text = "Storage in this building is full.";
+		break;
+	case(production_building_status::NO_BASIC_RESOURCES):
+		text = "Missing " + std::get<1>(find<resources_names, 0>(missing_resource));
+		break;
+	case(production_building_status::STOPPED):
+		text = "Stopped";
+		break;
+	case(production_building_status::NO_WORKERS_NEARBY):
+		text = "Not enough workers live nearby. Try building houses.";
+		break;
+	case(production_building_status::NO_PATH):
+		text = "Building is not connected to path network.";
+		break;
+	default:
+		throw std::exception();
+	}
+
+	al_draw_textf(font15, WRITING_COLOR, 20, display_height - 30, ALLEGRO_ALIGN_LEFT, "%s", text.c_str());
 }
 	
 void production_building::upgrade()
@@ -2060,7 +2142,7 @@ void store::specific_update()
 		resources r = static_cast<resources>(i);
 		if(buying[i] == resource_status::SELLING)
 		{
-			if((output->show_amount(r) >= show_selling_prices()[i]) && (output->show_free_space(GOLD) > 1))
+			if((output->show_usable_amount(r) >= show_selling_prices()[i]) && (output->show_free_space(GOLD) > 1))
 			{
 				output->save(GOLD, 1);
 				assert(output->try_subtract(r, show_selling_prices()[i]));
@@ -2068,7 +2150,7 @@ void store::specific_update()
 		}
 		else if(buying[i] == resource_status::BUYING)
 		{
-			if((output->show_amount(GOLD) >= show_buying_prices()[i]) && (output->show_free_space(r) > 1))
+			if((output->show_usable_amount(GOLD) >= show_buying_prices()[i]) && (output->show_free_space(r) > 1))
 			{
 				assert(output->try_subtract(GOLD, show_buying_prices()[i]));
 				output->save(r, 1);
@@ -2416,6 +2498,11 @@ int show_building_price(building_type type, resources resource_type, upgrade_lev
 	}
 
 	return price[resource_type];
+}
+
+std::vector<tile*> tiles_under_building(boost::shared_ptr<building> b)
+{
+	return tiles_under_building(b->show_tile_x(), b->show_tile_y(), b->show_size());
 }
 
 /*Returns std::vector with pointers to tiles*/

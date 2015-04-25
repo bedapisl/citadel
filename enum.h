@@ -351,5 +351,15 @@ enum class can_build_output
 	ENEMIES_NEARBY
 };
 
+enum class production_building_status
+{
+	WORKING,
+	NO_CAPACITY,
+	NO_BASIC_RESOURCES,
+	STOPPED,
+	NO_WORKERS_NEARBY,
+	NO_PATH,
+};
+
 #endif
 
