@@ -275,12 +275,6 @@ void game_loop::mouse_left_down(ALLEGRO_EVENT* ev)
 void game_loop::mouse_left_up(ALLEGRO_EVENT* ev)
 {
 	mouse->left_button_go_up(screen_position_x, screen_position_y);
-
-	if(((ev->mouse.x > display_width - 3*BUTTON_SIZE) && (ev->mouse.x < display_width - 2*BUTTON_SIZE)) &&
-		((ev->mouse.y > display_height - BUTTON_SIZE) && (ev->mouse.y < display_height - BUTTON_SIZE/2)))
-	{
-		event_handler::get_instance().change_state(game_state::INGAME_MENU);
-	}
 }
 
 void game_loop::mouse_right_down(ALLEGRO_EVENT* ev)

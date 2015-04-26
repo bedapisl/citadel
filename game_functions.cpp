@@ -214,11 +214,15 @@ int draw_main_panel(ALLEGRO_BITMAP* minimap, int screen_position_x, int screen_p
 		}
 	}
 	else
-	{
+	{				//rotate buttons
 		al_draw_bitmap(image_list[ROTATE_LEFT_IMAGE], display_width - 3*BUTTON_SIZE, display_height - BUTTON_SIZE/2 + 3, 0);
 		al_draw_bitmap(image_list[ROTATE_RIGHT_IMAGE], display_width - 2.5*BUTTON_SIZE, display_height - BUTTON_SIZE/2 + 3, 0);
+		
+					//menu button
 		al_draw_filled_rectangle(display_width - 3*BUTTON_SIZE, display_height - BUTTON_SIZE + 8, display_width - 2*BUTTON_SIZE - 8, display_height - BUTTON_SIZE/2 - 4, BLACK_COLOR);
-		al_draw_text(font20, WRITING_COLOR, display_width - 2.5*BUTTON_SIZE, display_height - BUTTON_SIZE + 12, ALLEGRO_ALIGN_CENTRE, "Menu"); 
+		al_draw_text(font20, WRITING_COLOR, display_width - 2.5*BUTTON_SIZE - 4, display_height - BUTTON_SIZE + 12, ALLEGRO_ALIGN_CENTRE, "Menu"); 
+
+					//other buttons
 		for(int i=0; i<(*button::button_list).size(); i++)
 		{
 			(*button::button_list)[i]->draw_button(i);

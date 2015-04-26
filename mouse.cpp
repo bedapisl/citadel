@@ -36,14 +36,21 @@ void game_mouse::left_button_go_down(int screen_position_x, int screen_position_
 	}
 	else if(state->y > display_height - BUTTON_SIZE)		//click to panel
 	{	
-		if((chosen_building.expired()) && (chosen_people.size() == 0))
+		if((chosen_building.expired()) && (chosen_people.size() == 0))	//basic interface
 		{
-			if((state->x > display_width - 3*BUTTON_SIZE) && (state->x < display_width - 2*BUTTON_SIZE) && (state->y > display_height - BUTTON_SIZE/2))
+			if((state->x > display_width - 3*BUTTON_SIZE) && (state->x < display_width - 2*BUTTON_SIZE))
 			{
-				if(state->x < display_width - 2.5*BUTTON_SIZE)
-					*rotate = LEFT_ROTATION; 
-				else
-					*rotate = RIGHT_ROTATION;
+				if(state->y > display_height - BUTTON_SIZE/2)	//rotate buttons click
+				{
+					if(state->x < display_width - 2.5*BUTTON_SIZE)
+						*rotate = LEFT_ROTATION; 
+					else
+						*rotate = RIGHT_ROTATION;
+				}
+				else						//menu click
+				{
+					event_handler::get_instance().change_state(game_state::INGAME_MENU);
+				}
 			}
 			else if(state->x < display_width - 2.5*BUTTON_SIZE)		//click to buttons
 			{
