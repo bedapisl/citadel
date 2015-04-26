@@ -221,9 +221,23 @@ private:
 };
 
 /**
+ * \brief Non-interactive text as gui_element.
+ */
+class text_element : public gui_element
+{
+public:
+	text_element(const std::vector<std::string> lines_of_text);
+	void draw();
+
+private:
+	static const int letter_size = 15;
+	static const int line_height = 30;
+	const std::vector<std::string> lines_of_text;
+};
+
+/**
  * \brief This class manages background music.
  */
-
 class music
 {
 public:

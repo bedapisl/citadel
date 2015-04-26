@@ -241,7 +241,6 @@ private:
 	std::vector<resources> needed_resources;
 	const int time_to_produce = 6*game_info::fps;
 	double work_done;
-	//int current_time_to_produce;
 	int amount_produced;
 	production_building_status status;
 	resources missing_resource;

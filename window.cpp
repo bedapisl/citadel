@@ -522,6 +522,21 @@ void switch_button::draw()
 	al_draw_text(font25, c, x + name_length, y, ALLEGRO_ALIGN_LEFT, text.c_str());
 }
 
+text_element::text_element(const std::vector<std::string> lines_of_text) 
+	: gui_element(letter_size * 
+	(std::max_element(lines_of_text.begin(), lines_of_text.end(), [] (std::string s1, std::string s2) {return s1.size() < s2.size();})->size())
+	+ 20, line_height * lines_of_text.size()), lines_of_text(lines_of_text)
+{
+}
+
+void text_element::draw()
+{
+	for(int i=0; i<lines_of_text.size(); ++i)
+	{
+		al_draw_text(font25, WRITING_COLOR, x + 10, y + i * line_height, ALLEGRO_ALIGN_LEFT, lines_of_text[i].c_str());
+	}
+}
+
 music::music() : sample_playing(nullptr), mixer(al_create_mixer(44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2)), 
 			voice(al_create_voice(44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2)), number_of_background_music(0)
 { 

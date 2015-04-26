@@ -301,15 +301,7 @@ enum class target_priority
 	ATTACKED_BY_ENEMY,
 	PLAYER_ORDER
 };
-/*
-enum class ingame_menu_options
-{
-	CONTINUE,
-	SAVE,
-	EXIT,
-	NO_OPTION
-};
-*/
+
 enum class game_state
 {
 	GAME,
@@ -318,6 +310,7 @@ enum class game_state
 	INGAME_MENU,
 	SAVE_MENU,
 	RANDOM_GAME_SETTINGS,
+	END_OF_GAME,
 	NUMBER_OF_STATES
 };
 

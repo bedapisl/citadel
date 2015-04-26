@@ -47,6 +47,7 @@ event_handler::event_handler() : queue(al_create_event_queue()), ev(new ALLEGRO_
 	loops.push_back(boost::shared_ptr<loop>(new ingame_menu));
 	loops.push_back(boost::shared_ptr<loop>(new save_menu));
 	loops.push_back(boost::shared_ptr<loop>(new random_game_settings));
+	loops.push_back(boost::shared_ptr<loop>(new end_of_game));
 
 	al_start_timer(timer);
 }
@@ -344,10 +345,8 @@ void game_loop::timer(ALLEGRO_EVENT* ev, int mouse_x, int mouse_y)
 	session->update(mouse, done);
 	if(done)
 	{
-		LOG("end of session");
-		delete session;
-		session = nullptr;
-		event_handler::get_instance().change_state(game_state::MAIN_MENU);
+		LOG("game lost");
+		event_handler::get_instance().change_state(game_state::END_OF_GAME);
 		return;
 	}
 
@@ -973,6 +972,65 @@ void random_game_settings::start_new_game()
 	event_handler::get_instance().change_state(game_state::GAME);
 }
 
+end_of_game::end_of_game() : done_button(new menu_button("Done", true))
+{	
+}
 
 
+void end_of_game::escape_down(ALLEGRO_EVENT* ev)
+{
+	event_handler::get_instance().change_state(game_state::MAIN_MENU);
+}
+
+void end_of_game::start()
+{	
+	blocks.clear();
+	blocks.push_back(gui_block(50, 50));
+
+	std::vector<std::string> text;
+	text.push_back(std::string("End of game - your warehouse was lost."));
+	text.push_back(std::string("You survived " + std::to_string(session->show_invasion_number()) + " invasions."));
+
+	message = boost::shared_ptr<text_element>(new text_element(text));		//constructing new message
+	blocks[0].add_gui_element(message);
+	blocks[0].add_gui_element(done_button);
+	update_gui_blocks_position();
+	
+	game_bitmap = al_clone_bitmap(al_get_backbuffer(game_info::display));
+}
+
+void end_of_game::end()
+{
+	blocks.clear();
+	al_destroy_bitmap(game_bitmap);
+}
+
+void end_of_game::draw()
+{
+	al_draw_bitmap(game_bitmap, 0, 0, 0);		//draws map and panel
+
+	int black_vertical_border = 0;
+	int black_horizontal_border = 0;
+	al_draw_filled_rectangle(blocks[0].x - black_horizontal_border, blocks[0].y - black_vertical_border, blocks[0].x + blocks[0].length + black_horizontal_border, blocks[0].y + blocks[0].height + black_vertical_border, BLACK_COLOR);
+
+	for(int i=0; i<blocks.size(); ++i)
+		blocks[i].draw();
+
+	al_flip_display();
+}
+
+void end_of_game::update_gui_blocks_position()
+{
+	blocks[0].update_position((display_width - blocks[0].length)/2, (display_height - blocks[0].height)/2);
+}
+
+void end_of_game::check_clicked_buttons()
+{
+	if(done_button->clicked())
+	{
+		delete session;
+		session = nullptr;
+		event_handler::get_instance().change_state(game_state::MAIN_MENU);
+	}
+}
 

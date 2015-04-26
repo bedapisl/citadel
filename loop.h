@@ -191,6 +191,9 @@ protected:
 	boost::shared_ptr<text_field> file_name;
 };
 
+/**
+ * \brief Manages main menu.
+ */
 class main_menu : public menu_loop
 {
 public:	
@@ -207,6 +210,9 @@ private:
 	const int element_height = 90;
 };
 
+/**
+ * \brief Manages screen with general settings.
+ */
 class settings_menu : public menu_loop
 {
 public:
@@ -229,6 +235,9 @@ private:
 
 class slider;
 
+/**
+ * \brief Manages screen before start of random game with settings about it.
+ */
 class random_game_settings : public menu_loop
 {
 public:
@@ -251,6 +260,27 @@ private:
 	std::vector<std::string> button_names = std::vector<std::string>{"Back", "Start game"};
 };
 
+/**
+ * \brief Manages window which will be visible after player loses the game.
+ */
+class end_of_game : public menu_loop
+{
+public:
+	end_of_game();
+	void escape_down(ALLEGRO_EVENT* ev);
+	void start();
+	void end();
+
+private:
+	void draw();
+	void update_gui_blocks_position();
+	void check_clicked_buttons();
+	void start_new_game();
+	
+	boost::shared_ptr<text_element> message;
+	boost::shared_ptr<menu_button> done_button;
+	ALLEGRO_BITMAP* game_bitmap;
+};
 
 #endif
 

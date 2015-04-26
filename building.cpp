@@ -1490,16 +1490,6 @@ void production_building::specific_update()
 	{
 		work_done += ((double)(upgrade_level + 1)) * (std::max(1.0, (double)session->show_happiness()) / 100.0);
 		status = production_building_status::WORKING;
-		
-		/*
-		action_duration--;
-		
-		double happiness_modifier = 100.0 / std::max(1.0, (double)session->show_happiness());
-		double new_time_to_produce = (time_to_produce * happiness_modifier) / (upgrade_level + 1);
-		double modifier = (double) new_time_to_produce / (double) current_time_to_produce;
-		action_duration *= modifier;
-		current_time_to_produce = new_time_to_produce;
-		*/
 	}
 
 	else if(output->show_amount(resource_produced) < output->show_capacity())
@@ -1573,7 +1563,7 @@ void production_building::draw_specific_interface()
 	default:
 		throw std::exception();
 	}
-
+				//draws building status
 	al_draw_textf(font15, WRITING_COLOR, 20, display_height - 30, ALLEGRO_ALIGN_LEFT, "%s", text.c_str());
 }
 	
