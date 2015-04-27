@@ -2110,9 +2110,6 @@ store::store(building_type type, int tile_x, int tile_y, int surface_height, pla
 	building_info info = building_info::show_building_info(type);
 	output = boost::shared_ptr<carrier_output>(new carrier_output(info.capacity, std::vector<resources>(), std::vector<resources>(), info.number_of_carriers)); 
 	
-	//output->change_accepted_resources(GOLD, true, true);
-	//output->change_accepted_resources(GOLD, false, true);
-
 	for(size_t i=0; i<NUMBER_OF_RESOURCES; ++i)
 	{
 		buying.push_back(resource_status::NOT_TRADING);
