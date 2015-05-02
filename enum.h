@@ -222,7 +222,7 @@ enum direction{
 enum tile_type{
 	GRASS,
 	RAMP,
-	WATER
+//	WATER
 };
 
 enum object_on_tile{
@@ -232,6 +232,7 @@ enum object_on_tile{
 	COAL_TILE,
 	GOLD_TILE,
 	TREE_TILE,
+	WATER_TILE,
 	NUMBER_OF_TILE_OBJECTS
 };
 

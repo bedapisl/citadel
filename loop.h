@@ -206,8 +206,8 @@ private:
 	void check_clicked_buttons();
 	std::vector<boost::shared_ptr<menu_button>> buttons;
 	
-	const int header_height = 100;
-	const int element_height = 90;
+//	const int header_height = 100;
+//	const int element_height = 90;
 };
 
 /**

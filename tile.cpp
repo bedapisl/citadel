@@ -19,11 +19,11 @@ tile::tile(tile_type type, int tile_x, int tile_y, int surface_height) : game_ob
 	can_go_on_building = false;
 	stairs_on_tile = false;
 	tile_object_image = NO_IMAGE;
-	if(type != WATER)
+	//if(type != WATER)
 		image = GRASS_IMAGE;
 
-	else
-		image = WATER_IMAGE;
+	//else
+	///	image = WATER_IMAGE;
 
 	object = NOTHING;
 	drawing_floor = 0;
@@ -52,30 +52,7 @@ std::vector<game_object*> tile::draw(int screen_position_x, int screen_position_
 	{
 		al_draw_bitmap_region(image_list[image], 64*border, 64, 64, 64, drawing_x, drawing_y, 0);
 	}
-	else if(type == WATER)
-	{
-		std::vector<std::pair<int, int>> adjacent_tiles{std::pair<int, int>(-1, 0), std::pair<int, int>(-1, -1), std::pair<int, int>(0, -1), std::pair<int, int>(1, -1), 
-							std::pair<int, int>(1, 0), std::pair<int, int>(1, 1), std::pair<int, int>(0, 1), std::pair<int, int>(-1, 1), };
-		
-		int image_number = 0;
-		for(int i=0; i<adjacent_tiles.size(); ++i)
-		{
-			int x = adjacent_tiles[i].first + tile_x;
-			int y = adjacent_tiles[i].second + tile_y;
-
-			if((x >= 0) && (x < game_info::map_width) && (y >= 0) && (y < game_info::map_height))
-			{
-				if((!session->tile_list[y][x]->is_water_tile()) 
-							|| (session->tile_list[y][x]->show_surface_height() != show_surface_height()))
-				{
-					image_number += pow(2, i);
-				}
-			}
-		}				
-		al_draw_bitmap_region(image_list[image], 64*border, 0, 64, 64, drawing_x, drawing_y, 0);
-		al_draw_bitmap_region(image_list[WATER_IMAGE], 64* (image_number % 16), 64* (image_number / 16), 64, 64, drawing_x, drawing_y, 0);
-	}
-
+	
 	if((fertile) && drawing_floor == 0)
 		al_draw_bitmap(image_list[FERTILE_IMAGE], drawing_x, drawing_y - 32, 0);
 	
@@ -208,6 +185,31 @@ std::vector<game_object*> tile::draw(int screen_position_x, int screen_position_
 			drawing_floor = 0;
 		}
 	}
+	
+	if(object == WATER_TILE)
+	{
+		std::vector<std::pair<int, int>> adjacent_tiles{std::pair<int, int>(-1, 0), std::pair<int, int>(-1, -1), std::pair<int, int>(0, -1), std::pair<int, int>(1, -1), 
+							std::pair<int, int>(1, 0), std::pair<int, int>(1, 1), std::pair<int, int>(0, 1), std::pair<int, int>(-1, 1), };
+		
+		int image_number = 0;
+		for(int i=0; i<adjacent_tiles.size(); ++i)
+		{
+			int x = adjacent_tiles[i].first + tile_x;
+			int y = adjacent_tiles[i].second + tile_y;
+
+			if((x >= 0) && (x < game_info::map_width) && (y >= 0) && (y < game_info::map_height))
+			{
+				if((!session->tile_list[y][x]->is_water_tile()) 
+							|| (session->tile_list[y][x]->show_surface_height() != show_surface_height()))
+				{
+					image_number += pow(2, i);
+				}
+			}
+		}				
+
+		al_draw_bitmap_region(image_list[WATER_IMAGE], 64* (image_number % 16), 64* (image_number / 16), 64, 64, drawing_x, drawing_y, 0);
+	}
+
 
 	for(int i=0; i<objects.size(); ++i)
 	{
@@ -331,7 +333,7 @@ int tile::show_effective_height()
 
 void tile::set_type(tile_type type)
 {
-	if((type == WATER) || (type == RAMP))
+	if(type == RAMP)
 	{
 		fertile = false;
 		object = NOTHING;
@@ -364,7 +366,7 @@ int tile::set_right_drawing(std::vector<std::vector<boost::shared_ptr<tile>>> & 
 	
 	int number_of_down_tiles = 0;
 
-	if(type == WATER)
+	if(object == WATER_TILE)	//water can't be o the edge of cliff
 	{
 		bool cant_be_water = false;
 		for(int i=0; i<4; ++i)
@@ -374,7 +376,7 @@ int tile::set_right_drawing(std::vector<std::vector<boost::shared_ptr<tile>>> & 
 		}
 		
 		if(cant_be_water)
-			set_type(GRASS);			
+			add_object(NOTHING);	//no water here
 
 		else
 		{
@@ -633,8 +635,8 @@ int tile::add_path(bool real)
 			return -1;
 		}
 	}
-	if(type == WATER)
-		return -1;
+	//if(type == WATER)
+	//	return -1;
 
 	path_on_tile = true;
 	bIs_path_real = real;
@@ -887,7 +889,7 @@ void tile::check_consistency()
 	assert(((unsigned int)visible == 1) || ((unsigned int)visible == 0));
 	assert((((unsigned int)border) >= 0) && (((unsigned int)border) <= UNKNOWN_BORDERS));
 	assert(((unsigned int)path_border >= 0) && (((unsigned int)path_border) <= UNKNOWN_BORDERS));
-	assert((((unsigned int)type) >= 0) && (((unsigned int)type) <= WATER));
+	assert((((unsigned int)type) >= 0) && (((unsigned int)type) <= RAMP));
 	assert(((unsigned int)draw_building == 1) || ((unsigned int)draw_building == 0));
 	assert(((unsigned int)fertile == 1) || ((unsigned int)fertile == 0));
 }

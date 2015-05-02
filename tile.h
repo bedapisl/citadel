@@ -45,10 +45,8 @@ public:
 	bool unreal_path_on_tile() {return path_on_tile;}			///< Returns whether there is any path (real or unreal) on tile.
 	bool real_path_on_tile() {return path_on_tile && bIs_path_real;}
 	borders show_borders() {return border;}
-	bool is_water_tile() {return type == WATER;}
-	void add_water() {type = WATER;}
+	bool is_water_tile() {return object == WATER_TILE;}
 	bool is_fertile() {return fertile;}
-	void set_tile_type(tile_type type) {this->type = type;}
 	void add_fertile();
 	boost::weak_ptr<building> building_on_tile;
 	std::vector<boost::weak_ptr<people>> people_on_tile;

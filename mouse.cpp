@@ -215,7 +215,14 @@ void game_mouse::right_button_go_down()
 			}
 			else
 			{
-				std::vector<tile*> target_tiles = pathfinding::near_accessible_tiles(target_tile, chosen_people.size());
+				std::vector<tile*> target_tiles = pathfinding::near_accessible_tiles(target_tile, chosen_people.size(),
+													std::sqrt(chosen_people.size()/2),
+													warrior::static_can_move, true);
+				while(target_tiles.size() < chosen_people.size())
+				{
+					target_tiles.push_back(target_tiles[rand() % target_tiles.size()]);
+				}
+				
 				for(int i=0; i<chosen_people.size(); ++i)
 				{	
 					boost::shared_ptr<people> ptr = chosen_people[i].lock();

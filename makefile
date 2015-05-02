@@ -2,16 +2,16 @@
 INCLUDE_DIR= -Iinclude
 ARCHITECTURE=$(shell uname -m | sed 's@x86_64@64@' | sed 's@i686@32@')
 CC=g++
-CFLAGS= -std=c++11 -ftemplate-depth=1024 -pedantic -Wall -O3 -Wno-sign-compare -ggdb $(INCLUDE_DIR)	#-lprofiler
+CFLAGS= -std=c++11 -pedantic -ftemplate-depth=1024 -Wall -Wno-sign-compare -ggdb $(INCLUDE_DIR) 	#-lprofiler
 LDFLAGS=-Llib$(ARCHITECTURE)
 BINARY_NAME=citadel_$(shell $(shell pwd)/citadel.out -v)_$(ARCHITECTURE)bit
 				#allegro headers are in /usr/include/allegro5
 
-all: ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o tile.o window.o
-	$(CC) ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o window.o tile.o $(LDFLAGS)  -Wl,-rpath=\$$ORIGIN/lib$(ARCHITECTURE)/ -lallegro_acodec -lallegro_audio -lallegro_color -lallegro_dialog -lallegro_font -lallegro_ttf -lallegro_image -lallegro_primitives -lallegro_main -lallegro -lboost_iostreams -lboost_serialization -lboost_system -lboost_filesystem -ldumb -lopenal -ljpeg -lpng12 -lbz2
+all: ai.o building.o button.o game_functions.o loop.o main.o map_generator.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o tile.o window.o
+	$(CC) ai.o building.o button.o game_functions.o loop.o main.o map_generator.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o window.o tile.o $(LDFLAGS)  -Wl,-rpath=\$$ORIGIN/lib$(ARCHITECTURE)/ -lallegro_acodec -lallegro_audio -lallegro_color -lallegro_dialog -lallegro_font -lallegro_ttf -lallegro_image -lallegro_primitives -lallegro_main -lallegro -lboost_iostreams -lboost_serialization -lboost_system -lboost_filesystem -ldumb -lopenal -ljpeg -lpng12 -lbz2
 	
-binaries: ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o tile.o window.o 
-	$(CC) ai.o building.o button.o game_functions.o loop.o main.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o window.o tile.o $(LDFLAGS) -Wl,-rpath=\$$ORIGIN/lib$(ARCHITECTURE)/ -lallegro_acodec -lallegro_audio -lallegro_color -lallegro_dialog -lallegro_font -lallegro_ttf -lallegro_image -lallegro_primitives -lallegro_main -lallegro -lboost_iostreams -lboost_serialization -lboost_system -lboost_filesystem -o citadel.out
+binaries: ai.o building.o button.o game_functions.o loop.o main.o map_generator.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o tile.o window.o 
+	$(CC) ai.o building.o button.o game_functions.o loop.o main.o map_generator.o mouse.o object.o others.o parsing.o pathfinding.o people.o session.o window.o tile.o $(LDFLAGS) -Wl,-rpath=\$$ORIGIN/lib$(ARCHITECTURE)/ -lallegro_acodec -lallegro_audio -lallegro_color -lallegro_dialog -lallegro_font -lallegro_ttf -lallegro_image -lallegro_primitives -lallegro_main -lallegro -lboost_iostreams -lboost_serialization -lboost_system -lboost_filesystem -o citadel.out
 	cp citadel.out $(BINARY_NAME).out
 	zip -r $(BINARY_NAME).zip $(BINARY_NAME).out data lib$(ARCHITECTURE)
 	echo -e "\n Don't forget VERSION"
@@ -33,6 +33,9 @@ loop.o: loop.cpp $(HEADERS)
 
 main.o: main.cpp $(HEADERS)
 	$(CC) $(CFLAGS) -c main.cpp
+
+map_generator.o: map_generator.cpp $(HEADERS)
+	$(CC) $(CFLAGS) -c map_generator.cpp
 
 mouse.o: mouse.cpp $(HEADERS)
 	$(CC) $(CFLAGS) -c mouse.cpp

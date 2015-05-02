@@ -64,7 +64,7 @@ public:
 	bool is_death() {return bIs_death;}		
 	void draw_life_bar(int screen_position_x, int screen_position_y);	///< Draws how much life unit has. Called if unit is selected or mouse points to it.
 	virtual void check_death() = 0;				///< Removes pointers to dead objects from internal structures.
-	static bool general_can_move(tile* from, tile* to);	///< Returns if it is possible to go from one tile to another. Doesn't take in account buildings and people.
+	static bool general_can_move(tile* from, tile* to);	///< Returns if it is possible to go from one tile to another. Doesn't take in account people.
 	virtual bool can_go_here(tile* t) = 0;			///< Returns if it is possible to go on given tile.
 	virtual bool can_move(tile* from, tile* to) = 0;	///< Returns if it is possible to go from one tile to another.
 	void rotate(int tile_x, int tile_y, bool clockwise);

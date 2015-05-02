@@ -7,6 +7,12 @@ bool game_info::fullscreen = false;
 int game_info::fps = 60;
 bool game_info::close_display = false;
 bool game_info::music = false;
+int game_info::map_generator_base_tile = 3;
+double game_info::map_generator_gauss_deviation = 0.2;
+double game_info::map_generator_base_ramp_probability = 0.5;
+double game_info::map_generator_ramp_start = 0.1;
+double game_info::map_generator_ramp_end = 0.2;
+
 ALLEGRO_DISPLAY* game_info::display = NULL;
 
 extern ALLEGRO_FONT* font20;
@@ -70,6 +76,21 @@ void game_info::load_game_info()
 				
 				else if(words[0] == "fps")
 					game_info::fps = std::stoi(words[2]);
+
+				else if(words[0] == "map_generator_base_tile")
+					game_info::map_generator_base_tile = std::stoi(words[2]);
+
+				else if(words[0] == "map_generator_gauss_deviation")
+					game_info::map_generator_gauss_deviation = std::stod(words[2]);
+
+				else if(words[0] == "map_generator_base_ramp_probability")
+					game_info::map_generator_base_ramp_probability = std::stod(words[2]);
+
+				else if(words[0] == "map_generator_ramp_start")
+					game_info::map_generator_ramp_start = std::stod(words[2]);	
+				
+				else if(words[0] == "map_generator_ramp_end")
+					game_info::map_generator_ramp_end = std::stod(words[2]);
 			}
 		}
 	}

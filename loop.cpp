@@ -871,14 +871,14 @@ random_game_settings::random_game_settings()
 	for(int i=0; i<text_fields.size(); ++i)
 		blocks[0].add_gui_element(text_fields[i]);
 
-	sliders.push_back(boost::shared_ptr<slider>(new slider("Enemies", 1, 2)));
-	sliders.push_back(boost::shared_ptr<slider>(new slider("Mountains", 1, 2)));
+	sliders.push_back(boost::shared_ptr<slider>(new slider("Enemies", 2, 4)));
+	sliders.push_back(boost::shared_ptr<slider>(new slider("Mountains", 2, 4)));
 
 	blocks[0].add_gui_element(sliders[0]);
 	blocks[0].add_gui_element(sliders[1]);
 	
 	for(int i=0; i<natural_resources_names.size(); ++i)
-		sliders.push_back(boost::shared_ptr<slider>(new slider(natural_resources_names[i], 1, 2)));
+		sliders.push_back(boost::shared_ptr<slider>(new slider(natural_resources_names[i], 2, 4)));
 
 	for(int i=2; i<sliders.size(); ++i)
 		blocks[1].add_gui_element(sliders[i]);

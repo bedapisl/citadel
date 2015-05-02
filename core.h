@@ -24,7 +24,6 @@
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 #include <iostream>
-#include <ctime>
 #ifdef UNIX
 	#include <sys/time.h>
 #endif
@@ -36,11 +35,11 @@
 #include <algorithm>
 #include <limits>
 #include <queue>
-#include <cstdio>
+#include <chrono>
 #include <boost/archive/tmpdir.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
-//#include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/base_object.hpp>
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
@@ -60,6 +59,7 @@
 #include "main.h"
 #include "object.h"
 #include "tile.h"
+#include "map_generator.h"
 #include "others.h"
 #include "building.h"
 #include "button.h"

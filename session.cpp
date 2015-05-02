@@ -4,8 +4,11 @@ extern std::ofstream log_file;
 extern game_session* session;
 
 game_session::game_session(std::vector<int> starting_resources, int starting_honour, int enemies, std::vector<int> natural_resources_amount, int mountains_amount) 
-	: tile_list(generate_map(natural_resources_amount, mountains_amount)), unlocked_buildings(set_unlocked_warehouse()), game_started(false)
+	: /*tile_list(generate_map(natural_resources_amount, mountains_amount)),*/ unlocked_buildings(set_unlocked_warehouse()), game_started(false)
 {
+	map_generator generator;
+	tile_list = generator.generate(natural_resources_amount, mountains_amount, (int)(std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1)));
+	
 	std::vector<resources> all_resources;
 	for(int i=0; i<NUMBER_OF_RESOURCES; ++i)
 		all_resources.push_back(static_cast<resources>(i));
@@ -24,14 +27,26 @@ game_session::game_session(std::vector<int> starting_resources, int starting_hon
 		break;
 		case(1):
 		{
-			time_to_invasion = 2400*game_info::fps;		//first_invasion - 40 minutes
-			invasion_interval = 1600*game_info::fps;	
+			time_to_invasion = 3600*game_info::fps;		//first_invasion - 1 hour
+			invasion_interval = 1800*game_info::fps;	
 		}
 		break;
 		case(2):
 		{
-			time_to_invasion = 1200*game_info::fps;
-			invasion_interval = 800*game_info::fps;
+			time_to_invasion = 2400*game_info::fps;		//40 minutes
+			invasion_interval = 1200*game_info::fps;
+		}
+		break;
+		case(3):
+		{
+			time_to_invasion = 1200*game_info::fps;		//20 minutes
+			invasion_interval = 600*game_info::fps;
+		}
+		break;
+		case(4):
+		{
+			time_to_invasion = 600*game_info::fps;		//10 minutes
+			invasion_interval = 300*game_info::fps;
 		}
 		break;
 		default:

@@ -36,63 +36,8 @@ std::vector<tile*> pathfinding::adjacent_tiles(tile* t, bool move_diagonally)
 	return adjacent;
 }
 
-std::vector<tile*> pathfinding::near_accessible_tiles(tile* middle_tile, int number_of_tiles)
-{
-	int max_distance = sqrt(number_of_tiles)/2;
-	int distance = 0;
 
-	std::vector<tile*> tiles;
-	tiles.push_back(middle_tile);
-	int explored_index = 0;
-	int distance_increase = 1;
-	bool done = false;
 
-	while(!done)
-	{
-		for(int i=0; i<tiles[explored_index]->accessible_neighbours.size(); ++i)
-		{	
-			tile* t = tiles[explored_index]->accessible_neighbours[i];
-			if(!contains(tiles, t) && (t->building_on_tile.expired() || t->can_go_inside_building))
-			{
-				tiles.push_back(t);
-				if(tiles.size() == number_of_tiles)
-				{
-					done = true;
-					break;
-				}
-			}
-		}
-		explored_index++;
-		if(explored_index == distance_increase)
-		{
-			if(distance_increase == max_distance)
-			{
-				done = true;
-			}
-			else
-			{
-				distance_increase = tiles.size();
-				++distance;
-				if(distance > max_distance)
-					done = true;
-			}
-		}
-		if(explored_index == tiles.size())
-			done = true;
-	}
-	
-	if(tiles.size() < number_of_tiles)
-	{
-		int founded = tiles.size();
-		
-		while(tiles.size() < number_of_tiles)
-		{
-			tiles.push_back(tiles[rand() % founded]);
-		}
-	}
-	return tiles;
-}
-	
 
 
 

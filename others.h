@@ -23,6 +23,11 @@ public:
 	static bool close_display;
 	static bool fullscreen;
 	static bool music;
+	static int map_generator_base_tile;
+	static double map_generator_gauss_deviation;
+	static double map_generator_base_ramp_probability;
+	static double map_generator_ramp_start;
+	static double map_generator_ramp_end;
 
 	static void load_game_info();
 };

@@ -33,20 +33,6 @@ std::vector<tile*> tiles_in_circle(float tile_range, tile* start);
 
 std::vector<tile*> tiles_in_rectangle(int x1, int y1, int x2, int y2);
 
-std::vector<std::vector<boost::shared_ptr<tile>>> generate_map(std::vector<int> natural_resources, int mountains);
-/// Generates surface of map.
-void generate_surface(std::vector<std::vector<boost::shared_ptr<tile>>>& map, int mountains);
-
-void generate_resource(std::vector<std::vector<boost::shared_ptr<tile>>>& map, object_on_tile ob, int amount);
-
-void generate_fertile(std::vector<std::vector<boost::shared_ptr<tile>>>& map, int amount);
-
-void generate_water(std::vector<std::vector<boost::shared_ptr<tile>>>& map, int amount);
-/// Check if all tiles are accessible.
-bool check_map(std::vector<std::vector<boost::shared_ptr<tile>>>& map);
-
-std::vector<std::vector<bool>>& find_accessible(std::vector<std::vector<bool>> & explored, tile* start);
-
 void rotate_map(bool clockwise, ALLEGRO_BITMAP** minimap, int *screen_position_x, int* screen_position_y);
 /// Compute direction from old_tile to new_tile.
 direction compute_direction(tile* old_tile, tile* new_tile);

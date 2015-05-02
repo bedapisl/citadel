@@ -24,6 +24,9 @@ public:
 	class normal_real_distance_functor;
 	class carrier_real_distance_functor;
 
+	/**
+	 * \brief Returns all adjacent tiles of "t", both accessible and inaccessible.
+	 */
 	static std::vector<tile*> adjacent_tiles(tile* t, bool move_diagonally);
 	
 	/** \brief Returns shortest paths to all reachable goal tiles. 
@@ -46,9 +49,15 @@ public:
 
 	/**
 	 * \brief Returns "number_of_tiles" tiles which are accessible from middle tile by shortest path. 
-	 * If not enough tiles is accessible, duplicates random accessible tiles. 
 	 */
-	static std::vector<tile*> near_accessible_tiles(tile* middle_tile, int number_of_tiles);
+	template <typename ACCESSIBLE> 
+	static std::vector<tile*> near_accessible_tiles(tile* middle_tile, int number_of_tiles, int max_distance, ACCESSIBLE accessible_function, bool move_diagonally, const std::vector<std::vector<boost::shared_ptr<tile>>>& map = session->tile_list);
+	
+	/**
+	 * \brief Returns adjacent tiles accessbile by "accessbile_function".
+	 */
+	template <typename ACCESSIBLE>
+	static std::vector<tile*> accessible_neighbours(tile* middle_tile, ACCESSIBLE accessible_function, bool move_diagonally, const std::vector<std::vector<boost::shared_ptr<tile>>>& map = session->tile_list);
 
 private:
 	template <typename TILE_TYPE>
@@ -83,6 +92,25 @@ std::vector<tile*> pathfinding::find_path_back(const std::vector<std::vector<TIL
 	
 	reverse(result.begin(), result.end());
 	return result;
+}
+
+template <typename ACCESSIBLE>
+std::vector<tile*> pathfinding::accessible_neighbours(tile* middle_tile, ACCESSIBLE accessible_function, bool move_diagonally, const std::vector<std::vector<boost::shared_ptr<tile>>>& map)
+{
+	std::vector<tile*> return_vector;
+	for(int x=std::max(0, middle_tile->show_tile_x() - 1); x <= std::min(game_info::map_width - 1, middle_tile->show_tile_x() + 1); ++x)
+	{
+		for(int y=std::max(0, middle_tile->show_tile_y() - 1); y <= std::min(game_info::map_height - 1, middle_tile->show_tile_y() + 1); ++y)
+		{
+						//not middle_tile and accessible
+			if((x != middle_tile->show_tile_x() || y != middle_tile->show_tile_y()) && (accessible_function(middle_tile, map[y][x].get())))
+			{			
+				if(move_diagonally || (std::abs(x - middle_tile->show_tile_x()) + std::abs(y - middle_tile->show_tile_y()) <= 1))
+					return_vector.push_back(map[y][x].get());
+			}
+		}
+	}
+	return return_vector;
 }
 
 template <typename ACCESSIBLE, typename GOAL>
@@ -348,11 +376,11 @@ std::vector<tile*> pathfinding::a_star(std::vector<tile*> starting_tiles, ACCESS
 	while(frontier.size() > 0)
 	{
 		tile* best = frontier.top().second;
-		std::vector<tile*> tiles_to_explore = adjacent_tiles(best, move_diagonally);
+		std::vector<tile*> tiles_to_explore = accessible_neighbours(best, accessible_function, move_diagonally);//adjacent_tiles(best, move_diagonally);
 		for(size_t i=0; i<tiles_to_explore.size(); ++i)
 		{
 			a_star_tile& adjacent = map[tiles_to_explore[i]->show_tile_y()][tiles_to_explore[i]->show_tile_x()];
-			if((!adjacent.explored) && (accessible_function(best, tiles_to_explore[i])))
+			if(!adjacent.explored)// && (accessible_function(best, tiles_to_explore[i])))
 			{
 				adjacent.explored = true;
 				adjacent.previous_tile = frontier.top().second;
@@ -370,4 +398,64 @@ std::vector<tile*> pathfinding::a_star(std::vector<tile*> starting_tiles, ACCESS
 	return std::vector<tile*>();
 }
 
+//Implemented by BFS.
+template <typename ACCESSIBLE>
+std::vector<tile*> pathfinding::near_accessible_tiles(tile* middle_tile, int number_of_tiles, int max_distance, ACCESSIBLE accessible_function, bool move_diagonally, const std::vector<std::vector<boost::shared_ptr<tile>>>& map)
+{
+	static std::vector<std::vector<bool>> explored(game_info::map_height, std::vector<bool>(game_info::map_width, false));
+
+	int distance = 0;
+
+	std::vector<tile*> tiles;
+	tiles.push_back(middle_tile);
+	explored[middle_tile->show_tile_y()][middle_tile->show_tile_x()] = true;
+	int explored_index = 0;
+	int distance_increase = 1;
+	bool done = false;
+
+	while(!done)
+	{
+		std::vector<tile*> neighbours = accessible_neighbours(tiles[explored_index], accessible_function, move_diagonally, map);
+		for(tile* t : neighbours)
+		{
+			if(!explored[t->show_tile_y()][t->show_tile_x()] && (t->building_on_tile.expired() || t->can_go_inside_building))
+			{
+				tiles.push_back(t);
+				explored[t->show_tile_y()][t->show_tile_x()] = true;
+
+				if(tiles.size() == number_of_tiles)
+				{
+					done = true;
+					break;
+				}
+			}
+		}
+	
+		explored_index++;
+		if(explored_index == distance_increase)
+		{
+			if(distance_increase == max_distance)
+			{
+				done = true;
+			}
+			else
+			{
+				distance_increase = tiles.size();
+				++distance;
+				if(distance > max_distance)
+					done = true;
+			}
+		}
+		if(explored_index == tiles.size())
+			done = true;
+	}
+
+	for(tile* t : tiles)
+	{
+		explored[t->show_tile_y()][t->show_tile_x()] = false;
+	}
+
+	return tiles;
+}
+	
 #endif

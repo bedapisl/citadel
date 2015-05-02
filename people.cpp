@@ -10,7 +10,6 @@ extern ALLEGRO_FONT* font15;
 people::people(people_type type, int tile_x, int tile_y, int surface_height, player owner) 
 			: game_object(tile_x, tile_y, surface_height, true, people_info::show_people_info(type).image, 1, PEOPLE)
 {		
-
 	people_info info = people_info::show_people_info(type);
 
 	this->type = type;
@@ -158,9 +157,14 @@ void people::draw_life_bar(int screen_position_x, int screen_position_y)
 bool people::general_can_move(tile* from, tile* to)		
 {
 	if((abs(from->show_tile_x() - to->show_tile_x()) > 1) || (abs(from->show_tile_y() - to->show_tile_y()) > 1))
-		return false;
+	{
+		throw std::exception();
+	}
+	//	return false;
 
-	if((to->is_water_tile()) || (from->is_water_tile()))
+	//if((to->is_water_tile()) || (from->is_water_tile()))
+	//	return false;
+	if(to->object != NOTHING)
 		return false;
 
 	direction way = compute_direction(from, to);
