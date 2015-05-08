@@ -148,7 +148,7 @@ std::vector<game_object*> building::draw(int screen_position_x, int screen_posit
 	
 	if(is_real)
 	{
-		if(actual_workers < required_workers)
+		if((actual_workers < required_workers) || (stopped))
 		{
 			if(size == FOUR_TILE_BUILDING)
 				drawing_y += 32;
@@ -590,6 +590,10 @@ can_build_output building::enough_resources(building_type type, int start_tile_x
 		{
 			for(int x = start_x; x <= end_x; x++)
 			{
+				if(session->tile_list[start_tile_y][start_tile_x]->show_surface_height() != session->tile_list[y][x]->show_surface_height())
+				{
+					continue;
+				}
 				object_on_tile ob = session->tile_list[y][x]->object;
 				if((ob == TREE_TILE) && ((type == WOODCUTTER) || (type == HUNTER)))
 					number_of_resources++;
@@ -669,7 +673,7 @@ struct vertex_info;
 void execute_order(std::vector<vertex_info> & vertices, int from, int to, int amount);
 
 /**
- * Describes vertex of graph of workers assignement. Works with vector<vertex_info> vertices, where are all vertices of the graph.
+ * \brief Describes vertex of graph of workers assignement. Works with vector<vertex_info> vertices, where are all vertices of the graph.
  */
 struct vertex_info
 {

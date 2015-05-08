@@ -239,6 +239,8 @@ void game_mouse::right_button_go_down()
 	{
 		chosen_people.clear();
 		chosen_building.reset();
+		if(!chosen_button.expired())
+			chosen_button.lock()->reset_tiles_with_action();
 		chosen_button.reset();
 	}
 }
@@ -463,6 +465,8 @@ void game_mouse::choose_button(boost::shared_ptr<button> button_to_choose)
 	{
 		chosen_people.clear();
 		chosen_building.reset();
+		if(!chosen_button.expired())
+			chosen_button.lock()->reset_tiles_with_action();
 		chosen_button = button_to_choose;
 	}
 }
@@ -471,9 +475,11 @@ void game_mouse::unchoose_button()
 {
 	if(!chosen_button.expired())
 	{
+		chosen_button.lock()->reset_tiles_with_action();
 		chosen_button.reset();
-		chosen_building.reset();
-		chosen_people.clear();
 	}
+	
+	chosen_building.reset();
+	chosen_people.clear();
 }
 

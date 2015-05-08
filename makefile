@@ -2,7 +2,7 @@
 INCLUDE_DIR= -Iinclude
 ARCHITECTURE=$(shell uname -m | sed 's@x86_64@64@' | sed 's@i686@32@')
 CC=g++
-CFLAGS= -std=c++11 -pedantic -ftemplate-depth=1024 -Wall -Wno-sign-compare -ggdb $(INCLUDE_DIR) 	#-lprofiler
+CFLAGS= -std=c++11 -pedantic -ftemplate-depth=1024 -Wall -Wno-sign-compare -ggdb -O3 $(INCLUDE_DIR) 	#-lprofiler
 LDFLAGS=-Llib$(ARCHITECTURE)
 BINARY_NAME=citadel_$(shell $(shell pwd)/citadel.out -v)_$(ARCHITECTURE)bit
 				#allegro headers are in /usr/include/allegro5

@@ -459,7 +459,6 @@ void button_build::reset_tiles_with_action()
 button_path::button_path(bool add) : button(image_list[PATHS_IMAGE], BUTTON_PATH, true)
 {
 	this->add = add;
-	//button::init();
 }
 
 game_object* button_path::draw(int tile_x, int tile_y, int surface_height, int number_of_tile)

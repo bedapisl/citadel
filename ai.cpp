@@ -18,7 +18,6 @@ void enemy_ai::update()
 	if(waiting_units.empty())
 		return;
 
-
 	if(main_target.expired())
 	{
 		choose_main_target();
@@ -28,6 +27,15 @@ void enemy_ai::update()
 	
 	for(size_t i=0; i<waiting_units.size(); ++i)
 		waiting_units[i]->add_target(t);
+
+	for(size_t i=0; i<waiting_units.size(); ++i)	//some units can't reach target -> choose new one
+	{
+		if(!waiting_units[i]->has_target());
+		{
+			choose_main_target();
+			break;
+		}
+	}
 }
 
 void enemy_ai::register_units()

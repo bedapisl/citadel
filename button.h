@@ -29,9 +29,9 @@ public:
 	static void draw_button_info(const std::string& name, const std::string& text, const std::vector<int>& prices, int honour_price, int needed_workres, int real_x);				///< Draws window with informations about button.
 	static void draw_progress_bar(int start_x, int start_y, int percentage, int bar_lenght = 100, int bar_height = 30);
 				///< Draws progress bar. Used mainly by buildings, probably.
+	virtual void reset_tiles_with_action();		
 
 protected:	
-	virtual void reset_tiles_with_action();		
 	int general_update_tiles_with_action(bool mouse_button_down, int tile_x, int tile_y, int button_down_tile_x, int button_down_tile_y);
 	static boost::shared_ptr<std::vector<boost::shared_ptr<button>>> init_buttons();
 

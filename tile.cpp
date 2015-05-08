@@ -19,11 +19,7 @@ tile::tile(tile_type type, int tile_x, int tile_y, int surface_height) : game_ob
 	can_go_on_building = false;
 	stairs_on_tile = false;
 	tile_object_image = NO_IMAGE;
-	//if(type != WATER)
-		image = GRASS_IMAGE;
-
-	//else
-	///	image = WATER_IMAGE;
+	image = GRASS_IMAGE;
 
 	object = NOTHING;
 	drawing_floor = 0;
@@ -134,7 +130,7 @@ std::vector<game_object*> tile::draw(int screen_position_x, int screen_position_
 		objects.push_back(building_on_tile.lock().get());
 	}
 	
-	if(object == TREE_TILE)//bTree_on_tile)				//tree has 4 floors, so at first time, this function draws only grass and returns tile. 
+	if(object == TREE_TILE)			//tree has 4 floors, so at first time, this function draws only grass and returns tile. 
 	{									//Then, when drawing_floor is 1-3, it draws tree. Same system as drawing buildings.
 		if(drawing_floor == 0)
 		{
@@ -635,8 +631,6 @@ int tile::add_path(bool real)
 			return -1;
 		}
 	}
-	//if(type == WATER)
-	//	return -1;
 
 	path_on_tile = true;
 	bIs_path_real = real;
@@ -671,18 +665,12 @@ int tile::remove_path(bool real)
 
 	set_path_drawing();
 	
-	if(tile_x - 1 >= 0)
-		session->tile_list[tile_y][tile_x - 1]->set_path_drawing();
-
-	if(tile_y - 1 >= 0)
-		session->tile_list[tile_y - 1][tile_x]->set_path_drawing();
+	std::vector<tile*> neighbours = pathfinding::adjacent_tiles(this, false);
 	
-	if(tile_x + 1 < game_info::map_width)
-		session->tile_list[tile_y][tile_x + 1]->set_path_drawing();
-
-	if(tile_y + 1 < game_info::map_height)
-		session->tile_list[tile_y + 1][tile_x]->set_path_drawing();
-
+	for(tile* t : neighbours)
+	{
+		t->set_path_drawing();
+	}
 	return 0;
 }
 
@@ -879,7 +867,7 @@ void tile::finish_serialization()
 void tile::check_consistency()
 {
 	assert(people_on_tile.size() >= 0);
-	assert((object == NOTHING) || (object == IRON_TILE) || (object == MARBLE_TILE) || (object == GOLD_TILE) || (object == COAL_TILE) || (object == TREE_TILE));
+	assert((object == NOTHING) || (object == IRON_TILE) || (object == MARBLE_TILE) || (object == GOLD_TILE) || (object == COAL_TILE) || (object == TREE_TILE) || (object == WATER_TILE));
 	assert(((unsigned int)can_go_inside_building == 1) || ((unsigned int)can_go_inside_building == 0));
 	assert(((unsigned int)can_go_on_building == 1) || ((unsigned int)can_go_on_building == 0));
 	assert(((unsigned int)stairs_on_tile == 1) || ((unsigned int)stairs_on_tile == 0));

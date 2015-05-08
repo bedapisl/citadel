@@ -3,11 +3,3 @@ display_width = 1366
 display_height = 768
 fps = 30
 music = true
-map_generator_base_tile = 2
-map_generator_gauss_deviation = 0.02
-map_generator_base_ramp_probability = 0.3
-map_generator_ramp_start = 0.01
-map_generator_ramp_end = 0.03
-
-
-

@@ -158,7 +158,8 @@ bool people::general_can_move(tile* from, tile* to)
 {
 	if((abs(from->show_tile_x() - to->show_tile_x()) > 1) || (abs(from->show_tile_y() - to->show_tile_y()) > 1))
 	{
-		throw std::exception();
+		//throw std::exception();
+		return false;
 	}
 	//	return false;
 
@@ -570,6 +571,12 @@ void warrior::damage(int damage, tile* attacker_position, bool is_ranged)
 			case(NORTHEAST_TOWER):
 			case(SOUTHEAST_TOWER):
 				evasion_chance = 90;
+				break;
+			case(SOUTHWEST_STAIRS):
+			case(NORTHWEST_STAIRS):
+			case(NORTHEAST_STAIRS):
+			case(SOUTHEAST_STAIRS):
+				evasion_chance = 0;
 				break;
 			default:
 				throw std::exception();

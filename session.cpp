@@ -4,10 +4,11 @@ extern std::ofstream log_file;
 extern game_session* session;
 
 game_session::game_session(std::vector<int> starting_resources, int starting_honour, int enemies, std::vector<int> natural_resources_amount, int mountains_amount) 
-	: /*tile_list(generate_map(natural_resources_amount, mountains_amount)),*/ unlocked_buildings(set_unlocked_warehouse()), game_started(false)
+	: unlocked_buildings(set_unlocked_warehouse()), game_started(false)
 {
 	map_generator generator;
 	tile_list = generator.generate(natural_resources_amount, mountains_amount, (int)(std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1)));
+	//tile_list(generate_map(natural_resources_amount, mountains_amount));	//uncomment to use old map_generator
 	
 	std::vector<resources> all_resources;
 	for(int i=0; i<NUMBER_OF_RESOURCES; ++i)
@@ -199,7 +200,6 @@ int game_session::invasion()
 			}
 		}
 		warrior_born_near(t, x, y, RED_PLAYER);
-		//warrior_born_near(CATAPULT, x, y, RED_PLAYER);
 	}
 
 	ai.register_units();
@@ -208,20 +208,6 @@ int game_session::invasion()
 	
 	return 0;
 }
-
-/*
-void game_session::reset_tile_list()
-{
-	tile_list.clear();
-	for(int i=0; i<game_info::map_height; ++i)
-	{
-		tile_list.push_back(std::vector<boost::shared_ptr<tile>>());
-		for(int j=0; j<game_info::map_width; ++j)
-			tile_list[i].push_back(boost::shared_ptr<tile>(new tile(RAMP, j, i, 0)));
-	
-	}
-}
-*/
 
 std::vector<bool> game_session::set_unlocked_warehouse()
 {

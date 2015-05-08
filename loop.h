@@ -167,7 +167,7 @@ private:
 };
 
 /**
- * \brief Load save menu.
+ * \brief Load/save menu.
  */
 class save_menu : public menu_loop
 {

@@ -371,6 +371,7 @@ void game_loop::end()
 {
 	al_destroy_bitmap(minimap);
 	minimap = nullptr;
+	mouse->unchoose_button();
 }
 
 void game_loop::draw()
