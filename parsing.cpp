@@ -41,6 +41,24 @@ void object_info::parse_file(std::ifstream & file)
 	}
 }
 
+void object_info::remove_spaces_and_apostrophs(std::string & word)
+{
+	int start_index = 0;
+	while((word[start_index] == ' ') || (word[start_index] == '\t'))
+		start_index++;
+
+	int end_index = word.size() - 1;
+	while((word[end_index] == ' ') || (word[end_index] == '\t'))
+		end_index--;
+
+	if(word[start_index] == '"')
+		start_index++;
+
+	if(word[end_index] == '"')
+		end_index--;
+
+	word = word.substr(start_index, end_index - start_index + 1);
+}
 /**
  * \brief Loads informations about buildings or people from configurations file
  * Can throw exception.

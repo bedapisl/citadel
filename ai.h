@@ -1,3 +1,12 @@
+
+/**
+ * \file ai.h
+ * \brief High level AI.
+ * 
+ * This file contains high level AI player behaviour which uses influence maps.
+ * Low level AI is in people.h. 
+ */
+
 #ifndef ai_h_bedas_guard
 #define ai_h_bedas_guard
 

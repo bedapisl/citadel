@@ -1,3 +1,11 @@
+
+/**
+ * \file people.h
+ * \brief Classes for units and target system for units behaviour.
+ *
+ * All types of units which can fight are instances of \ref warrior in this file. Carriers have their own class \ref carrier.
+ */
+
 #ifndef people_h
 #define people_h
 

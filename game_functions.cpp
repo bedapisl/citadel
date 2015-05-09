@@ -683,4 +683,208 @@ direction compute_direction(tile* old_tile, tile* new_tile)
 	return movement_direction;
 }
 
+possible_borders tile_borders(tile* cTile, direction way)
+{
+	if((!cTile->is_ramp()) && (cTile->building_on_tile.expired()))
+	{
+		return NORMAL_BORDER;
+	}
+	
+	borders tile_borders = cTile->show_border();
+	bool double_ramp = false;
+	possible_borders result = NORMAL_BORDER;
+
+	if(!cTile->building_on_tile.expired())
+	{
+		switch(cTile->building_on_tile.lock()->type)
+		{
+			case(NORTHWEST_STAIRS):
+				tile_borders = SOUTHEAST_BORDER;
+				break;
+
+			case(NORTHEAST_STAIRS):
+				tile_borders = SOUTHWEST_BORDER;
+				break;
+
+			case(SOUTHEAST_STAIRS):
+				tile_borders = NORTHWEST_BORDER;
+				break;
+
+			case(SOUTHWEST_STAIRS):
+				tile_borders = NORTHEAST_BORDER;
+				break;
+			
+			case(SOUTHWEST_TOWER):
+			{
+				if(cTile == boost::dynamic_pointer_cast<tower>(cTile->building_on_tile.lock())->doors_tile)
+				{
+					tile_borders = SOUTHWEST_BORDER;
+					double_ramp = true;
+				}
+				else 
+					return NORMAL_BORDER;
+
+			}
+			break;
+			case(NORTHWEST_TOWER):
+			{
+				if(cTile == boost::dynamic_pointer_cast<tower>(cTile->building_on_tile.lock())->doors_tile)
+				{
+					tile_borders = NORTHWEST_BORDER;
+					double_ramp = true;
+				}
+				else
+					return NORMAL_BORDER;
+			}
+			break;
+			case(NORTHEAST_TOWER):
+			{
+				if(cTile == boost::dynamic_pointer_cast<tower>(cTile->building_on_tile.lock())->doors_tile)
+				{
+					tile_borders = NORTHEAST_BORDER;
+					double_ramp = true;
+				}
+				else
+					return NORMAL_BORDER;
+			}
+			break;
+			case(SOUTHEAST_TOWER):
+			{
+				if(cTile == boost::dynamic_pointer_cast<tower>(cTile->building_on_tile.lock())->doors_tile)
+				{
+					tile_borders = SOUTHEAST_BORDER;
+					double_ramp = true;
+				}
+				else
+					return NORMAL_BORDER;
+			}
+			break;
+
+			default:
+				return NORMAL_BORDER;
+		}
+	}
+		
+	if((tile_borders == NO_BORDERS) || (tile_borders == GROUND_LEVEL))
+		result = NORMAL_BORDER;
+
+	switch(tile_borders)				
+	{
+	case(SOUTHWEST_BORDER):
+		{
+			if((way == NORTHWEST) || (way == SOUTHEAST))
+				result = RAMP_BORDER;
+			else if((way == NORTH) || (way == NORTHEAST) || (way == EAST))
+				result = NORMAL_BORDER;
+			else result = DOWN_BORDER;	
+		}
+		break;
+	case(NORTHWEST_BORDER):
+		{
+			if((way == SOUTHWEST) || (way == NORTHEAST))
+				result = RAMP_BORDER;
+			else if((way == EAST) || (way == SOUTHEAST) || (way == SOUTH))
+				result = NORMAL_BORDER;
+			else result = DOWN_BORDER;	
+		}
+		break;
+	case(NORTHEAST_BORDER):
+		{
+			if((way == NORTHWEST) || (way == SOUTHEAST))
+				result = RAMP_BORDER;
+			else if((way == SOUTH) || (way == SOUTHWEST) || (way == WEST))
+				result = NORMAL_BORDER;
+			else result = DOWN_BORDER;	
+		}
+		break;
+	case(SOUTHEAST_BORDER):
+		{
+			if((way == SOUTHWEST) || (way == NORTHEAST))
+				result = RAMP_BORDER;
+			else if((way == WEST) || (way == NORTHWEST) || (way == NORTH))
+				result = NORMAL_BORDER;
+			else result = DOWN_BORDER;	
+		}
+		break;
+	case(SOUTH_BORDER):
+		{
+			if(way == NORTH)
+				result = NORMAL_BORDER;
+			else if((way == NORTHEAST) || (way == NORTHWEST))
+				result = RAMP_BORDER;
+			else result = DOWN_BORDER;
+		}
+		break;
+	case(WEST_BORDER):
+		{
+			if(way == EAST)
+				result = NORMAL_BORDER;
+			else if((way == NORTHEAST) || (way == SOUTHEAST))
+				result = RAMP_BORDER;
+			else result = DOWN_BORDER;
+		}
+		break;
+	case(NORTH_BORDER):
+		{
+			if(way == SOUTH)
+				result = NORMAL_BORDER;
+			else if((way == SOUTHEAST) || (way == SOUTHWEST))
+				result = RAMP_BORDER;
+			else result = DOWN_BORDER;
+		}
+		break;
+	case(EAST_BORDER):
+		{
+			if(way == WEST)
+				result = NORMAL_BORDER;
+			else if((way == NORTHWEST) || (way == SOUTHWEST))
+				result = RAMP_BORDER;
+			else result = DOWN_BORDER;
+		}
+		break;
+	case(SOUTH_INSIDE_BORDER):
+		{
+			if(way == SOUTH)
+				result = DOWN_BORDER;
+			else if((way == SOUTHEAST) || (way == SOUTHWEST))
+				result = RAMP_BORDER;
+			else result = NORMAL_BORDER;
+		}
+		break;
+	case(WEST_INSIDE_BORDER):
+		{
+			if(way == WEST)
+				result = DOWN_BORDER;
+			else if((way == SOUTHWEST) || (way == NORTHWEST))
+				result = RAMP_BORDER;
+			else result = NORMAL_BORDER;
+		}
+		break;
+	case(NORTH_INSIDE_BORDER):
+		{
+			if(way == NORTH)
+				result = DOWN_BORDER;
+			else if((way == NORTHEAST) || (way == NORTHWEST))
+				result = RAMP_BORDER;
+			else result = NORMAL_BORDER;
+		}
+		break;
+	case(EAST_INSIDE_BORDER):
+		{
+			if(way == EAST)
+				result = DOWN_BORDER;
+			else if((way == SOUTHEAST) || (way == NORTHEAST))
+				result = RAMP_BORDER;
+			else result = NORMAL_BORDER;
+		}
+	default:
+		{ }
+	}
+	if((result == DOWN_BORDER) && (double_ramp == true))
+		result = DOUBLE_DOWN_BORDER;
+	
+	return result;
+}
+
+
 

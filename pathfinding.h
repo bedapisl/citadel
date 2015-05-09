@@ -1,3 +1,9 @@
+
+/**
+ * \file pathfinding.h
+ * \brief Constains pathfinding class with BFS, A* and some others pathfinding functions.
+ */
+
 #ifndef pathfinding_h
 #define pathfinding_h
 

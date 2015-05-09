@@ -1,3 +1,10 @@
+
+/**
+ * \file parsing.h
+ * \brief Classess for parsing files describing buildings and peoples attributes.
+ * Parsed files are in data/buildings and data/people
+ */
+
 #ifndef parsing_h
 #define parsing_h
 
@@ -29,6 +36,7 @@ protected:
 	void parse_file(std::ifstream & file);
 	template <typename INFO_TYPE, typename DATABASE_TYPE, typename ENUM_TYPE>
 	static std::vector<INFO_TYPE> load_info(int number_of_enums, std::string folder);
+	void remove_spaces_and_apostrophs(std::string& word);
 };
 /**
  * \brief Represents informations from data files about type of building.

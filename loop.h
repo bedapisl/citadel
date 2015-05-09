@@ -1,3 +1,9 @@
+
+/**
+ * \file loop.h
+ * \brief Event handling and loops for all states of game.
+ */
+
 #ifndef loop_h_bedas_guard
 #define loop_h_bedas_guard
 

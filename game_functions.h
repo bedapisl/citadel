@@ -1,3 +1,10 @@
+
+/**
+ * \file game_functions.h
+ * \brief Various ingame functions.
+ * Contains functions for drawing map, creating minimap and few other map oriented functions.
+ */
+
 #ifndef game_functions_h_bedas_guard
 #define game_functions_h_bedas_guard
 
@@ -36,5 +43,7 @@ std::vector<tile*> tiles_in_rectangle(int x1, int y1, int x2, int y2);
 void rotate_map(bool clockwise, ALLEGRO_BITMAP** minimap, int *screen_position_x, int* screen_position_y);
 /// Compute direction from old_tile to new_tile.
 direction compute_direction(tile* old_tile, tile* new_tile);
+
+possible_borders tile_borders(tile* cTile, direction way);
 
 #endif

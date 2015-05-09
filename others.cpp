@@ -7,11 +7,11 @@ bool game_info::fullscreen = false;
 int game_info::fps = 60;
 bool game_info::close_display = false;
 bool game_info::music = false;
-int game_info::map_generator_base_tile = 3;
-double game_info::map_generator_gauss_deviation = 0.2;
-double game_info::map_generator_base_ramp_probability = 0.5;
-double game_info::map_generator_ramp_start = 0.1;
-double game_info::map_generator_ramp_end = 0.2;
+int game_info::map_generator_base_tile = 2;
+double game_info::map_generator_gauss_deviation = 0.015;
+double game_info::map_generator_base_ramp_probability = 0.3;
+double game_info::map_generator_ramp_start = 0.02;
+double game_info::map_generator_ramp_end = 0.03;
 
 ALLEGRO_DISPLAY* game_info::display = NULL;
 
@@ -96,6 +96,46 @@ void game_info::load_game_info()
 	}
 }
 
+/*Makes all upper case letters lower case.*/
+int game_info::lower_case(std::string& word)
+{
+	for(int i=0; i<word.size(); ++i)
+	{
+		if((word[i] >= 'A') && (word[i] <= 'Z'))
+			word[i] = word[i] - int('A') + int('a');
+	}
+	return 0;
+}
+
+/*Splits line to words. Delimiters are only space and TAB. If "/" (comments) is found ignores rest of line. Number of words returns in variable number_of_words. To avoid memory leaks each word must be deleted and also array of words.*/
+std::vector<std::string> game_info::split(std::string line)
+{
+	std::vector<std::string> words;
+	
+	bool done = false;
+
+	while(!done)
+	{
+		while((line.find(" ") == 0) || (line.find("\t") == 0))		//remove white characters on the beginning
+			line = line.substr(1);
+
+		int space_index = line.find(" ");
+		if(space_index == std::string::npos)
+			space_index = line.find("\t");
+			
+		if(space_index == std::string::npos)
+		{
+			if(line.size() > 0)
+				words.push_back(line);
+
+			return words;
+		}
+
+		words.push_back(line.substr(0, space_index));
+		line = line.substr(space_index + 1);
+	}
+	return words;
+}
 void graphical_texts::draw_and_update(int screen_position_x, int screen_position_y)
 {
 	for(int i=0; i<hints.size(); ++i)
@@ -189,209 +229,6 @@ int missile::draw_and_update(int screen_position_x, int screen_position_y)
 	}
 	
 	return 0;
-}
-
-possible_borders tile_borders(tile* cTile, direction way)
-{
-	if((!cTile->is_ramp()) && (cTile->building_on_tile.expired()))
-	{
-		return NORMAL_BORDER;
-	}
-	
-	borders tile_borders = cTile->show_border();
-	bool double_ramp = false;
-	possible_borders result = NORMAL_BORDER;
-
-	if(!cTile->building_on_tile.expired())
-	{
-		switch(cTile->building_on_tile.lock()->type)
-		{
-			case(NORTHWEST_STAIRS):
-				tile_borders = SOUTHEAST_BORDER;
-				break;
-
-			case(NORTHEAST_STAIRS):
-				tile_borders = SOUTHWEST_BORDER;
-				break;
-
-			case(SOUTHEAST_STAIRS):
-				tile_borders = NORTHWEST_BORDER;
-				break;
-
-			case(SOUTHWEST_STAIRS):
-				tile_borders = NORTHEAST_BORDER;
-				break;
-			
-			case(SOUTHWEST_TOWER):
-			{
-				if(cTile == boost::dynamic_pointer_cast<tower>(cTile->building_on_tile.lock())->doors_tile)
-				{
-					tile_borders = SOUTHWEST_BORDER;
-					double_ramp = true;
-				}
-				else 
-					return NORMAL_BORDER;
-
-			}
-			break;
-			case(NORTHWEST_TOWER):
-			{
-				if(cTile == boost::dynamic_pointer_cast<tower>(cTile->building_on_tile.lock())->doors_tile)
-				{
-					tile_borders = NORTHWEST_BORDER;
-					double_ramp = true;
-				}
-				else
-					return NORMAL_BORDER;
-			}
-			break;
-			case(NORTHEAST_TOWER):
-			{
-				if(cTile == boost::dynamic_pointer_cast<tower>(cTile->building_on_tile.lock())->doors_tile)
-				{
-					tile_borders = NORTHEAST_BORDER;
-					double_ramp = true;
-				}
-				else
-					return NORMAL_BORDER;
-			}
-			break;
-			case(SOUTHEAST_TOWER):
-			{
-				if(cTile == boost::dynamic_pointer_cast<tower>(cTile->building_on_tile.lock())->doors_tile)
-				{
-					tile_borders = SOUTHEAST_BORDER;
-					double_ramp = true;
-				}
-				else
-					return NORMAL_BORDER;
-			}
-			break;
-
-			default:
-				return NORMAL_BORDER;
-		}
-	}
-		
-	if((tile_borders == NO_BORDERS) || (tile_borders == GROUND_LEVEL))
-		result = NORMAL_BORDER;
-
-	switch(tile_borders)				
-	{
-	case(SOUTHWEST_BORDER):
-		{
-			if((way == NORTHWEST) || (way == SOUTHEAST))
-				result = RAMP_BORDER;
-			else if((way == NORTH) || (way == NORTHEAST) || (way == EAST))
-				result = NORMAL_BORDER;
-			else result = DOWN_BORDER;	
-		}
-		break;
-	case(NORTHWEST_BORDER):
-		{
-			if((way == SOUTHWEST) || (way == NORTHEAST))
-				result = RAMP_BORDER;
-			else if((way == EAST) || (way == SOUTHEAST) || (way == SOUTH))
-				result = NORMAL_BORDER;
-			else result = DOWN_BORDER;	
-		}
-		break;
-	case(NORTHEAST_BORDER):
-		{
-			if((way == NORTHWEST) || (way == SOUTHEAST))
-				result = RAMP_BORDER;
-			else if((way == SOUTH) || (way == SOUTHWEST) || (way == WEST))
-				result = NORMAL_BORDER;
-			else result = DOWN_BORDER;	
-		}
-		break;
-	case(SOUTHEAST_BORDER):
-		{
-			if((way == SOUTHWEST) || (way == NORTHEAST))
-				result = RAMP_BORDER;
-			else if((way == WEST) || (way == NORTHWEST) || (way == NORTH))
-				result = NORMAL_BORDER;
-			else result = DOWN_BORDER;	
-		}
-		break;
-	case(SOUTH_BORDER):
-		{
-			if(way == NORTH)
-				result = NORMAL_BORDER;
-			else if((way == NORTHEAST) || (way == NORTHWEST))
-				result = RAMP_BORDER;
-			else result = DOWN_BORDER;
-		}
-		break;
-	case(WEST_BORDER):
-		{
-			if(way == EAST)
-				result = NORMAL_BORDER;
-			else if((way == NORTHEAST) || (way == SOUTHEAST))
-				result = RAMP_BORDER;
-			else result = DOWN_BORDER;
-		}
-		break;
-	case(NORTH_BORDER):
-		{
-			if(way == SOUTH)
-				result = NORMAL_BORDER;
-			else if((way == SOUTHEAST) || (way == SOUTHWEST))
-				result = RAMP_BORDER;
-			else result = DOWN_BORDER;
-		}
-		break;
-	case(EAST_BORDER):
-		{
-			if(way == WEST)
-				result = NORMAL_BORDER;
-			else if((way == NORTHWEST) || (way == SOUTHWEST))
-				result = RAMP_BORDER;
-			else result = DOWN_BORDER;
-		}
-		break;
-	case(SOUTH_INSIDE_BORDER):
-		{
-			if(way == SOUTH)
-				result = DOWN_BORDER;
-			else if((way == SOUTHEAST) || (way == SOUTHWEST))
-				result = RAMP_BORDER;
-			else result = NORMAL_BORDER;
-		}
-		break;
-	case(WEST_INSIDE_BORDER):
-		{
-			if(way == WEST)
-				result = DOWN_BORDER;
-			else if((way == SOUTHWEST) || (way == NORTHWEST))
-				result = RAMP_BORDER;
-			else result = NORMAL_BORDER;
-		}
-		break;
-	case(NORTH_INSIDE_BORDER):
-		{
-			if(way == NORTH)
-				result = DOWN_BORDER;
-			else if((way == NORTHEAST) || (way == NORTHWEST))
-				result = RAMP_BORDER;
-			else result = NORMAL_BORDER;
-		}
-		break;
-	case(EAST_INSIDE_BORDER):
-		{
-			if(way == EAST)
-				result = DOWN_BORDER;
-			else if((way == SOUTHEAST) || (way == NORTHEAST))
-				result = RAMP_BORDER;
-			else result = NORMAL_BORDER;
-		}
-	default:
-		{ }
-	}
-	if((result == DOWN_BORDER) && (double_ramp == true))
-		result = DOUBLE_DOWN_BORDER;
-	
-	return result;
 }
 
 int stock::save(resources type, int amount)

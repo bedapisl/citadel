@@ -1,3 +1,9 @@
+
+/**
+ * \file constant_database.h
+ * \brief Contains templates for general constant database definition and all constant database instances.
+ */
+
 #ifndef CONSTANT_DATABASE_BEDAS
 #define CONSTANT_DATABASE_BEDAS
 

@@ -1,3 +1,10 @@
+
+/**
+ * \file button.h
+ * \brief Classess for buttons on the panel menu in the game.
+ * 
+ */
+
 #ifndef button_h_bedas_guard
 #define button_h_bedas_guard
 

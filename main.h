@@ -1,7 +1,12 @@
 /*
-	The Citadel - strategická hra
+	The Citadel - strategic game
 	Bedrich Pisl
 */
+
+/**
+ * \file main.h
+ * \brief Entry point and functions mainly for loading resources and initilization.
+ */
 
 //dont use function stoi() from standard library - it doesnt work with MinGW
 
@@ -22,28 +27,21 @@ class game_info;
 
 void create_display();
 
-bool init_allegro();
+bool init_allegro();		///< Initializes all parts of Allegro library. Returns false when something fails.
 
-bool load_pictures();
+bool load_pictures();		///< Loads all pictures in global variable image_list. If some pictures can't be loaded, creates image with text "No image" and puts it in image list. Returns false if some images were not loaded.
 
-void transform_bitmaps_to_atlas();
+void transform_bitmaps_to_atlas();	///< Creates one big image, draws all other images to it and changes image_list accordingly. Is needed for performance reasons.
 
-int delete_pictures();
+int delete_pictures();		///< Destroys image_list.
 
-bool load_fonts();
+bool load_fonts();		///< Tries loading fonts. Returns false if loading fails.
 
-int delete_fonts();
+int delete_fonts();		///< Destroys fonts.
 
-int pow(int a, int b);
+int pow(int a, int b);		///< Mathematical power function.
 
-int resize_display(ALLEGRO_EVENT* ev);
+int load_settings();		///< Loads contents of data/config.txt file in game_info class.
 
-int load_settings();
-
-int lower_case(std::string& word);
-
-std::vector<std::string> split(std::string line);
-
-void remove_spaces_and_apostrophs(std::string& word);
 
 #endif

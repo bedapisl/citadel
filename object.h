@@ -1,3 +1,9 @@
+
+/**
+ * \file object.h
+ * \brief Contains game_object class which represents all objects on game map.
+ */
+
 #ifndef object_h_bedas_guard
 #define object_h_bedas_guard
 

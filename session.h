@@ -1,15 +1,14 @@
+/**
+ * \file session.h
+ * \brief Contains \ref game_session class which represents one game.
+ */
+
 #ifndef session_h
 #define session_h
 
 #include "core.h"
 
 #define TIME_TO_UPDATE_HAPPINESS (2*game_info::fps)
-//#define INVASION_TIME (200*game_info::fps)
-//#define FIRST_INVASION (300*game_info::fps)
-#define STARTING_WOOD 400
-#define STARTING_STONE 300
-#define STARTING_MARBLE 50
-#define STARTING_BRICKS 0
 
 /**
  * \brief Contains all data about one game session and manages global ingame events

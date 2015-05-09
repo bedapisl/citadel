@@ -1,3 +1,9 @@
+
+/**
+ * \file others.h
+ * \brief Contains game_info, graphical_texts, \ref missile, \ref stock and carrier_output classess.
+ */
+
 #ifndef others_h
 #define others_h
 
@@ -30,6 +36,9 @@ public:
 	static double map_generator_ramp_end;
 
 	static void load_game_info();
+private:
+	static int lower_case(std::string& word);
+	static std::vector<std::string> split(std::string line);
 };
 
 /**
@@ -101,7 +110,6 @@ private:
 	
 };
 
-possible_borders tile_borders(tile* cTile, direction way);
 
 template <typename T>
 bool contains(std::vector<T> v, T element)

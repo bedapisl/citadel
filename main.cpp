@@ -299,6 +299,9 @@ int delete_fonts()
 	al_destroy_font(font20);
 	al_destroy_font(font25);
 	al_destroy_font(font30);
+	al_destroy_font(font35);
+	al_destroy_font(font40);
+	al_destroy_font(font45);
 
 	return 0;
 }
@@ -313,62 +316,6 @@ int pow(int a, int b)
 	return c;
 }
 
-/*Makes all upper case letters lower case.*/
-int lower_case(std::string& word)
-{
-	for(int i=0; i<word.size(); ++i)
-	{
-		if((word[i] >= 'A') && (word[i] <= 'Z'))
-			word[i] = word[i] - int('A') + int('a');
-	}
-	return 0;
-}
-/*Splits line to words. Delimiters are only space and TAB. If "/" (comments) is found ignores rest of line. Number of words returns in variable number_of_words. To avoid memory leaks each word must be deleted and also array of words.*/
-std::vector<std::string> split(std::string line)
-{
-	std::vector<std::string> words;
-	
-	bool done = false;
 
-	while(!done)
-	{
-		while((line.find(" ") == 0) || (line.find("\t") == 0))		//remove white characters on the beginning
-			line = line.substr(1);
 
-		int space_index = line.find(" ");
-		if(space_index == std::string::npos)
-			space_index = line.find("\t");
-			
-		if(space_index == std::string::npos)
-		{
-			if(line.size() > 0)
-				words.push_back(line);
-
-			return words;
-		}
-
-		words.push_back(line.substr(0, space_index));
-		line = line.substr(space_index + 1);
-	}
-	return words;
-}
-
-void remove_spaces_and_apostrophs(std::string & word)
-{
-	int start_index = 0;
-	while((word[start_index] == ' ') || (word[start_index] == '\t'))
-		start_index++;
-
-	int end_index = word.size() - 1;
-	while((word[end_index] == ' ') || (word[end_index] == '\t'))
-		end_index--;
-
-	if(word[start_index] == '"')
-		start_index++;
-
-	if(word[end_index] == '"')
-		end_index--;
-
-	word = word.substr(start_index, end_index - start_index + 1);
-}
 

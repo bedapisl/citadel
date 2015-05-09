@@ -1,3 +1,9 @@
+
+/**
+ * \file mouse.h
+ * \brief Contains game_mouse class.
+ */
+
 #ifndef mouse_h_bedas_guard
 #define mouse_h_bedas_guard
 
@@ -5,7 +11,8 @@
 #include "others.h"
 
 /**
- * \brief Represents mouse.
+ * \brief Translates player's actions with mouse to game orders during missions.
+ * 
  */
 class game_mouse
 {

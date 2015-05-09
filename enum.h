@@ -1,3 +1,9 @@
+
+/**
+ * \file enum.h
+ * \brief All enums should be here.
+ */
+
 #ifndef BEDAS_ENUM_H
 #define BEDAS_ENUM_H
 

@@ -1,3 +1,9 @@
+
+/** 
+ * \file window.h
+ * \brief Contains ingame window used by store building and gui elements used in menus.
+ */
+
 #ifndef citadel_window_h
 #define citadel_window_h
 
@@ -39,7 +45,7 @@ protected:
 class store;
 
 /**
- * Represents window with controls of store building.
+ * \brief Represents window with controls of store building.
  */
 class store_window : public window
 {

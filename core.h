@@ -1,11 +1,14 @@
 /*
-	The Castle - strategická hra
-	Bedrich Pisl, I. rocnik
-	Letni semestr 2013
-	Programovani II.
+	Citadel - strategic game
+	Bedrich Pisl - part of bachelor thesis
+	2015
 */
-	
-/* This is major header file, which includes all other header files.*/
+
+/**
+ * \file core.h 
+ * \brief This is major header file, which includes all other header files and contains some macros.
+ *
+ */
 
 #ifndef core_bedas_guard
 #define core_bedas_guard
@@ -90,13 +93,7 @@
 #define BACKGROUND_COLOR al_map_rgb(100, 100, 100)
 #define MAP_WIDTH 100 //in tiles not pixels
 #define MAP_HEIGHT 100 //big increasing of this can cause problems, because current A* needs about (20*n)^2 memory (A* can be overwritten to use less memory...)
-#define FPS 60							// if FPS goes under 10 or something like that, mouse_button_down should have been invoked in main loop by allegro queue 
 #define DISPLAY_MOVEMENT_SPEED (13.0/(game_info::fps/60.0))
-//#define SOCHL 4							//Speed Of CHanging Legs when drawing moving people 
-#define MAX_NUMBER_OF_CHOSEN_PEOPLE 128
-#define MAX_PEOPLE 4096
-#define MAX_MISSILES 2048
 #define MARKED_LOCATION	8				//udava jak vzdaleny muze byt drawing_x jednotky od vybraneho bodu, aby byla jednotka jeste vybrana 
-//#define LENGHT_OF_BUILDING_ACTION_QUEUE 10
 
 #endif

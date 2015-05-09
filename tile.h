@@ -1,9 +1,13 @@
+
+/**
+ * \file tile.h
+ * \brief Contains class \ref tile which describes one tile in game map.
+ */
+
 #ifndef tile_h
 #define tile_h
 
 #include "core.h"
-
-#define MAX_MINIMAP_UPDATES 512
 
 class tree;
 class button;

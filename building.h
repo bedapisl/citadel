@@ -1,3 +1,14 @@
+
+/**
+ * \file building.h
+ * \brief Description of general building class and all derived classes.
+ * 
+ * All types of buildings are represented by some class derived from building class, but there are more types of buildings than derived classes.
+ * Wall and palisade building types share class wall, and all buildings which produce resources (fisherman, woocutter, gold mine) share one class production_building.
+ * Statistics of building types are in folder ./data/buildings.
+ * Algorithm for workers assignment is in building.cpp.
+ */
+
 #ifndef building_h_bedas_guard
 #define building_h_bedas_guard
 
