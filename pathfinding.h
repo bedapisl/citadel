@@ -45,10 +45,11 @@ public:
 	/**
 	 * \brief Returns shortest path from any starting tile to any goal tile.
 	 * All template parameters represent something which can be called with given signature.
-	 * \param ACCESSIBLE:		should be callable like bool f(tile* t1, tile* t2) 	- is it possible to go from t1 to t2
-	 * \param GOAL:			should be callable like bool f(tile* t) 		- is t goal tile?
-	 * \param HEURISTIC:		should be callable like double f(tile* t)		- what is the lower bound for distance to from t to some goal tile
-	 * \param REAL_DISTANCE:	should be callable like double f(tile* t1, tile* t2)	- what is the real distance between t1 and t2, t1 and t2 are adjacent (it may take more time to move diagonally for example)
+	 * \tparam ACCESSIBLE:		should be callable like bool f(tile* t1, tile* t2) 	- is it possible to go from t1 to t2
+	 * \tparam GOAL:		should be callable like bool f(tile* t) 		- is t goal tile?
+	 * \tparam HEURISTIC:		should be callable like double f(tile* t)		- what is the lower bound for distance to from t to some goal tile
+	 * \tparam REAL_DISTANCE:	should be callable like double f(tile* t1, tile* t2)	- what is the real distance between t1 and t2, t1 and t2 are adjacent (it may take more time to move diagonally for example)
+	 * \param check_goal_accessible Wheteher goal tile must be accessible by accessible_function.
 	 */
 	template <typename ACCESSIBLE, typename GOAL, typename HEURISTIC, typename REAL_DISTANCE>
 	static std::vector<tile*> a_star(std::vector<tile*> starting_tiles, ACCESSIBLE accessible_function, GOAL goal_function, HEURISTIC heuristic_function, REAL_DISTANCE real_distance_function, bool move_diagonally = true);

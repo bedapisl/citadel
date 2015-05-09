@@ -440,6 +440,9 @@ private:
 	const std::vector<int> honour_produced = std::vector<int>{1,2,3,4};
 };
 
+/**
+ * \brief Type of building for buying and selling resources.
+ */
 class store : public building
 {
 public:

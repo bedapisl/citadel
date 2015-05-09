@@ -8,10 +8,9 @@
 #ifndef button_h_bedas_guard
 #define button_h_bedas_guard
 
-	//button pointers are in chosen_mouse and tile::action_on_tile - so when deleting buttons take care of them
-
 /**
  * \brief Represents button on panel in game not in menus. Also does not represents buttons in buildings interfaces, which are handled by buildings, rotate buttons and button to invoke menu.
+ * Currently existing buttons are in button::button_list.
  */
 class button : public boost::enable_shared_from_this<button>
 {

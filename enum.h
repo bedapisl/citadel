@@ -111,7 +111,6 @@ enum picture{
 	TOWER_IMAGE,
 	STAIRS_IMAGE,
 	GATE_IMAGE,
-	
 	AXEMAN_IMAGE,		//needed for barracks
 	BOWMAN_IMAGE,
 	SPEARMAN_IMAGE,
@@ -141,8 +140,6 @@ enum picture{
 	OPEN_GATE_IMAGE,
 	ROCK_RESOURCES_IMAGE,
 	FERTILE_IMAGE,
-	//STONE_IMAGE,
-	//IRON_IMAGE,
 	WATER_IMAGE,
 	NO_WORKERS_IMAGE,
 	CLOSE_WINDOW_IMAGE,
@@ -153,8 +150,8 @@ enum picture{
 
 
 enum player{
-	BLUE_PLAYER,
-	RED_PLAYER
+	BLUE_PLAYER,		//the player
+	RED_PLAYER		//enemies
 };
 
 enum rotation{
@@ -180,8 +177,7 @@ enum game_object_type{
 
 
 enum missile_type{
-	ARROW,			//this is from TOWER
-	ARCHERS_ARROW,
+	ARCHERS_ARROW,		//spearman and bowman are both using this type of arrow
 	CATAPULT_SHOT
 };
 
@@ -191,7 +187,7 @@ enum possible_borders
 	NORMAL_BORDER,
 	RAMP_BORDER,
 	DOWN_BORDER,
-	DOUBLE_DOWN_BORDER
+	DOUBLE_DOWN_BORDER	//used only for ascending towers
 };
 
 enum people_type
@@ -227,8 +223,7 @@ enum direction{
 
 enum tile_type{
 	GRASS,
-	RAMP,
-//	WATER
+	RAMP
 };
 
 enum object_on_tile{
@@ -286,12 +281,14 @@ enum upgrade_level
 	THIRD_UPGRADE
 };
 
+/// Used by carrier_output.
 enum transaction_type
 {
 	IN_TRANSACTION,
 	OUT_TRANSACTION
 };
 
+/// Used by store building.
 enum class resource_status
 {
 	NOT_TRADING,
@@ -299,7 +296,7 @@ enum class resource_status
 	SELLING
 };
 
-enum class target_priority
+enum class target_priority		//order of values in this enum defines priority of each target
 {
 	NO_TARGET,
 	AI_BUILDING_TARGET,

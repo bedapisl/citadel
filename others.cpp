@@ -156,17 +156,24 @@ missile::missile(missile_type type, tile* attacker_position, int damage, tile* g
 	game_x = compute_game_x(attacker_position->show_tile_x(), attacker_position->show_tile_y());
 	game_y = compute_game_y(attacker_position->show_tile_x(), attacker_position->show_tile_y()) - 32*attacker_position->show_surface_height();
 
-	if(type == ARROW)	//classic arrows are from TOWERs
+	int speed;
+	switch(type)
 	{
-		image = ARROW_IMAGE;
-	}
-	else if(type == ARCHERS_ARROW)
-	{
-		image = ARCHERS_ARROW_IMAGE;
-	}
-	else if(type == CATAPULT_SHOT)
-	{
-		image = CATAPULT_SHOT_IMAGE;
+		case(ARCHERS_ARROW):
+		{
+			image = ARCHERS_ARROW_IMAGE;
+			speed = 20;
+		}
+		break;
+		case(CATAPULT_SHOT):
+		{
+			image = CATAPULT_SHOT_IMAGE;
+			speed = 6;
+		}
+		break;
+		default:
+			LOG("undefined missile type");
+			throw std::exception();
 	}
 
 	int goal_game_x = compute_game_x(goal->show_tile_x(), goal->show_tile_y());
@@ -175,17 +182,6 @@ missile::missile(missile_type type, tile* attacker_position, int damage, tile* g
 	angle = ALLEGRO_PI + acos((float)(goal_game_x - game_x)/sqrt((float)(pow(goal_game_x - game_x, 2) + pow(goal_game_y - game_y, 2))));
 	if(goal_game_y - game_y < 0)
 		angle = 2*ALLEGRO_PI - angle;
-
-	int speed;
-
-	if(type ==  ARROW)
-		speed = 20;
-	
-	if(type == ARCHERS_ARROW)
-		speed = 20;
-
-	if(type == CATAPULT_SHOT)
-		speed = 6;
 
 	int distance = pow((double)pow(goal_game_x - game_x, 2) + pow(2*(goal_game_y - game_y), 2), 0.5);
 

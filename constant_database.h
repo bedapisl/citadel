@@ -20,6 +20,7 @@ public:
 };
 /**
  * \brief Base class for constant databases.
+ * Shouldn't be used directly. Examples of constant databases are lower in this file.
  */
 template <typename derived_database, typename Tuple>
 class base_database
@@ -83,6 +84,21 @@ protected:
 template <typename db, typename Tuple>
 std::vector<Tuple> base_database<db, Tuple>::tuples;
 
+/**
+ * \brief Function to find data in some constant database.
+ * \tparam db Name of database instance, which should be searched.
+ * \tparam idx Index of element of tuples in database which will be the key that is searched for.
+ * 
+ * Returns tuples from database "db" with "key" as "idx"-th element of the tuple.
+ * Throws exception if no tuple is found or more than one tuple is found.
+ *
+ * Example: 
+ * We have database called building_names with building_types (enum) and building names and we want to get the name given the type.
+ * \code
+ *		tuple<building_type, std::string> t = find<building_names, 0>(HOUSE);
+ * 		std::string name = get<1>(t);
+ * \endcode
+ */
 template <class db, int idx>
 const typename db::value_type &find(const typename std::tuple_element<idx, typename db::value_type>::type & key)
 {
@@ -100,10 +116,6 @@ const typename db::value_type &find(const typename std::tuple_element<idx, typen
 
 	return base_database<db,typename db::value_type>::tuples[(*it_lower).second];
 }
-
-//databases definitions
-//usage: 	tuple<building_type, std::string> t = find<building_names, 0>(HOUSE);
-//		std::string name = get<1>(t);
 
 /**
  * \brief Constant database with buildings names as strings, enums and names of their images.

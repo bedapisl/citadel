@@ -15,7 +15,7 @@
 
 /**
  * \brief Class for managing high level enemy behaviour.
- *
+ * Gives orders to idle enemy units, and chooses building which the enemies will try attack by influence maps.
  */
 class enemy_ai
 {

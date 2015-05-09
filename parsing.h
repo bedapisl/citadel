@@ -2,7 +2,7 @@
 /**
  * \file parsing.h
  * \brief Classess for parsing files describing buildings and peoples attributes.
- * Parsed files are in data/buildings and data/people
+ * Parsed files are in data/buildings and data/people.
  */
 
 #ifndef parsing_h

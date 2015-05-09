@@ -54,6 +54,7 @@ private:
 
 /**
  * \brief Represents units.
+ * Units should be updated each frame by update() function.
  */
 class people : public game_object, public boost::enable_shared_from_this<people>
 {
@@ -62,7 +63,7 @@ public:
 	virtual ~people() {}
 	std::vector<game_object*> draw(int screen_position_x, int screen_position_y);	///< Draws this. Returns empty vector.
 	player show_owner() {return owner;}
-	direction show_direction() {return movement_direction;}
+	direction show_direction() {return movement_direction;}	///< Which direction the unit moves.
 	people_type show_type() {return type;}
 	virtual void update() = 0;				///< Manages people. Should be called once each frame. Performs movement, attacks, ....
 	void draw_interface();					///< Draws stats of this unit to panel. Called if one unit is selected.
@@ -125,7 +126,7 @@ protected:
 	people_type type;
 	tile* previous_tile;
 	tile* next_tile;
-	bool moving_diagonally;	//NORTH is diagonally, because its longer then NORTHEAST
+	bool moving_diagonally;		//NORTH is diagonally, because its longer then NORTHEAST
 	direction movement_direction;
 	elevation movement_elevation;
 	std::vector<tile*> path;	///< Where the unit plans to go. Last tile is goal tile.
@@ -212,7 +213,7 @@ protected:
 	boost::shared_ptr<target> current_target;
 
 	int regeneration_time;
-	const int max_regeneration_time = game_info::fps;	//every second
+	const int max_regeneration_time = game_info::fps;	
 
 	bool is_ranged;
 	int range;

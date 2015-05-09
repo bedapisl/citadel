@@ -50,9 +50,10 @@
 #include <boost/weak_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
+//Instead of "text" there can be any variable, which has << operator, __FILE__, __LINE__ and __func__ are special things provided by compiler, example: LOG("ahoj"); 
+//Writes info to file called log.
 #define LOG(text) (log_file << __FILE__ << ", line " << __LINE__ << " " << __func__ << "(): " << text << std::endl)
-		//instead of "text" there can be any variable, which has << operator, __FILE__, __LINE__ and __func__ are special things provided by compiler, example: LOG("ahoj"); 
-#define BUTTON_SIZE 80
+#define BUTTON_SIZE 80		///Height of main panel in game. In pixels.
 
 #include "enum.h"
 #include "constant_database.h"
@@ -91,9 +92,11 @@
 #define WRITING_COLOR al_map_rgb(200, 200, 200)
 #define GREY_COLOR al_map_rgb(150, 150, 150)
 #define BACKGROUND_COLOR al_map_rgb(100, 100, 100)
-#define MAP_WIDTH 100 //in tiles not pixels
-#define MAP_HEIGHT 100 //big increasing of this can cause problems, because current A* needs about (20*n)^2 memory (A* can be overwritten to use less memory...)
+			// Following two macros shouldnt be used. Use game_info::map_width and game_info::map_height instead.
+#define MAP_WIDTH 100 	//in tiles not pixels
+#define MAP_HEIGHT 100 	//big increasing of this can cause problems, because current A* needs about (20*n)^2 memory (A* can be overwritten to use less memory...)
+
 #define DISPLAY_MOVEMENT_SPEED (13.0/(game_info::fps/60.0))
-#define MARKED_LOCATION	8				//udava jak vzdaleny muze byt drawing_x jednotky od vybraneho bodu, aby byla jednotka jeste vybrana 
+#define MARKED_LOCATION	8				//How far away from unit can the player click to select the unit. In pixels.
 
 #endif

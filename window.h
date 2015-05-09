@@ -205,7 +205,7 @@ private:
 };
 
 /**
- * \brief Represents gui_element with two possible values: Disabled and enabled.
+ * \brief Represents gui_element with two possible values: Disabled and Enabled.
  */
 class switch_button : public gui_element		//button in menu with values: disabled, enabled
 {

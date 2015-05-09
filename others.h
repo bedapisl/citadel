@@ -19,6 +19,8 @@ class building;
 
 /**
  * \brief Class maintaing high level informations about game.
+ * Info is loaded from data/config.txt file.
+ * If file cannot be opened or does not contains values of variables in proper format, default values are used.
  */
 class game_info{
 public:
@@ -43,6 +45,8 @@ private:
 
 /**
  * \brief Class managing texts which appears on the map.
+ * Texts automatically disappear after some time.
+ * Function "draw_and_update" should be called each frame.
  */
 class graphical_texts
 {
@@ -110,7 +114,7 @@ private:
 	
 };
 
-
+/// Returns whether element is in vector. Linear complexity.
 template <typename T>
 bool contains(std::vector<T> v, T element)
 {
@@ -157,6 +161,9 @@ protected:
 };
 /**
  * \brief Manages transporting resources with carriers.
+ * Class is meant to be part of some building, member pointer "this_building" should points to it.
+ * Creates carriers, assigns them tasks and by base class manages resources in the building.
+ * Must be updated (function "update()") each frame to work properly.
  */
 class carrier_output : public stock
 {

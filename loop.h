@@ -24,6 +24,8 @@ class game_mouse;
 
 /**
  * \brief Manages run of whole program.
+ * Class is singleton, should be accessed through the "get_instance()" function.
+ * Manages events from various sources, handles some of them and sent the rest to curernt loop.
  */
 
 class event_handler
@@ -34,7 +36,7 @@ public:
 
 	void run();			///< Main function. Starts executing main_menu_loop.
 	void quit() {done = true;}	///< Halts the program.
-	void change_state(game_state state);	///< Go to another state (for example from "main menu" to "load/save menu).
+	void change_state(game_state state);	///< Go to another state (for example from "main menu" to "load/save menu").
 
 private:
 	event_handler();
@@ -49,13 +51,14 @@ private:
 	ALLEGRO_TIMER* timer;
 	ALLEGRO_MOUSE_STATE* mouse_state;
 	
-	loop* current_loop;
+	loop* current_loop;			///< Loop which is currently executed. Events are sent to it.
 	std::vector<boost::shared_ptr<loop>> loops;
 	bool done;
 };
 
 /**
  * \brief General loop interface. All loops are managed by event_handler which executes them by calling their functions when event comes.
+ * There should be one instance of this class for every game state.
  */
 class loop
 {
@@ -120,6 +123,7 @@ private:
 };
 /**
  * \brief Base class for all menu loops.
+ * Handles events which are similarly handled by all menus.
  */
 class menu_loop : public loop
 {
@@ -151,7 +155,7 @@ protected:
 	std::vector<gui_block> blocks;
 };
 /**
- * \brief Represents menu when game is only paused.
+ * \brief Represents menu which appears when game is only paused.
  */
 class ingame_menu : public menu_loop
 {
@@ -212,8 +216,6 @@ private:
 	void check_clicked_buttons();
 	std::vector<boost::shared_ptr<menu_button>> buttons;
 	
-//	const int header_height = 100;
-//	const int element_height = 90;
 };
 
 /**
