@@ -1,0 +1,27 @@
+/**
+\mainpage
+
+Citadel is 2D isometric RTS game written in C++.
+It's binaries are at sourceforge.net/projects/citadel-game and sources are at github.com/spekoun/citadel.
+Files there may be outdated, especially the binary ones.
+
+\section Compilation
+Here we will describe compilation on Linux OS.
+You will need compiler with C++11 support, for example gcc 4.8 or newer, make and of course sources which can be obtained by command:
+
+git clone git://github.com/spekoun/citadel
+
+This will also download binaries of some libraries, which are used by game, especially Allegro 5 and Boost Serialization.
+If you don't want to use binaries or you are not on x86 or x86_64 architectures, you will also need to install Allegro 5.1 (with Allegro 5.0 it will also work, but the game will be probably much slower) and Boost Serialization libraries.
+In this case you will probably have to change the makefile to include directories with these libraries.
+
+Then go to citadel main directory and run "make".
+
+*/
+
+
+
+
+
+
+

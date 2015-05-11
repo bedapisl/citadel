@@ -68,8 +68,11 @@ or if you have already downloaded source:
 ###Run
 	./a.out
 
+#Documentation 
+To generate documentation, run following command in Citadel's root directory:
+	doxygen Doxyfile 
 
-##Troubleshooting
+#Troubleshooting
 In case of any problems you can contact me on bedapisl@gmail.com.
 
 
