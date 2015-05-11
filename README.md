@@ -70,6 +70,7 @@ or if you have already downloaded source:
 
 #Documentation 
 To generate documentation, run following command in Citadel's root directory:
+	
 	doxygen Doxyfile 
 
 #Troubleshooting
