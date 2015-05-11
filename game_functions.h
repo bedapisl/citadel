@@ -60,7 +60,7 @@ int draw_main_panel(ALLEGRO_BITMAP* minimap, int screen_position_x, int screen_p
 int delete_death(game_mouse* mouse);
 
 /// Returns tiles in circle with diameter tile_range and middle point start. Tiles are from session->tile_list.
-std::vector<tile*> tiles_in_circle(float tile_range, tile* start);
+std::vector<tile*> tiles_in_circle(double tile_range, tile* start);
 
 /// Returns tiles in rectangle given by two corners. Rectangle's sides are horizontal and vertical, not diagonal. Tiles are from session->tile_list.
 std::vector<tile*> tiles_in_rectangle(int x1, int y1, int x2, int y2);

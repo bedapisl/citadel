@@ -250,11 +250,18 @@ int draw_main_panel(ALLEGRO_BITMAP* minimap, int screen_position_x, int screen_p
 		
 	al_draw_bitmap(image_list[HONOUR_IMAGE], 100, 10, 0);
 	al_draw_textf(font25, WRITING_COLOR, 140, 5, ALLEGRO_ALIGN_LEFT, "%i", session->honour);
-				
+		
+	for(int i=0; i<4; ++i)
+	{
+		al_draw_bitmap_region(image_list[RESOURCES_IMAGE], i*30, 0, 30, 30, i*100 + 200, 10, 0);
+		al_draw_textf(font25, WRITING_COLOR, 240 + i*100, 5, ALLEGRO_ALIGN_LEFT, "%i", session->global_stock->show_amount(static_cast<resources>(i)));
+	}
+		
 				//draw time to invasion
 	int time_to_invasion = session->frames_to_invasion();
 	if((time_to_invasion > 0) && (time_to_invasion < 300*game_info::fps))
 		al_draw_textf(font25, WRITING_COLOR, display_width - 5, 35, ALLEGRO_ALIGN_RIGHT, "%i:%.2i", time_to_invasion / (60*game_info::fps), (time_to_invasion / game_info::fps) % 60 );
+	
 	LOG("main panel finished");
 	return 0;
 }
@@ -408,12 +415,12 @@ int delete_death(game_mouse* mouse) // deletes all death people
 }
 
 /*Returns array with tile pointers, which are in circle defined by start and radius parametr. Size of array is in number_of_tiles variable. Array must be deleted in calling function. */ 
-std::vector<tile*> tiles_in_circle(float radius, tile* start)
+std::vector<tile*> tiles_in_circle(double radius, tile* start)
 {
 	//this returns tiles in circle sorted from the nearest ones to the farest one
 	
 	
-	radius = radius*1.5;		//radius one means that in circle will be 9 tiles
+	//radius = radius*1.5;		//radius one means that in circle will be 9 tiles
 
 	std::vector<tile*> tiles_in_circle;
 	tiles_in_circle.push_back(start);
@@ -439,7 +446,7 @@ std::vector<tile*> tiles_in_circle(float radius, tile* start)
 				if(((y >= 0) & (y < game_info::map_height)) & ((x >= 0) & (x < game_info::map_width))) 
 				{
 					if(pow((session->tile_list[y][x]->show_tile_x() - start->show_tile_x()), 2) + 
-						pow((session->tile_list[y][x]->show_tile_y() - start->show_tile_y()), 2) <= (int)(radius*radius))
+						pow((session->tile_list[y][x]->show_tile_y() - start->show_tile_y()), 2) <= (radius*radius))
 					{
 						tiles_in_circle.push_back(session->tile_list[y][x].get());
 						done = false;

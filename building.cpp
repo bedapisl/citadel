@@ -851,8 +851,9 @@ int add_building_to_graph(std::vector<vertex_info> & vertices, boost::shared_ptr
 		}
 	}
 
-	std::vector<std::vector<tile*>> connected = pathfinding::breadth_first_search(starting_tiles, carrier::static_can_move, 
-								pathfinding::any_building_goal_functor(), false, true, MAX_WORKERS_DISTANCE_FROM_HOUSE);
+	std::vector<std::vector<tile*>> connected = pathfinding::breadth_first_search(starting_tiles, carrier::static_can_move,
+					[] (tile* from, tile* to) {return (!(to->building_on_tile.expired()) && (people::general_can_move(from, to)));}, 
+					false, MAX_WORKERS_DISTANCE_FROM_HOUSE);
 	
 	for(size_t i=0; i<connected.size(); ++i)
 	{
@@ -1504,7 +1505,7 @@ void production_building::specific_update()
 			if(output->show_amount(needed_resources[i]) < amount_produced)
 			{
 				enough_resources = false;
-				missing_resource = static_cast<resources>(i);
+				missing_resource = needed_resources[i];
 			}
 		}
 		

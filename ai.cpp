@@ -76,8 +76,8 @@ void enemy_ai::unit_attacked(tile* from)
 
 void enemy_ai::choose_main_target()
 {
-	if(!main_target.expired())
-		return;
+	//if(!main_target.expired())
+	//	return;
 
 	check_death_units();
 	if(units.empty())
@@ -85,9 +85,11 @@ void enemy_ai::choose_main_target()
 
 	std::vector<tile*> starting_tile(1, session->tile_list[units[0].lock()->show_tile_y()][units[0].lock()->show_tile_x()].get());
 		
-	std::vector<std::vector<tile*>> paths_to_buildings = pathfinding::breadth_first_search(starting_tile, warrior::static_can_move, pathfinding::any_building_goal_functor(), true, false);
+	std::vector<std::vector<tile*>> paths_to_buildings = pathfinding::breadth_first_search(starting_tile, 
+			[this] (tile* from, tile* to) -> bool {return this->units[0].lock()->can_move(from, to);},
+			[this] (tile* from, tile* to) -> bool {return this->units[0].lock()->can_attack_building(from, to);}, true);
 						
-	if(paths_to_buildings.size() == 0)	//first compute reacheble buildings
+	if(paths_to_buildings.size() == 0)	//first compute reachable buildings
 		throw std::exception();
 
 	std::vector<std::vector<INFLUENCE_T>> map = generate_influence_map();

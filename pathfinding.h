@@ -37,11 +37,11 @@ public:
 	
 	/** \brief Returns shortest paths to all reachable goal tiles. 
 	 * Whether it is possible to go from one tile to another is determined by accessible function which must be function with signature 
-	 * "bool f(tile* t1, tile* t2)" or equivalent functor, lambda, .... Goal function should have signature bool "bool f(tile* t)" or equivalent.
+	 * "bool f(tile* t1, tile* t2)" or equivalent functor, lambda, .... Goal function should have signature bool "bool f(tile* from, tile* to)" or equivalent.
 	*/
 	template <typename ACCESSIBLE, typename GOAL>
 	static std::vector<std::vector<tile*>> breadth_first_search(std::vector<tile*> starting_tiles, ACCESSIBLE accessible_function, GOAL goal_function,
-						bool move_diagonally = true, bool check_goal_accessible = true, int max_distance = std::numeric_limits<int>::max());
+						bool move_diagonally = true, /*bool check_goal_accessible = true,*/ int max_distance = std::numeric_limits<int>::max());
 	/**
 	 * \brief Returns shortest path from any starting tile to any goal tile.
 	 * All template parameters represent something which can be called with given signature.
@@ -122,7 +122,7 @@ std::vector<tile*> pathfinding::accessible_neighbours(tile* middle_tile, ACCESSI
 
 template <typename ACCESSIBLE, typename GOAL>
 std::vector<std::vector<tile*>> pathfinding::breadth_first_search(std::vector<tile*> starting_tiles, ACCESSIBLE accessible_function, GOAL goal_function, 
-						bool move_diagonally, bool check_goal_accessible, int max_distance)
+						bool move_diagonally,/* bool check_goal_accessible,*/ int max_distance)
 {
 	std::vector<std::vector<tile*>> result;
 
@@ -155,13 +155,13 @@ std::vector<std::vector<tile*>> pathfinding::breadth_first_search(std::vector<ti
 						new_frontier.push_back(adjacent[j]);
 					}
 
-					if(goal_function(adjacent[j]))
+					if(goal_function(frontier[i], adjacent[j]))
 					{
-						if((check_goal_accessible && people::general_can_move(frontier[i], adjacent[j])) || (!check_goal_accessible))
-						{
+					//	if((check_goal_accessible && people::general_can_move(frontier[i], adjacent[j])) || (!check_goal_accessible))
+					//	{
 							adjacent_tile.previous_tile = frontier[i];
 							result.push_back(find_path_back(map, adjacent[j]));
-						}
+					//	}
 					}
 				}
 			}
@@ -383,7 +383,7 @@ std::vector<tile*> pathfinding::a_star(std::vector<tile*> starting_tiles, ACCESS
 	while(frontier.size() > 0)
 	{
 		tile* best = frontier.top().second;
-		std::vector<tile*> tiles_to_explore = accessible_neighbours(best, accessible_function, move_diagonally);//adjacent_tiles(best, move_diagonally);
+		std::vector<tile*> tiles_to_explore = accessible_neighbours(best, accessible_function, move_diagonally);
 		for(size_t i=0; i<tiles_to_explore.size(); ++i)
 		{
 			a_star_tile& adjacent = map[tiles_to_explore[i]->show_tile_y()][tiles_to_explore[i]->show_tile_x()];

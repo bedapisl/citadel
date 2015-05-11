@@ -79,8 +79,6 @@ public:
 	template <class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
-		LOG("serializing tile");
-		
 		using boost::serialization::make_nvp;
 
 		ar & make_nvp("game_object", boost::serialization::base_object<game_object>(*this));

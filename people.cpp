@@ -136,7 +136,10 @@ void people::draw_interface()
 void people::draw_partial_interface(int button_number)
 {
 	al_draw_filled_rectangle(button_number * BUTTON_SIZE + 8, display_height - BUTTON_SIZE + 8, (button_number + 1)*BUTTON_SIZE - 8, display_height - 8, BLACK_COLOR);
-	al_draw_bitmap_region(image_list[image], 0, 0, 64, 64, button_number*BUTTON_SIZE + 8, display_height - BUTTON_SIZE + 8, 0);
+	int start_y = 0;
+	if(owner == RED_PLAYER)
+		start_y += 64;
+	al_draw_bitmap_region(image_list[image], 0, start_y, 64, 64, button_number*BUTTON_SIZE + 8, display_height - BUTTON_SIZE + 8, 0);
 
 	button::draw_progress_bar(button_number * BUTTON_SIZE + 8, display_height - 10, (100*life)/max_life, 64, 6);
 }
@@ -158,13 +161,9 @@ bool people::general_can_move(tile* from, tile* to)
 {
 	if((abs(from->show_tile_x() - to->show_tile_x()) > 1) || (abs(from->show_tile_y() - to->show_tile_y()) > 1))
 	{
-		//throw std::exception();
 		return false;
 	}
-	//	return false;
-
-	//if((to->is_water_tile()) || (from->is_water_tile()))
-	//	return false;
+	
 	if(to->object != NOTHING)
 		return false;
 
@@ -323,7 +322,7 @@ bool people::move_to_next_tile()
 	return true;
 }
 	
-//return to->height - from_height, negative return value means that people move down
+//return to->height - from->height, negative return value means that people move down
 int people::height_difference_for_moving(tile* from, tile* to)
 {
 	std::vector<tile*> tiles{from, to};
@@ -765,13 +764,17 @@ bool warrior::try_fullfill_target(boost::shared_ptr<target> target_to_fullfill)
 					next_tile_to_attack = tiles_under_target[i];
 					path.clear();
 					target_ok = true;
+					break;
 				}
 			}
 		}
 
 		if(!target_ok)
 		{
-			std::vector<tile*> tiles_near_target = tiles_in_circle(1.0, tile_under_target);
+			double diameter = 1;
+			if(is_ranged)
+				diameter = range;
+			std::vector<tile*> tiles_near_target = tiles_in_circle(diameter, tile_under_target);
 			std::vector<tile*> goal_tiles;
 			for(int i=0; i<tiles_near_target.size(); ++i)
 			{
@@ -847,10 +850,37 @@ void warrior::find_near_enemies()
 
 	std::vector<tile*> starting_tile(1, session->tile_list[tile_y][tile_x].get());
 	std::vector<std::vector<tile*>> paths = pathfinding::breadth_first_search(starting_tile, [this](tile* from, tile* to) {return this->can_move(from, to);}, 
-						pathfinding::any_enemy_goal_functor(boost::dynamic_pointer_cast<warrior>(shared_from_this())), true, true, 7);
+						[this] (tile* from, tile* to) {return this->can_attack_people(from, to) || this->can_attack_building(from, to);},
+						true, 7);
 
 	if(paths.size() > 0)
 	{
+		tile* previous;
+		tile* last = paths[0].back();
+		if(paths[0].size() > 1)
+			previous = paths[0][paths[0].size() - 2];
+		else
+			previous = session->tile_list[tile_y][tile_x].get();
+		
+		bool done = false;
+		for(int i=0; i<last->people_on_tile.size(); ++i)
+		{
+			if((last->people_on_tile[i].lock()->show_owner() != owner) && (can_attack_people(previous, last)))
+			{
+				add_target(boost::shared_ptr<target>(new target(last->people_on_tile[i], target_priority::ENEMY_NEARBY)));
+				path = paths[0];
+				done = true;
+				break;
+			}
+		}
+
+		if(!done)
+		{
+			add_target(boost::shared_ptr<target>(new target(last->building_on_tile, target_priority::ENEMY_NEARBY)));
+			path = paths[0];
+		}
+		
+		/*
 		std::vector<tile*> adjacent = pathfinding::adjacent_tiles(paths[0].back(), true);
 		for(int i=0; i<adjacent.size(); ++i)
 		{	
@@ -880,6 +910,7 @@ void warrior::find_near_enemies()
 				}
 			}
 		}
+		*/
 	}
 }
 
@@ -1048,6 +1079,19 @@ bool warrior::static_can_move(tile* from, tile* to)
 }
 bool warrior::can_attack_people(tile* from, tile* enemy_tile)
 {
+	enemy_tile->check_death_people_on_tile();
+	bool ok = false;
+	for(int i=0; i<enemy_tile->people_on_tile.size(); ++i)
+	{
+		if(enemy_tile->people_on_tile[i].lock()->show_owner() != owner)
+		{
+			ok = true;
+			break;
+		}
+	}
+	if(!ok)
+		return false;
+			
 	switch(type)
 	{
 		case(AXEMAN):
@@ -1068,7 +1112,7 @@ bool warrior::can_attack_people(tile* from, tile* enemy_tile)
 
 bool warrior::can_attack_building(tile* from, tile* enemy_tile)
 {
-	if(enemy_tile->building_on_tile.expired())
+	if((enemy_tile->building_on_tile.expired()) || (enemy_tile->building_on_tile.lock()->show_owner() == owner))
 		return false;
 
 	switch(type)
@@ -1146,7 +1190,9 @@ void carrier::update()
 	if(action_duration == 0)			//ready for new action
 	{
 		check_target();
-		
+		if(is_death())
+			return;
+
 		if(is_target_adjacent())
 		{
 			target_reached();

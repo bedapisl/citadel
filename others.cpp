@@ -136,6 +136,7 @@ std::vector<std::string> game_info::split(std::string line)
 	}
 	return words;
 }
+
 void graphical_texts::draw_and_update(int screen_position_x, int screen_position_y)
 {
 	for(int i=0; i<hints.size(); ++i)
@@ -489,7 +490,8 @@ void carrier_output::assign_tasks()
 		}
 	}
 
-	std::vector<std::vector<tile*>> paths_to_tasks = pathfinding::breadth_first_search(starting_tiles, carrier::static_can_move, pathfinding::any_building_goal_functor(), false, true);
+	std::vector<std::vector<tile*>> paths_to_tasks = pathfinding::breadth_first_search(starting_tiles, carrier::static_can_move, 
+				[] (tile* from, tile* to) {return (!to->building_on_tile.expired()) && people::general_can_move(from, to);}, false);
 
 	for(int i=0; i<paths_to_tasks.size(); ++i)
 	{
