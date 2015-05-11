@@ -493,10 +493,15 @@ void carrier_output::assign_tasks()
 	std::vector<std::vector<tile*>> paths_to_tasks = pathfinding::breadth_first_search(starting_tiles, carrier::static_can_move, 
 				[] (tile* from, tile* to) {return (!to->building_on_tile.expired()) && people::general_can_move(from, to);}, false);
 
+	std::vector<int> warehouse_path_indeces;
 	for(int i=0; i<paths_to_tasks.size(); ++i)
 	{
 		if(paths_to_tasks[i].back()->building_on_tile.lock()->type == WAREHOUSE)
 		{
+			warehouse_path_indeces.push_back(i);
+			/*
+			warehouse_pa
+			
 			for(int j=i+1; j<paths_to_tasks.size(); ++j)
 			{
 				if(paths_to_tasks[j].back()->building_on_tile.lock()->type != WAREHOUSE)
@@ -505,6 +510,7 @@ void carrier_output::assign_tasks()
 					break;
 				}
 			}
+			*/
 		}
 		boost::shared_ptr<building> founded_building = paths_to_tasks[i].back()->building_on_tile.lock();
 		if((!founded_building->has_carrier_output()) || (founded_building == this_building.lock()))

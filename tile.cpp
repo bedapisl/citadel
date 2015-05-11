@@ -125,9 +125,12 @@ std::vector<game_object*> tile::draw(int screen_position_x, int screen_position_
 		if(building_on_tile.expired())
 		{
 			LOG("error");
-			throw std::exception();
+			draw_building = false;
 		}
-		objects.push_back(building_on_tile.lock().get());
+		else
+		{
+			objects.push_back(building_on_tile.lock().get());
+		}
 	}
 	
 	if(object == TREE_TILE)			//tree has 4 floors, so at first time, this function draws only grass and returns tile. 

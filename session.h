@@ -12,6 +12,7 @@
 
 /**
  * \brief Contains all data about one game session and manages global ingame events
+ * The active instance of this class can be accessed through "session" global variable. 
  */
 
 class game_session{
