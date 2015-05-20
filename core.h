@@ -13,7 +13,7 @@
 #ifndef core_bedas_guard
 #define core_bedas_guard
 
-#define VERSION 0.2
+#define VERSION 0.3
 
 #if defined(unix) || defined(__unix__) || defined(__unix)
 	#define UNIX
