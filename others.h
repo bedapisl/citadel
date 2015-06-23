@@ -38,6 +38,7 @@ public:
 	static double map_generator_ramp_end;
 
 	static void load_game_info();
+
 private:
 	static int lower_case(std::string& word);
 	static std::vector<std::string> split(std::string line);
