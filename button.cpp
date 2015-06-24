@@ -404,7 +404,14 @@ void button_build::draw_info(int button_number)
 	
 	if(unlocked)
 	{
-		draw_button_info(info.name, info.text, info.building_price, 0, info.number_of_workers, button_number*BUTTON_SIZE);
+		std::vector<int> building_price = info.building_price;
+		
+		if(!session->game_started)
+		{
+			building_price = std::vector<int>(NUMBER_OF_RESOURCES, 0);
+		}
+			
+		draw_button_info(info.name, info.text, building_price, 0, info.number_of_workers, button_number*BUTTON_SIZE);
 	}
 	else
 	{

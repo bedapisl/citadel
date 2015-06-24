@@ -3,7 +3,7 @@ RTS game written in C++
 
 #Getting the game
 ##Windows
-Not supported
+Experimental version can be found on [Sourceforge](https://sourceforge.net/projects/citadel-game/files/) in "windows" folder.
 
 ##Download binaries on Linux
 Download [Linux binaries](https://sourceforge.net/projects/citadel-game/files/), unzip downloaded file and run executable file with name similar to "citadel_0.1_32bit.out".

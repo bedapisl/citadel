@@ -857,6 +857,12 @@ void settings_menu::end()
 	else
 		file << "false" << std::endl;
 
+	file << "map_generator_base_tile = " << game_info::map_generator_base_tile << std::endl;
+	file << "map_generator_gauss_deviation = " << game_info::map_generator_gauss_deviation << std::endl;
+	file << "map_generator_base_ramp_probability = " << game_info::map_generator_base_ramp_probability << std::endl;
+	file << "map_generator_ramp_start = " << game_info::map_generator_ramp_start << std::endl;
+	file << "map_generator_ramp_end = " << game_info::map_generator_ramp_end << std::endl;
+
 	file.close();
 }
 	
