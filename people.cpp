@@ -724,7 +724,7 @@ bool warrior::try_fullfill_target(boost::shared_ptr<target> target_to_fullfill)
 		if(can_go_here(t))
 		{
 			std::vector<tile*> starting_tile(1, session->tile_list[tile_y][tile_x].get());
-			std::vector<tile*> path_to_goal = pathfinding::a_star(starting_tile, [this](tile* from, tile* to) -> bool {return this->can_move(from, to);}, 						pathfinding::single_tile_goal_functor(t), pathfinding::single_tile_heuristic_functor(t), pathfinding::normal_real_distance_functor());
+			std::vector<tile*> path_to_goal = pathfinding::a_star(starting_tile, [this](tile* from, tile* to) -> bool {return this->can_move(from, to);}, pathfinding::single_tile_goal_functor(t), pathfinding::single_tile_heuristic_functor(t), pathfinding::normal_real_distance_functor());
 			
 			if(path_to_goal.size() > 0)
 			{
