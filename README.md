@@ -69,7 +69,7 @@ or if you have already downloaded source:
 	./a.out
 
 #Documentation 
-To generate documentation, run following command in Citadel's root directory:
+To generate documentation, run following command in docs subdirectory:
 	
 	doxygen Doxyfile 
 
